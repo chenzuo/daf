@@ -1,0 +1,22 @@
+Enable-Migrations
+
+Add-Migration -Name Init
+
+Update-Database
+
+Update-Database -Script -SourceMigration:$InitialDatabase -TargetMigration:Init
+
+Update-Database -Script -TargetMigration:$InitialDatabase
+
+
+
+ -Force
+Add-Migration -Name <> -ConfigurationTypeName .Configuration -ConnectionStringName DAFDB
+
+Add-Migration -ConfigurationTypeName .Configuration -ConnectionStringName DAFDB 201207061622188_Init
+
+Update-Database -Script -ConfigurationTypeName .Configuration -ConnectionStringName DAFDB
+
+Update-Database -Force -Script -TargetMigration:$InitialDatabase -ConfigurationTypeName .Configuration -ConnectionStringName DAFDB
+
+Update-Database -Script -SourceMigration:Init -TargetMigration:$InitialDatabase -ConnectionStringName CMSDB

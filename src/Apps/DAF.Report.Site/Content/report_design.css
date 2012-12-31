@@ -1,0 +1,118 @@
+﻿#title-bar
+{
+    clear:both;
+    height:auto;
+    overflow:hidden;
+}
+
+#title-bar>div>div>h3,
+#title-bar>div>div>ul
+{
+    display:inline-block;
+}
+
+#title-bar ul li
+{
+    list-style:none;
+    float:left;
+    margin: 0px 4px;
+}
+#title-bar ul li.selected a
+{
+    font-size:11pt;
+    font-weight:bold;
+    color:Orange;
+}
+
+ul li input[type="text"],
+ul li select
+{
+    margin: 0px;
+    width: auto;
+    height: auto;
+}
+
+.toolbar ul
+{
+    height: 30px;
+    margin: 0px;
+}
+
+.toolbar ul li
+{
+    list-style:none;
+    float:left;
+    margin: 3px 8px;
+    height: 24px;
+}
+
+.toolbar ul li a
+{
+    display: inline-block;
+    margin: 2px 0px 0px 0px;
+}
+
+#designArea
+{
+    overflow:hidden;
+}
+
+#design-panel
+{
+    background: #eee;
+}
+
+#tb-tab
+{
+    position: relative;
+    float: right;
+    z-index: 10;
+}
+
+#tb-tab ul
+{
+    margin: 5px 10px 0px 0px;
+}
+
+.rpt-pages
+{
+    clear:both;
+    background: #ccc;
+    overflow:auto;
+}
+
+.rpt-page .with-border
+{
+    border:solid 1px blue;
+}
+
+.rpt-page .ele:hover
+{
+    border:solid 1px blue;
+}
+
+.colorpicker-holder
+{
+}
+
+.colorpicker 
+{
+    z-index:1000000;
+}
+
+.rpt-page *[data-bind]
+{
+    background-color:#eeeeee;
+}
+
+.rpt-page .ele-selected
+{
+    border:solid 1px red;
+}
+
+.rpt-page td.ele-selected
+{
+    background:#cccccc;
+}
+
+

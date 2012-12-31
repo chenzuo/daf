@@ -1,0 +1,25 @@
+﻿@{
+    Layout = "_Html.cshtml";
+}
+@section head {
+    @Html.Partial("_AdminHead")
+    @RenderSection("head", false)
+}
+@section end {
+    @Html.Partial("_AdminEnd")
+    @RenderSection("end", false)
+}
+
+<header class="container page-header">
+    @Html.Partial("_AdminHeader")
+    @RenderSection("header", false)
+</header> 
+
+<div class="page-body">
+    @RenderBody()
+</div>
+
+<footer class="container page-footer">
+    @Html.Partial("_AdminFooter")
+    @RenderSection("footer", false) 
+</footer>

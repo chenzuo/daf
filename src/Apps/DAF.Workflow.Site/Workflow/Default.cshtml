@@ -1,0 +1,217 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@{
+    Page.Title = "工作流管理";
+}
+<div class="row">
+    <div class="data-filter span3">
+        <div id="clients-container"></div>
+        <div data-bind="visible:SelectedClient">
+            <button class="btn btn-primary" type="button" onclick="NewBiz();">
+                <i class="icon-plus"></i><span>新增业务组</span></button>
+            <div class="accordion" data-bind="foreach:Owners">
+                <h3><a href="#" data-bind="text:Name" class="lgap4"></a></h3>
+                <div>
+                    <ul data-bind="foreach:Groups">
+                        <li><a href="#" data-bind="click: $root.SelectOwner.bind($data, $parent)"><span data-bind="text:$data"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="newBiz" style="display: none;">
+        <table class="table table-bordered">
+            <tr>
+                <td class="caption">应  用</td>
+                <td data-bind="with:SelectedClient">
+                    <span data-bind="text:ClientName"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="caption">所有者</td>
+                <td>
+                    <input id="owner" name="owner" type="text" required="true" />
+                </td>
+            </tr>
+            <tr>
+                <td class="caption">业务组</td>
+                <td>
+                    <input id="group" name="group" type="text" required="true" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="data-list span9 lgap1" data-bind="visible:SelectedGroup">
+        <h3 class="pull-left" data-bind="with:SelectedOwner">
+            <span>所有者：</span><span class="info" data-bind="text:Name"></span><br />
+        </h3>
+        <h3 class="pull-left" data-bind="with:SelectedGroup">
+            <span>业务组：</span><span class="info" data-bind="text:$data"></span>
+        </h3>
+        <table class="clear table table-bordered" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>编码</th>
+                    <th>业务对象</th>
+                    <th>开始地址</th>
+                    <th>明细地址</th>
+                    <th title="须提供必需输入材料, 才可以继续后续的操作">材料必需</th>
+                    <th title="须提供必需阶段产物, 才可以继续后续的操作">产物必需</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach:FilteredData">
+                <tr>
+                    <td>
+                        <input type="text" required="true" onblur="CheckUniqueFlowName(this);" placeholder="请输入名称" data-bind="value:Name" /></td>
+                    <td>
+                        <input type="text" required="true" onblur="CheckUniqueFlowCode(this);" placeholder="请输入编码" data-bind="value:Code" style="width: 80px;" /></td>
+                    <td>
+                        <input type="text" required="true" placeholder="请输入业务对象" data-bind="value:TargetType" /></td>
+                    <td>
+                        <input type="text" required="true" placeholder="请输入开始地址" data-bind="value:StartUrl" /></td>
+                    <td>
+                        <input type="text" required="true" placeholder="请输入明细地址" data-bind="value:DetailUrl" /></td>
+                    <td>
+                        <input type="checkbox" data-bind="checked:StopWhenIncomeRequired" style="width: 30px;" /></td>
+                    <td>
+                        <input type="checkbox" data-bind="checked:StopWhenOutcomeRequired" style="width: 30px;" /></td>
+                    <td>
+                        <button class="btn btn-primary" type="button" data-bind="click: function(item, e) { OpenDialog('编辑工作流','@(UrlHelper.ClientUrl("Workflow/BizFlow"))?id=' + item.FlowId()); return false; }">
+                            <i class="icon-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger" type="button" data-bind="click:vm.RemoveItem">
+                            <i class="icon-remove"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+                <i class="icon-plus"></i><span>新增</span></button>
+            <button class="btn btn-success" type="button" onclick="vm.Save();">
+                <i class="icon-ok"></i><span>保存</span></button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var selectedClient = vm.SelectedClient();
+                if (selectedClient) {
+                    return '@(UrlHelper.ClientUrl("Api/Workflow/Flows"))?client=' + selectedClient.ClientId;
+                }
+                return '@(UrlHelper.ClientUrl("Api/Workflow/Flows"))';
+            },
+            onQuerySuccess: function (bindedData) {
+                vm.Owners.removeAll();
+                if (bindedData() && bindedData().length > 0) {
+                    for (var i = 0; i < bindedData().length; i++) {
+                        var d = bindedData()[i];
+                        vm.AddOwner(d.Owner(), d.BizGroup());
+                    }
+                    vm.SelectOwner(vm.Owners()[0], vm.Owners()[0].Groups[0]);
+                }
+                $('.accordion').accordion('destroy').accordion();
+            },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Workflow/SaveFlows"))'; },
+            createItem: function () {
+                return {
+                    FlowId: ko.observable(IdGenerator.NewId()),
+                    ClientId: ko.observable(vm.SelectedClient().ClientId),
+                    Owner: ko.observable(vm.SelectedOwner().Name),
+                    BizGroup: ko.observable(vm.SelectedGroup()),
+                    Name: ko.observable(""),
+                    Code: ko.observable(""),
+                    TargetType: ko.observable(""),
+                    StartUrl: ko.observable(""),
+                    DetailUrl: ko.observable(""),
+                    StopWhenIncomeRequired: ko.observable(true),
+                    StopWhenOutcomeRequired: ko.observable(true)
+                };
+            },
+            onInit: function (self) {
+                self.SelectedClient = ko.observable(null);
+                self.SelectedOwner = ko.observable(null);
+                self.SelectedGroup = ko.observable(null);
+                self.Owners = ko.observableArray([]);
+                self.FilteredData = ko.computed(function () {
+                    return ko.utils.arrayFilter(self.Data(), function (r) {
+                        return self.SelectedOwner() && r.Owner() == self.SelectedOwner().Name && r.BizGroup() == self.SelectedGroup();
+                    });
+                });
+                self.AddOwner = function (owner, group) {
+                    var fo;
+                    var fos = $.grep(vm.Owners(), function (n, i) { return n.Name == owner; });
+                    if (fos.length <= 0) {
+                        fo = { Name: owner, Groups: [group] };
+                        vm.Owners.push(fo);
+                    }
+                    else {
+                        fo = fos[0];
+                        var fgs = $.grep(fo.Groups, function (n, i) { return n == group; });
+                        if (fgs.length <= 0) {
+                            fo.Groups.push(group);
+                        }
+                    }
+                };
+                self.SelectOwner = function (owner, group) {
+                    self.SelectedOwner(owner);
+                    self.SelectedGroup(group);
+                };
+                self.HasChildren = function (item) {
+                    return item.Children() && item.Children().length > 0;
+                };
+            }
+        });
+
+        ko.applyBindings(vm);
+        $('.accordion').accordion();
+        $(document).off('selectclient').on('selectclient', OnSelectClient);
+        LoadHtml('#clients-container', '@UrlHelper.SSOUrl("Controls/SelectClients.cshtml")', function () {
+            SelectFirstClient();
+        }, null, false);
+    });
+
+    function OnSelectClient(event, obj) {
+        vm.SelectedClient(obj);
+        vm.SelectedOwner(null);
+        vm.SelectedGroup(null);
+        vm.GetData();
+    }
+
+    function CheckUniqueFlowCode(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data(), function (n, i) { return n.Code() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在编码为“" + txt + "”的工作流", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+    function CheckUniqueFlowName(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data(), function (n, i) { return n.Name() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在名为“" + txt + "”的工作流", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+
+    function NewBiz() {
+        ShowDialog('#newBiz', '新增业务', function () {
+            var owner = $('#owner').val();
+            var group = $('#group').val();
+            vm.AddOwner(owner, group);
+            vm.SelectOwner(vm.Owners()[0], group);
+            $('.accordion').accordion('destroy').accordion();
+        });
+    }
+
+</script>

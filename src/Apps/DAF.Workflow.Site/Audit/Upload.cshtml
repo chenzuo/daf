@@ -1,0 +1,159 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.SSO;
+@using DAF.Workflow;
+@using DAF.Workflow.Models;
+@using DAF.Workflow.Info;
+@{
+    Layout = "~/_Dialog.cshtml";
+
+    var pageModel = this.PageModel<UploadInfo>();
+
+    bool removed = Request.QueryString["removed"].ConvertTo<bool>(false);
+    bool? verified = Request.QueryString["verified"].ConvertTo<bool?>(null);
+    var fileName = Request.QueryString["fileName"];
+    var fileUrl = Request.QueryString["fileUrl"];
+    if (IsPost)
+    {
+        if (Validation.IsValid())
+        {
+
+            UploadInfo info = new UploadInfo();
+            info.UploadId = Request.QueryString["uploadId"];
+            info.TargetStateId = Request.QueryString["targetStateId"];
+            info.TargetId = Request.QueryString["targetId"];
+            info.FileName = fileName;
+            info.FileUrl = fileUrl;
+
+            info.Removed = removed;
+            info.Verified = verified;
+            info.Remark = Request.Form["Remark"];
+            info.OperationTime = DateTime.Now;
+
+            if (AuthHelper.IsAuthenticated)
+            {
+                info.UserId = AuthHelper.CurrentSession.User.UserId;
+                info.UserName = AuthHelper.CurrentSession.User.Name();
+            }
+
+            ServerResponse result = new ServerResponse();
+            var flowSvr = IOC.Current.GetService<IStateFlowService>();
+            bool r = false;
+            if (info.Removed)
+            {
+                r = flowSvr.RemoveIncome(info);
+            }
+            else if (info.Verified.HasValue)
+            {
+                r = flowSvr.VerifyIncome(info);
+            }
+            else
+            {
+                r = flowSvr.UploadIncome(info);
+            }
+            if (r)
+            {
+                result.Status = ResponseStatus.Success;
+                result.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
+            }
+            else
+            {
+                result.Status = ResponseStatus.Failed;
+                result.Message = LocaleHelper.Localizer.Get("SaveFailure");
+            }
+
+            this.Refresh(result);
+        }
+    }
+}
+
+@section head {
+    @AssetsHelper.CDNScript("jquery.fileupload.js")
+    @AssetsHelper.CDNScript("jquery.fileupload-fp.js")
+    @AssetsHelper.CDNScript("jquery.fileupload.vm.js")
+}
+
+<div class="row">
+    <div class="span12">
+        <form method="post">
+            @Html.ValidationSummary(true)
+            @if (removed)
+            {
+                <h5>确认要删除文档：<a target="_blank" href="@fileUrl">@fileName</a>？</h5>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-ok"></i><span>确认删除</span></button>
+                    <button class="btn" type="button" onclick="CloseDialog();">
+                        <i class="icon-close"></i><span>取消</span></button>
+                </div> 
+            }
+            else if (verified.HasValue)
+            {
+                <h5>请下载并验证文档：<a target="_blank" href="@fileUrl">@fileName</a></h5>
+                <div>
+                    @(pageModel.TextAreaFor(o => o.Remark, 4, 20))
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="button" onclick="Submit(true);">
+                        <i class="icon-ok"></i><span>验证通过</span></button>
+                    <button class="btn btn-danger" type="button" onclick="Submit(false);">
+                        <i class="icon-close"></i><span>验证不通过</span></button>
+                    <button class="btn" type="button" onclick="CloseDialog();">
+                        <i class="icon-close"></i><span>取消</span></button>
+                </div> 
+            }
+            else
+            {
+                <h5>请上传文档：@fileName</h5>
+                <div id="fileuploader"></div> 
+                <div class="clear">
+                    <h5>备注：</h5>@(pageModel.TextAreaFor(o => o.Remark, 4, 20))
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-ok"></i><span>保存</span></button>
+                    <button class="btn" type="button" onclick="CloseDialog();">
+                        <i class="icon-close"></i><span>取消</span></button>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+@section end {
+    <script type="text/javascript">
+
+        $(function () {
+            LoadHtml('#fileuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=wf")');
+
+            OnReceiveMessage('fileselected', function (data) {
+                if (data.owner.indexOf('wf') >= 0) {
+                    $.each(data.files, function (i, n) {
+                        $('#FileUrl').val(file.url);
+                    });
+                }
+            });
+
+            OnReceiveMessage('fileremoved', function (data) {
+                var file = data.file;
+                if (data.owner.indexOf('wf') >= 0) {
+                    $('#FileUrl').val(file.url);
+                }
+            });
+
+            OnReceiveMessage('fileuploaded', function (data) {
+                var file = data.file;
+                if (data.owner.indexOf('wf') >= 0) {
+                    $('#FileUrl').val(file.url);
+                }
+            });
+        });
+
+        function Submit(verified) {
+            $('#Verified').val(verified ? 'True' : 'False');
+            $('form').submit();
+        }
+
+    </script>
+}
+

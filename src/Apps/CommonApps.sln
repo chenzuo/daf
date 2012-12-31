@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{9562390A-DD07-4254-8D77-9F2C6D5E2C0E}"
+	ProjectSection(SolutionItems) = preProject
+		ef_cmds.txt = ef_cmds.txt
+		hosts.txt = hosts.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Workflow", "DAF.Workflow\DAF.Workflow.csproj", "{D4964EA0-4B09-4780-AEB1-505DCDF5F869}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Workflow.WcfProviders", "DAF.Workflow.WcfProviders\DAF.Workflow.WcfProviders.csproj", "{8100325D-7A46-4F41-90A5-114062667980}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Workflow.Site", "DAF.Workflow.Site\DAF.Workflow.Site.csproj", "{A91D9E8D-2630-49E1-B750-255FB275004B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.CMS.Site", "DAF.CMS.Site\DAF.CMS.Site.csproj", "{669DBB9E-8182-4269-A903-3315A0AC40BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Report.Site", "DAF.Report.Site\DAF.Report.Site.csproj", "{8943C970-C6F2-48E6-A007-0F411CAD67F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Timeline.Site", "DAF.Timeline.Site\DAF.Timeline.Site.csproj", "{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D4964EA0-4B09-4780-AEB1-505DCDF5F869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4964EA0-4B09-4780-AEB1-505DCDF5F869}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4964EA0-4B09-4780-AEB1-505DCDF5F869}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4964EA0-4B09-4780-AEB1-505DCDF5F869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8100325D-7A46-4F41-90A5-114062667980}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8100325D-7A46-4F41-90A5-114062667980}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8100325D-7A46-4F41-90A5-114062667980}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8100325D-7A46-4F41-90A5-114062667980}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A91D9E8D-2630-49E1-B750-255FB275004B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A91D9E8D-2630-49E1-B750-255FB275004B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A91D9E8D-2630-49E1-B750-255FB275004B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A91D9E8D-2630-49E1-B750-255FB275004B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{669DBB9E-8182-4269-A903-3315A0AC40BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{669DBB9E-8182-4269-A903-3315A0AC40BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{669DBB9E-8182-4269-A903-3315A0AC40BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{669DBB9E-8182-4269-A903-3315A0AC40BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8943C970-C6F2-48E6-A007-0F411CAD67F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8943C970-C6F2-48E6-A007-0F411CAD67F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8943C970-C6F2-48E6-A007-0F411CAD67F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8943C970-C6F2-48E6-A007-0F411CAD67F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

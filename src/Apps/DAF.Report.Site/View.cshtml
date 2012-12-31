@@ -1,0 +1,69 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.Report.Site;
+@{
+    Layout = "~/_Html.cshtml";
+    var url = Server.UrlDecode(Request.QueryString["url"]);
+    var client = Request.QueryString["client"];
+    var group = Request.QueryString["group"];
+    var report = Request.QueryString["report"];
+    string path = ReportHelper.GetPath(client, group, report);
+    var dir = new DirectoryInfo(path);
+    string[] files = null;
+    if (dir.Exists)
+    {
+        files = dir.GetFiles().OrderBy(f => f.Name).Select(f =>
+                        string.Format("~/{0}/{1}/{2}/{3}/{4}", ReportHelper.ReportTemplatePath, client, group, report, f.FileNameWithoutExtension())
+                    ).ToArray();
+    }
+}
+@AssetsHelper.Css("Content/report_view.css")
+@AssetsHelper.Css("Content/report_eles.css")
+@AssetsHelper.Css("Content/report_print.css", "", "print")
+
+@AssetsHelper.CDNScript("knockout-2.1.0.js")
+@AssetsHelper.CDNScript("knockout.mapping-latest.js")
+@AssetsHelper.CDNScript("knockout.ext.js")
+@AssetsHelper.CDNScript("knockout.vm.js")
+@AssetsHelper.Script("Scripts/report_view.js")
+
+<div id="title-bar" class="title-bar">
+    <div id="menu-bar" class="menu-bar">
+        <ul>
+            <li><a href="javascript:void(0);" onclick="Print();">打印</a></li>
+            <li><a href="javascript:void(0);" onclick="Preview();">预览</a></li>
+            <li><a href="javascript:void(0);" onclick="PageSetup();">页面设置</a></li>
+        </ul>
+    </div>
+</div>
+<div id="papers" class="papers" data-bind="with:Data">
+    @if (files == null)
+    {
+        <div>该报表未设计页面。</div>
+    }
+    else
+    {
+        foreach (var file in files)
+        {
+        @RenderPage(file);
+        }
+    }
+</div>
+
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        Initialize('@(UrlHelper.ClientUrl("").TrimEnd('/'))');
+        GetJson('@Html.Raw(url)', function (data) {
+            vm = new VM(data);
+            ko.applyBindings(vm);
+            SetupPaper();
+        });
+    });
+
+    function VM(data) {
+        var self = this;
+        self.Data = ko.mapping.fromJS(data);
+    }
+</script>

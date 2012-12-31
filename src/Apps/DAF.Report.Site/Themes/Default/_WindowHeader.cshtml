@@ -1,0 +1,17 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@{
+}
+
+@RenderPage("_Banner.cshtml")
+
+<div id="main-menu"  class="navbar navbar-primary">
+    <div class="navbar-inner">
+        <div class="container">
+            @Menu.Render(MenuHelper.GetMenuItems("main"))
+            <ul class="nav pull-right">
+                <li><a href="/Admin">系统管理</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

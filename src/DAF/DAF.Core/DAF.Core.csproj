@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BFD39D66-B5BC-44FF-989D-043379AA20B3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DAF.Core</RootNamespace>
+    <AssemblyName>DAF.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\outputs\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\outputs\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\libs\Autofac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\libs\System.Net.Http.Formatting.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assert.cs" />
+    <Compile Include="AutoRegisterStartup.cs" />
+    <Compile Include="AutoWireModule.cs" />
+    <Compile Include="Caching\CacheScope.cs" />
+    <Compile Include="Caching\DictionaryCacheProviderBase.cs" />
+    <Compile Include="Caching\ICacheManager.cs" />
+    <Compile Include="Caching\ICacheProvider.cs" />
+    <Compile Include="Caching\ICacheProviderExtensions.cs" />
+    <Compile Include="Caching\StaticShareCacheManager.cs" />
+    <Compile Include="Caching\StaticShareCacheProvider.cs" />
+    <Compile Include="ChangedData.cs" />
+    <Compile Include="ConstItem.cs" />
+    <Compile Include="Data\PagingInfo.cs" />
+    <Compile Include="Collections\SerializableDictionary.cs" />
+    <Compile Include="Collections\TreeNode.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="Configurations\ConfigurationSystem.cs" />
+    <Compile Include="Configurations\IConfigurationProvider.cs" />
+    <Compile Include="ContainerBuilderExtensions.cs" />
+    <Compile Include="DataExchange\ExportConfig.cs" />
+    <Compile Include="DataExchange\ExportMark.cs" />
+    <Compile Include="DataExchange\IDataExporter.cs" />
+    <Compile Include="DataExchange\IDataImporter.cs" />
+    <Compile Include="DataExchange\IDataSynchronizer.cs" />
+    <Compile Include="DataExchange\ExchangePackage.cs" />
+    <Compile Include="DataExchange\IExchangeProvider.cs" />
+    <Compile Include="DataExchange\IMatadataMap.cs" />
+    <Compile Include="DataExchange\ImportConfig.cs" />
+    <Compile Include="DataExchange\IPackager.cs" />
+    <Compile Include="DataExchange\ImportMark.cs" />
+    <Compile Include="DataStatus.cs" />
+    <Compile Include="Data\DataOperation.cs" />
+    <Compile Include="Data\DefaultDbProvider.cs" />
+    <Compile Include="Data\DefaultSqlFileExecutor.cs" />
+    <Compile Include="Data\DefaultTransactionManager.cs" />
+    <Compile Include="Data\EntityEventArgs.cs" />
+    <Compile Include="Data\IDbProvider.cs" />
+    <Compile Include="Data\IMapRepository.cs" />
+    <Compile Include="Data\IRepository.cs" />
+    <Compile Include="Data\ISqlFileExecutor.cs" />
+    <Compile Include="Data\ITransactionManager.cs" />
+    <Compile Include="Data\NullTransactionManager.cs" />
+    <Compile Include="Data\ObjectExistsException.cs" />
+    <Compile Include="Data\ObjectNotFoundException.cs" />
+    <Compile Include="Data\SqlFileExecutorBase.cs" />
+    <Compile Include="DateTimePart.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\LocalizerExtensions.cs" />
+    <Compile Include="Helpers\EnumHelper.cs" />
+    <Compile Include="Helpers\HttpHelper.cs" />
+    <Compile Include="Helpers\LocaleHelper.cs" />
+    <Compile Include="Helpers\LogHelper.cs" />
+    <Compile Include="IPublisher.cs" />
+    <Compile Include="IServerResponse.cs" />
+    <Compile Include="ISubscriber.cs" />
+    <Compile Include="ExecuteOrder.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\DimensionExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\ExpressionExtension.cs" />
+    <Compile Include="Extensions\IOExtensions.cs" />
+    <Compile Include="Extensions\LinqDynamicExtension.cs" />
+    <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\PredicateExtensions.cs" />
+    <Compile Include="Extensions\StringExtentension.cs" />
+    <Compile Include="Extensions\StringMatchType.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="Extensions\XElementExtensions.cs" />
+    <Compile Include="FileSystem\IFileSystemProvider.cs" />
+    <Compile Include="FileSystem\LocalFileProvider.cs" />
+    <Compile Include="Generators\GuidIdGenerator.cs" />
+    <Compile Include="Generators\IIdGenerator.cs" />
+    <Compile Include="Generators\IRandomTextGenerator.cs" />
+    <Compile Include="Generators\RandomNumberIdGenerator.cs" />
+    <Compile Include="Generators\RNGRandomTextGenerator.cs" />
+    <Compile Include="Generators\TicksIdGenerator.cs" />
+    <Compile Include="Helpers\HierarchyHelper.cs" />
+    <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\LinkedListHelper.cs" />
+    <Compile Include="Helpers\SecurityHelper.cs" />
+    <Compile Include="IAppEventHandler.cs" />
+    <Compile Include="IAutoRegisterContainerWithType.cs" />
+    <Compile Include="IEntityWithStatus.cs" />
+    <Compile Include="IObjectProvider.cs" />
+    <Compile Include="IOC.cs" />
+    <Compile Include="IOrdered.cs" />
+    <Compile Include="IServiceFactory.cs" />
+    <Compile Include="IStartup.cs" />
+    <Compile Include="JsonFileObjectProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="JsonObjectProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KeyEqualityComparer.cs" />
+    <Compile Include="Messaging\IEmailSender.cs" />
+    <Compile Include="Messaging\ISMSSender.cs" />
+    <Compile Include="ResourceBase.cs" />
+    <Compile Include="Localization\ILocalizer.cs" />
+    <Compile Include="Localization\LocalizationInfo.cs" />
+    <Compile Include="Localization\NullLocalizer.cs" />
+    <Compile Include="Localization\ResxLocalizer.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Extensions\LoggingExtensions.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="Logging\NullLoggerFactory.cs" />
+    <Compile Include="Map\IMapProvider.cs" />
+    <Compile Include="Map\ReflectionMapProvider.cs" />
+    <Compile Include="NullPublisher.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProviderBaseWithLogger.cs" />
+    <Compile Include="ProviderBaseWithLoggerNLocalizer.cs" />
+    <Compile Include="Resources.cs" />
+    <Compile Include="ResponseStatus.cs" />
+    <Compile Include="Scheduling\ElapseScheduleTimer.cs" />
+    <Compile Include="Scheduling\IOperation.cs" />
+    <Compile Include="Scheduling\IScheduleManager.cs" />
+    <Compile Include="Scheduling\IScheduleTask.cs" />
+    <Compile Include="Scheduling\IScheduleTimer.cs" />
+    <Compile Include="Scheduling\IScheduleTrigger.cs" />
+    <Compile Include="Scheduling\ITaskTrigger.cs" />
+    <Compile Include="Scheduling\NullOperation.cs" />
+    <Compile Include="Scheduling\ScheduleAppEventHandler.cs" />
+    <Compile Include="Scheduling\ISheduleTaskExecuteLog.cs" />
+    <Compile Include="Scheduling\TimingTrigger.cs" />
+    <Compile Include="Security\AESEncryptionProvider.cs" />
+    <Compile Include="Security\DESEncryptionProvider.cs" />
+    <Compile Include="Security\HashEncryptionProvider.cs" />
+    <Compile Include="Security\IEncryptionProvider.cs" />
+    <Compile Include="Security\IPasswordEncryptionProvider.cs" />
+    <Compile Include="Security\PlainEncryptionProvider.cs" />
+    <Compile Include="Serialization\IJsonSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ServerResponse.cs" />
+    <Compile Include="Template\DefaultTemplateEngine.cs" />
+    <Compile Include="Template\FileTemplateProvider.cs" />
+    <Compile Include="Template\ITemplateEngine.cs" />
+    <Compile Include="Template\ITemplateGenerator.cs" />
+    <Compile Include="Template\ITemplateProvider.cs" />
+    <Compile Include="Template\TemplateContent.cs" />
+    <Compile Include="Template\TemplateProperty.cs" />
+    <Compile Include="Template\TemplateResult.cs" />
+    <Compile Include="TypeBasedModule.cs" />
+    <Compile Include="WcfService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NuGet\NuGet.csproj">
+      <Project>{89080056-9c27-4760-a4fa-d4e0500df91e}</Project>
+      <Name>NuGet</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

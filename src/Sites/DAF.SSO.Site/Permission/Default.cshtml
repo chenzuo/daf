@@ -1,0 +1,209 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.SSO.Server;
+@{
+    var pageModel = this.PageModel<Permission>();
+}
+
+<div class="row">
+    <div class="span12">
+        @RenderPage("~/Controls/SelectClients.cshtml")
+        <div class="data-container tabs clear" data-bind="visible:SelectedClient">
+            <ul>
+                @foreach (var it in EnumHelper.GetObjectsFromEnum(typeof(DAF.SSO.PermissionType), LocaleHelper.Localizer))
+                {
+                    <li><a href="#data-list-container" onclick="vm.SelectPermissionType(@(it.Item2));">@it.Item1</a></li>
+                }
+            </ul>
+            <div id="data-list-container">
+                <form method="post">
+                    <button class="btn btn-primary" type="button" data-bind="click:vm.AddGroup">
+                        <i class="icon-plus"></i><span>新增分组</span></button>
+                    <!-- ko foreach:vm.GetGroups() -->
+                    <fieldset>
+                        <legend>
+                            <a href="javascript:void(0);" data-bind="text:GroupName,click:vm.EditGroup"></a>
+                            <button class="btn btn-primary btn-mini" type="button" data-bind="click:vm.AddGroupItem">
+                                <i class="icon-plus"></i>
+                            </button>
+                        </legend>
+                        <table id="data-list" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>@(pageModel.CaptionFor(o => o.PermissionName))</th>
+                                    <th>@(pageModel.CaptionFor(o => o.Uri))</th>
+                                    <th>@(pageModel.CaptionFor(o => o.Position))</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach:{ data:vm.GetGroupItems($data), afterRender: AfterRender }">
+                                <tr data-bind="attr:{key:PermissionName, id:PermissionName, idx:Position}">
+                                    <td>
+                                        <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:PermissionName"></span></div>
+                                        <div data-bind="visible:vm.IsNew($data)">
+                                            @(pageModel.TextBoxFor(o => o.PermissionName, new { data_bind = "value:PermissionName, event: { blur: CheckNameExists }" }))
+                                        </div>
+                                    </td>
+                                    <td>
+                                    @(pageModel.TextBoxFor(o => o.Uri, new { @data_bind = "value:Uri" }))
+                                    <td>
+                                        <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Position"></span></div>
+                                        <div data-bind="visible:vm.IsNew($data)">
+                                            @pageModel.TextBoxFor(o => o.Position, new { data_bind = "value:Position, event: { blur: CheckPositionExists }" })
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </fieldset>
+                    <!-- /ko -->
+                </form>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-success" type="button" onclick="vm.Save();">
+                <i class="icon-ok"></i><span>保存</span></button>
+        </div>
+        <div id="editGroup" class="hide">
+            <table class="table table-bordered">
+                <tr>
+                    <td class="caption">分组名称：</td>
+                    <td>
+                        <input id="editGroupName" name="editGroupName" type="text" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () { return '@(UrlHelper.ClientUrl("Api/Permission"))?client=' + vm.SelectedClient().ClientId; },
+            onQuerySuccess: function (data) {
+                var gs = $.map(data(), function (n) { return { PermissionType: n.PermissionType(), GroupName: n.GroupName() }; });
+                var gns = gs.unique(function (n, item) { return n.PermissionType == item.PermissionType && n.GroupName.toLowerCase() == item.GroupName.toLowerCase(); });
+                ko.mapping.fromJS(gns, null, vm.PermissionGroups);
+            },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Permission"))'; },
+            createItem: function () {
+                return {
+                    ClientId: ko.observable(vm.SelectedClient().ClientId),
+                    PermissionName: ko.observable(""),
+                    PermissionType: ko.observable(vm.SelectedPermissionType()),
+                    Uri: ko.observable(""),
+                    Position: ko.observable(vm.GetGroupItems().length),
+                    GroupName: ko.observable(vm.SelectedGroup().GroupName())
+                };
+            },
+            onInit: function (self) {
+                self.SelectedClient = ko.observable(null);
+                self.SelectedPermissionType = ko.observable(1);
+                self.PermissionGroups = ko.observableArray([]);
+                self.SelectedGroup = ko.observable(null);
+                self.SelectPermissionType = function (pt) {
+                    self.SelectedPermissionType(pt);
+                };
+                self.AddGroup = function () {
+                    $('#editGroupName').val("");
+                    ShowDialog('#editGroup', "新增分组",
+                        function () {
+                            var gpName = $('#editGroupName').val();
+                            if (gpName.length <= 0) {
+                                ShowMessage('提示信息', '请输入分组名称！');
+                                return true;
+                            }
+                            var fgps = $.grep(vm.PermissionGroups(), function (n, i) { return n.PermissionType() == vm.SelectedPermissionType() && n.GroupName().toLowerCase() == gpName.toLowerCase(); });
+                            if (fgps && fgps.length > 0) {
+                                ShowMessage('提示信息', '已经存在相同的分组名称！');
+                                return true;
+                            }
+                            var ngp = {
+                                PermissionType: ko.observable(vm.SelectedPermissionType()),
+                                GroupName: ko.observable(gpName)
+                            };
+                            vm.PermissionGroups.push(ngp);
+                            return false;
+                        });
+                };
+                self.EditGroup = function (group) {
+                    $('#editGroupName').val(group.GroupName());
+                    ShowDialog('#editGroup', "编辑分组",
+                        function () {
+                            var gpName = $('#editGroupName').val();
+                            if (gpName.length <= 0) {
+                                ShowMessage('提示信息', '请输入分组名称！');
+                                return true;
+                            }
+                            var fgps = $.grep(vm.PermissionGroups(), function (n, i) { return n.PermissionType() == vm.SelectedPermissionType() && n.GroupName().toLowerCase() == gpName.toLowerCase() });
+                            if (fgps && fgps.length > 1) {
+                                ShowMessage('提示信息', '已经存在相同的分组名称！');
+                                return true;
+                            }
+                            $.each(vm.GetGroupItems(group.GroupName()), function (i, n) {
+                                n.GroupName(gpName);
+                            });
+                            group.GroupName(gpName);
+                            return false;
+                        });
+                };
+                self.GetGroups = function () {
+                    return ko.utils.arrayFilter(vm.PermissionGroups(), function (r) {
+                        return (r.PermissionType() == vm.SelectedPermissionType());
+                    });
+                };
+                self.GetGroupItems = function (gpName) {
+                    if (gpName && gpName.length > 0) {
+                        return ko.utils.arrayFilter(vm.Data(), function (r) {
+                            return (r.PermissionType() == vm.SelectedPermissionType() && r.GroupName() == gpName);
+                        });
+                    } else {
+                        return ko.utils.arrayFilter(vm.Data(), function (r) {
+                            return (r.PermissionType() == vm.SelectedPermissionType());
+                        });
+                    }
+                };
+                self.AddGroupItem = function (group) {
+                    vm.SelectedGroup(group);
+                    vm.AddItem();
+                }
+            },
+            validate: function () {
+                return $('#data-list-container>form').valid();
+            }
+        });
+
+        ko.applyBindings(vm);
+        $(document).off('selectclient').on('selectclient', OnSelectClient);
+        SelectFirstClient();
+    });
+
+    function OnSelectClient(event, obj) {
+        vm.SelectedClient(obj);
+        vm.GetData();
+    }
+
+    function CheckNameExists(item, event) {
+        var key = item.PermissionName();
+        var items = $('#data-list tr[key="' + key + '"]');
+        if (items.length > 1) {
+            ShowMessage("提示信息", "已经存在名称为“" + item.PermissionName() + "”的受保护资源。", function () { $(event.target).val('').focus(); });
+            return false;
+        }
+    }
+
+    function CheckPositionExists(item, event) {
+        var key = item.Position();
+        var items = $('#data-list tr[idx="' + key + '"]');
+        if (items.length > 1) {
+            ShowMessage("提示信息", "已经存在位置在“" + item.Position() + "”的受保护资源。", function () { $(event.target).val('').focus(); });
+            return false;
+        }
+    }
+</script>
+

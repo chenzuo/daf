@@ -1,0 +1,170 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS.Site.Models;
+@{
+    var pageModel = this.PageModel<AppSetting>();
+}
+<div class="row">
+    <div class="span12">
+        <div id="clients-container" class="pull-left"></div>
+        <div class="control-group tgap1 pull-left" data-bind="visible:SelectedClient">
+            <button class="btn btn-primary" type="button" onclick="NewCate();">
+                <i class="icon-plus"></i><span>新增分类</span>
+            </button>
+        </div>
+        <div id="cates" class="clear" data-bind="visible:SelectedClient">
+            <ul data-bind="foreach:Categories">
+                <li><a href="#data-container" data-bind="text: $data, click:SelectCate"></a></li>
+            </ul>
+            <div id="data-container" data-bind="visible:SelectedCate">
+                <form method="post">
+                <table id="data-list" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>@(pageModel.CaptionFor(o => o.Name))</th>
+                            <th>@(pageModel.CaptionFor(o => o.Caption))</th>
+                            <th>@(pageModel.CaptionFor(o => o.Value))</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: { data: Data, afterRender: AfterRender }">
+                        <tr data-bind="attr:{ key:Category() + '_' + Name(), id:Name, idx:ShowOrder }">
+                            <td>
+                                <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Name"></span></div>
+                                <div data-bind="visible:vm.IsNew($data)">
+                                    @pageModel.TextBoxFor(o => o.Name, new { data_bind = "value:Name, event: { blur: CheckExists }" })
+                                </div>
+                            </td>
+                            <td>@pageModel.TextBoxFor(o => o.Caption, new { data_bind = "value:Caption" })</td>
+                            <td>@pageModel.TextBoxFor(o => o.Value, new { data_bind = "value:Value" })</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+                        <i class="icon-plus"></i><span>新增</span></button>
+                    <button class="btn btn-success" type="button" onclick="vm.Save();">
+                        <i class="icon-ok"></i><span>保存</span></button>
+                </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="newCate" class="hide">
+    <table class="table table-bordered">
+        <tr>
+            <td class="caption">应用：</td>
+            <td data-bind="with:SelectedClient"><span data-bind="text:ClientId"></span></td>
+        </tr>
+        <tr>
+            <td class="caption">分类：</td>
+            <td>
+                <input id="cateName" name="cateName" required="true" type="text" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var url = '@(UrlHelper.ClientUrl("Api/AppSettings/Data"))?client=' + vm.SelectedClient().ClientId;
+                var cate = vm.SelectedCate();
+                if (cate) {
+                    url = url + '&cate=' + cate;
+                }
+                return url;
+            },
+            onQuerySuccess: function (data) { },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/AppSettings/Save"))'; },
+            createItem: function () {
+                return {
+                    SiteName: ko.observable('@(AuthHelper.CurrentClient.ClientId)'),
+                    ClientId: ko.observable(vm.SelectedClient().ClientId),
+                    Category: ko.observable(vm.SelectedCate()),
+                    Name: ko.observable(""),
+                    Caption: ko.observable(""),
+                    Value: ko.observable(""),
+                    ShowOrder: ko.observable(vm.Data().length)
+                };
+            },
+            onInit: function (self) {
+                self.Categories = ko.observableArray([]);
+                self.SelectedClient = ko.observable(null);
+                self.SelectedCate = ko.observable("");
+            },
+            validate: function () {
+                return $('#data-container>form').valid();
+            }
+        });
+        ko.applyBindings(vm);
+        $('#cates').tabs();
+        $(document).off('selectclient').on('selectclient', OnSelectClient);
+        LoadHtml('#clients-container', '@UrlHelper.SSOUrl("Controls/SelectClients.cshtml")', function () {
+            SelectFirstClient();
+        }, null, false);
+    });
+
+    function OnSelectClient(event, obj) {
+        vm.SelectedClient(obj);
+        GetCategories(obj);
+    }
+
+    function SelectCate(cate) {
+        vm.SelectedCate(cate);
+        vm.GetData();
+    }
+
+    function GetCategories(client) {
+        var url = '@(UrlHelper.ClientUrl("Api/AppSettings/Categories"))?client=' + client.ClientId;
+
+        GetJson(url,
+        function (data, status, xhr) {
+            ko.mapping.fromJS(data, null, vm.Categories);
+            if (vm.Categories().length > 0) {
+                SelectCate(vm.Categories()[0]);
+            }
+            else {
+                SelectCate("");
+            }
+            $('#cates').tabs('destroy').tabs();
+        });
+    }
+
+    function NewCate() {
+        ShowDialog('#newCate', '新增应用分类',
+            function () {
+                var clientId = vm.SelectedClient().ClientId;
+                var cateName = $('#cateName').val();
+                if (cateName.length <= 0) {
+                    alert('必须输入分类名称！');
+                    $('#cateName').focus();
+                    return true;
+                }
+                var it = $.grep(vm.Data(), function (n, i) { return n == cateName; });
+
+                if (it.length > 0) {
+                    ShowMessage("提示信息", "应用" + clientId + "已经存在分类" + cateName);
+                }
+                else {
+                    vm.Categories.push(cateName);
+                }
+                $('#cates').tabs("destroy").tabs({ selected: $('#cates>ul>li').length - 1 });
+                SelectCate(cateName);
+            });
+    }
+
+    function CheckExists(item, event) {
+        var key = item.Category() + "_" + item.Name();
+        var items = $('#data-list tr[key="' + key + '"]');
+        if (items.length > 1) {
+            ShowMessage("提示信息", "分类" + item.Category() + "已经存在名称为“" + item.Name() + "”的项目。", function () { $(event.target).val('').focus(); });
+            return false;
+        }
+    }
+</script>

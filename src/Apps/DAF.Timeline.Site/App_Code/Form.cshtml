@@ -1,0 +1,23 @@
+﻿@helper MainTitle(string title, string description)
+{
+    <div>
+        <h2>
+            @if (!string.IsNullOrEmpty(description))
+            {
+                <button class="bgap2 btn btn-mini btn-warning" onclick="$(this).parent().next().slideToggle(200, function(){ ResizeIFrame(); });$('i:first', this).toggleClass('icon-chevron-down').toggleClass('icon-chevron-up');">
+                    <i class="icon-chevron-down"></i>
+                </button>
+            }
+            <span>@title</span>
+        </h2>
+        @if (!string.IsNullOrEmpty(description))
+        {
+            <p class="hide">@description</p>
+        }
+    </div>
+    <hr />
+}
+
+@helper Recursive(Func<dynamic, object> itemTemplate)
+{
+}

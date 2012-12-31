@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="DAF.SSO.Site.Services.SSOServerService" CodeBehind="SSOServerService.svc.cs" %>

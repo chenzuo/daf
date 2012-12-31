@@ -1,0 +1,1 @@
+﻿{ ClientId: "DAF.Scheduling.Site", ClientName: "DAF.Scheduling.Site", BaseUrl: "http://www.apisite.com", EncryptKey: "DAF.Scheduling.Site", EncryptScrect: "DAF.Scheduling.Site" }

@@ -1,0 +1,198 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.Core.Security;
+@using DAF.SSO;
+@using DAF.Workflow;
+@using DAF.Workflow.Models;
+@{
+    this.Layout = null;
+    bool addStyleAndScripts = true;
+    if (Page.ExcludeStyleAndScripts != null)
+    {
+        addStyleAndScripts = false;
+    }
+
+    TargetFlow targetFlow = Page.TargetFlow;
+    string clientId = Request.QueryString["client"].DefaultIfNull(AuthHelper.CurrentClient.ClientId);
+    if (targetFlow == null)
+    {
+        var flowSvr = IOC.Current.GetService<IStateFlowService>();
+        if (!string.IsNullOrEmpty(Request.QueryString["id"]))
+        {
+            targetFlow = flowSvr.LoadFlow(Request.QueryString["id"], true);
+        }
+        else
+        {
+            var targetId = Request.QueryString["targetId"];
+            var flowCodeOrTargetType = Request.QueryString["flowCode"].DefaultIfNull(Request.QueryString["targetType"]);
+            targetFlow = flowSvr.LoadFlow(clientId, flowCodeOrTargetType, targetId, true);
+        }
+    }
+}
+@if (addStyleAndScripts)
+{
+    @AssetsHelper.Css("/Content/workflow.css")
+    @AssetsHelper.Script("/Scripts/workflow.js")
+}
+<div class="workflow-target">
+    @if (targetFlow == null)
+    {
+        <h3>无相关工作流数据。</h3>
+    }
+    else
+    {
+        var linked = LinkedListHelper.Build(targetFlow.TreatedStates,
+            list => list.FirstOrDefault(o => string.IsNullOrEmpty(o.PrevTargetStateId)),
+            (list, last) => list.FirstOrDefault(o => o.PrevTargetStateId == last.TargetStateId));
+
+        var node = linked.First;
+        var detailUrl = "#";
+        if (!string.IsNullOrEmpty(targetFlow.Flow.DetailUrl))
+        {
+            detailUrl = string.Format("{0}?targetId={1}&targetFlowId={2}", targetFlow.Flow.DetailUrl, targetFlow.TargetId, targetFlow.TargetFlowId);
+        }
+        <div class="spanfull">
+            <h3><a href="@detailUrl" class="dialog">@(targetFlow.Title)&nbsp;[@targetFlow.FlowCode]</a></h3>
+            <p>@targetFlow.Message</p>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>状态</th>
+                    <th>输入材料</th>
+                    <th>操作</th>
+                    <th>输出材料</th>
+                </tr>
+            </thead>
+            <tbody>
+                @while (node != null)
+                {
+                    <tr>
+                        <td class="span2 text-center">
+                            <span>@(node.Value.State.Name)</span><br />
+                            <span>[@(LocaleHelper.Localizer.Get("StateStatus_" + Enum.GetName(typeof(StateStatus), node.Value.StateStatus), "DAF.Workflow"))]</span>
+                        </td>
+                        <td class="span3">
+                            @if (node.Value.StateStatus != StateStatus.Planned && node.Value.State.Incomes.Count > 0)
+                            {
+                                <ul>
+                                    @foreach (var doc in node.Value.State.Incomes)
+                                    {
+                                        var ndoc = node.Value.TargetIncomes.FirstOrDefault(d => d.IncomeId == doc.IncomeId);
+                                        var url = string.Format("{0}?uploadId={1}&targetFlowId={2}&targetStateId={3}&targetId={4}&fileName={5}"
+                                            , doc.Income.UploadUrl, doc.IncomeId, targetFlow.TargetFlowId, node.Value.TargetStateId, targetFlow.TargetId, doc.Income.Name);
+                                        <li>
+                                            <span class="@(doc.IsRequired ? "required" : "")">@doc.Income.Name</span>
+                                            @if (ndoc != null)
+                                            {
+                                                <span>[@LocaleHelper.Localizer.Get("FileStatus_" + Enum.GetName(typeof(FileStatus), ndoc.FileStatus), "DAF.Workflow")]</span>
+                                                <a target="_blank" href="@(ndoc.FileUrl)">下载</a>
+                                                <a class="dialog" href="@(url)&fileUrl=@HttpUtility.UrlEncode(ndoc.FileUrl)&verified=True">验证</a>
+                                                <a class="dialog" href="@(url)&fileUrl=@HttpUtility.UrlEncode(ndoc.FileUrl)&remove=True">删除</a>
+                                            }
+                                            else
+                                            {
+                                                <span>[未提供]</span>
+                                                <a class="dialog" href="@(url)">上传材料</a>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </td>
+                        <td>
+                            <h5>@(node.Value.Title)</h5>
+                            <p>@node.Value.Message</p>
+                            @if (node.Value.State.StateType == StateType.Begin)
+                            {
+                            <p>@(targetFlow.CreatorName)于@(targetFlow.CreateTime.ToString("yyyy-MM-dd"))提交。</p>
+                            }
+                            @if (node.Value.StateStatus == StateStatus.Planned)
+                            {
+                            <p>@(node.Value.UserName())计划于@(node.Value.OperationTime().ToString("yyyy-MM-dd"))进行处理。</p>
+                            }
+                            else if(node.Value.StateStatus == StateStatus.Responsed)
+                            {
+                            <p>@(node.Value.UserName())于@(node.Value.OperationTime().ToString("yyyy-MM-dd"))响应。</p>
+                            }
+                            else if(node.Value.Operation != null)
+                            {
+                            <p>@(node.Value.UserName())于@(node.Value.OperationTime().ToString("yyyy-MM-dd"))进行@(node.Value.Operation.Name)</p>
+                            }
+                            @if ((node.Next == null || node.Next.Value.StateStatus == StateStatus.Planned) && node.Value.StateStatus != StateStatus.Planned && node.Value.State.StateType != StateType.End)
+                            {
+                                <hr />
+                                <div class="tgap1">
+                                    <label class="pull-left tgap1">继续下一步操作：</label>
+                                    <div class="btn-groups">
+                                        @if (node.Value.State.StateType != StateType.End)
+                                        {
+                                            foreach (var op in node.Value.State.Operations.Where(o => AuthHelper.CurrentSession.CanAccess(clientId, o.Operation.PermissionUri, PermissionType.Operation)))
+                                            {
+                                            <a class="btn btn-primary dialog" href="@(op.Operation.OperationUrl)?operationId=@(op.OperationId)&targetFlowId=@(targetFlow.TargetFlowId)&targetStateId=@(node.Value.TargetStateId)&targetId=@(@targetFlow.TargetId)">@op.Operation.Name</a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            foreach (var nf in targetFlow.Flow.NextBizFlows)
+                                            {
+                                            <a class="btn btn-primary dialog" href="@(nf.ToBizFlow.StartUrl)?targetId=@(targetFlow.TargetId)&lastFlowId=@(targetFlow.FlowId)&lastTargetFlowId=@(targetFlow.TargetFlowId)">@nf.ToBizFlow.Name</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                if (node.Next == null && node.Value.State.StateType != StateType.End)
+                                {
+                                    <div class="tgap1">
+                                        <label class="pull-left tgap1">计划下一步操作：</label>
+                                        <div class="btn-groups">
+                                            @foreach (var op in node.Value.State.Operations.Where(o => o.Operation.CanPlanned && AuthHelper.CurrentSession.CanAccess(clientId, o.Operation.PermissionUri, PermissionType.Operation)))
+                                            {
+                                            <a class="btn dialog" href="@(op.Operation.OperationUrl)?plan=True&operationId=@(op.OperationId)&targetFlowId=@(targetFlow.TargetFlowId)&targetStateId=@(node.Value.TargetStateId)&targetId=@(@targetFlow.TargetId)">@op.Operation.Name</a>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            @if (!string.IsNullOrEmpty(node.Value.OperationId) && node.Value.StateStatus != StateStatus.Planned && node.Value.Operation.CanCancelled)
+                            {
+                                <div class="tgap1">
+                                    <a class="btn btn-danger dialog" href="@(node.Value.Operation.OperationUrl)?cancel=True&operationId=@(node.Value.OperationId)&targetFlowId=@(targetFlow.TargetFlowId)&targetStateId=@(node.Value.TargetStateId)&targetId=@(@targetFlow.TargetId)">撤销-@node.Value.Operation.Name</a>
+                                </div>
+                            }
+                        </td>
+                        <td class="span3">
+                            @if (node.Value.StateStatus != StateStatus.Planned && node.Value.State.Outcomes.Count > 0)
+                            {
+                                <ul>
+                                    @foreach (var doc in node.Value.State.Outcomes)
+                                    {
+                                        var ndoc = node.Value.TargetOutcomes.FirstOrDefault(d => d.OutcomeId == doc.OutcomeId);
+                                        var url = string.Format("{0}?uploadId={1}&targetFlowId={2}&targetStateId={3}&targetId={4}&fileName={5}"
+                                            , doc.Outcome.UploadUrl, doc.OutcomeId, targetFlow.TargetFlowId, node.Value.TargetStateId, targetFlow.TargetId, doc.Outcome.Name);
+                                        <li>
+                                            <span class="@(doc.IsRequired ? "required" : "")">@doc.Outcome.Name</span>
+                                            @if (ndoc != null)
+                                            {
+                                                <span>[@LocaleHelper.Localizer.Get("FileStatus_" + Enum.GetName(typeof(FileStatus), ndoc.FileStatus), "DAF.Workflow")]</span>
+                                                <a target="_blank" href="@(ndoc.FileUrl)">下载</a>
+                                                <a class="dialog" href="@(url)&fileUrl=@HttpUtility.UrlEncode(ndoc.FileUrl)&verified=True">验证</a>
+                                                <a class="dialog" href="@(url)&fileUrl=@HttpUtility.UrlEncode(ndoc.FileUrl)&remove=True">删除</a>
+                                            }
+                                            else
+                                            {
+                                                <span>[未提供]</span>
+                                                <a class="dialog" href="@(url)">上传产物</a>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </td>
+                    </tr>
+                            node = node.Next;
+                }
+            </tbody>
+        </table>
+    }
+</div>

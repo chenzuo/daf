@@ -1,0 +1,1 @@
+﻿{ ClientId: "DAF.File.Site", ClientName: "DAF.File.Site", BaseUrl: "http://www.file.com", EncryptKey: "DAF.File.Site", EncryptScrect: "DAF.File.Site" }

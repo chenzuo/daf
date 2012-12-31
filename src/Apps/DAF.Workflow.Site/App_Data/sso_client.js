@@ -1,0 +1,1 @@
+﻿{ ClientId: "DAF.Workflow.Site", ClientName: "DAF.Workflow.Site", BaseUrl: "http://www.workflow.com", EncryptKey: "DAF.Workflow.Site", EncryptScrect: "DAF.Workflow.Site" }

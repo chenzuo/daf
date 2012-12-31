@@ -1,0 +1,17 @@
+﻿    <div class="banner">
+@*        @(Html.CacheWidget("banner", 3600, WebHelper.SSOUrl("Widget/ImageSlideShow"), WidgetBag<IEnumerable<ContentItem>>.Create(
+        model: new ContentItem[] {
+            new ContentItem { Title = "Image1", ImageUrl = "/Themes/Default/Skins/Default/Contents/Images/banner_1.jpg" },
+            new ContentItem { Title = "Image2", ImageUrl = "/Themes/Default/Skins/Default/Contents/Images/banner_2.jpg" },
+            new ContentItem { Title = "Image3", ImageUrl = "/Themes/Default/Skins/Default/Contents/Images/banner_3.jpg" }
+        },
+        args: new { numbers = false }
+        )))*@
+    </div>
+    <h1>
+        @if (!string.IsNullOrEmpty(LocaleHelper.Localizer.Get("SiteLogo", "DAF.Web")))
+        {
+            <img src="@LocaleHelper.Localizer.Get("SiteLogo", "DAF.Web")" alt="@LocaleHelper.Localizer.Get("SiteName", "DAF.Web")" />
+        }
+        <span>@LocaleHelper.Localizer.Get("SiteName", "DAF.Web")</span>
+    </h1>

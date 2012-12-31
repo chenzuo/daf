@@ -1,0 +1,138 @@
+﻿.workflow-target
+{
+    clear:both;
+    width: auto;
+    height:auto;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.day-line
+{
+    clear:both;
+    height:90px;
+}
+
+.time-line
+{
+}
+
+.time-head
+{
+    float:left;
+    height: 0.5cm;
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 6px;
+}
+
+.time-node
+{
+    width: 76px;
+    height: 25px;
+    float:left;
+    margin: 0px;
+    padding:0px;
+    text-align:center;
+    background-image:url('Images/time-line.png');
+    background-color:Transparent;
+    background-repeat:no-repeat;
+}
+.node-Begin-None { background-position: 26px -111px; }
+.node-Stop-None { background-position: -50px -111px; }
+.node-PeriodBegin-None { background-position: -125px -111px; }
+.node-PeriodStop-None { background-position: -205px -111px; }
+.node-PeriodEnd-None { background-position: -280px -111px; }
+.node-End-None { background-position: -355px -111px; }
+
+.node-Begin-Responsed { background-position: 26px -147px; }
+.node-Stop-Responsed { background-position: -50px -147px; }
+.node-PeriodBegin-Responsed { background-position: -125px -147px; }
+.node-PeriodStop-Responsed { background-position: -205px -147px; }
+.node-PeriodEnd-Responsed { background-position: -280px -147px; }
+.node-End-Responsed { background-position: -355px -147px; }
+
+.node-Begin-Planned { background-position: 26px -185px; }
+.node-Stop-Planned { background-position: -50px -185px; }
+.node-PeriodBegin-Planned { background-position: -125px -185px; }
+.node-PeriodStop-Planned { background-position: -205px -185px; }
+.node-PeriodEnd-Planned { background-position: -280px -185px; }
+.node-End-Planned { background-position: -355px -185px; }
+
+.node-Begin-TreatedNormal { background-position: 26px 0px; }
+.node-Stop-TreatedNormal { background-position: -50px 0px; }
+.node-PeriodBegin-TreatedNormal { background-position: -125px 0px; }
+.node-PeriodStop-TreatedNormal { background-position: -205px 0px; }
+.node-PeriodEnd-TreatedNormal { background-position: -280px 0px; }
+.node-End-TreatedNormal { background-position: -355px 0px; }
+
+.node-Begin-TreatedWarn { background-position: 26px -37px; }
+.node-Stop-TreatedWarn { background-position: -50px -37px; }
+.node-PeriodBegin-TreatedWarn { background-position: -125px -37px; }
+.node-PeriodStop-TreatedWarn { background-position: -205px -37px; }
+.node-PeriodEnd-TreatedWarn { background-position: -280px -37px; }
+.node-End-TreatedWarn { background-position: -355px -37px; }
+
+.node-Begin-TreatedError { background-position: 26px -74px; }
+.node-Stop-TreatedError { background-position: -50px -74px; }
+.node-PeriodBegin-TreatedError { background-position: -125px -74px; }
+.node-PeriodStop-TreatedError { background-position: -205px -74px; }
+.node-PeriodEnd-TreatedError { background-position: -280px -74px; }
+.node-End-TreatedError { background-position: -355px -74px; }
+
+.node-title
+{
+    margin: 30px 0px;
+}
+
+.node-info
+{
+    display:none;
+    position:absolute;
+    left: 0px;
+    top: 0px;
+    background: #eee;
+    border: solid 1px #ccc;
+    min-width: 200px;
+    padding:8px;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    box-shadow: 3px 3px 3px #eee;
+    -moz-box-shadow: h-shadow;
+    -webkit-box-shadow: h-shadow;
+}
+
+.node-message
+{
+}
+
+.node-message h4
+{
+    font-weight: bold;
+    padding: 0px;
+    margin: 2px 0px 5px 0px;
+}
+
+.node-actions
+{
+}
+
+div.title
+{
+    text-align: right;
+    padding: 0px 0px;
+}
+
+a.close
+{
+    background: transparent url('Images/close.gif') 0 0 no-repeat;
+    width:16px;
+    height:16px;
+    display:inline-block;
+}
+
+span.required
+{
+    color:Red;
+}

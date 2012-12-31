@@ -1,0 +1,289 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.SSO.Server;
+@{
+    var pageModel = this.PageModel<Role>();
+}
+@AssetsHelper.CDNCss("jquery.treeview.css")
+@AssetsHelper.CDNScript("jquery.treeview.js")
+
+<script type="text/html" id="role-template">
+    <li data-bind="attr:{id:RoleName}">
+        <a href="javascript:void(0);" data-bind="click:$root.SelectRole"><span data-bind="text:RoleName"></span></a>
+        <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.AddRole" title="新增下级角色"><i class="icon-plus"></i></button>
+        <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditItem" title="编辑角色"><i class="icon-pencil"></i></button>
+        <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveRole.bind($data, $parent)" title="删除角色"><i class="icon-remove"></i></button>
+        <!-- ko if:$root.HasChildren($data) -->
+        <ul data-bind="template:{ name:'role-template', foreach:Children}"></ul>
+        <!-- /ko -->
+    </li>
+</script>
+
+<div class="row">
+    <div class="span3">
+        <div class="well">
+            <h3>
+                <span class="title">角色</span>
+                <button class="btn btn-primary btn-mini" type="button" onclick="vm.AddRole(null);" title="新增角色"><i class="icon-plus"></i></button>
+            </h3>
+            <div id="roles">
+                <ul data-bind="template:{ name:'role-template', foreach:Data}"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="span9 tgap1" data-bind="visible:SelectedRole">
+        <div>
+            <h3 class="pull-left" data-bind="with:SelectedRole">当前角色：<span data-bind="text:RoleName"></span></h3>
+            @RenderPage("~/Controls/SelectClients.cshtml")
+        </div>
+        <div id="permissions" class="ui-corner-all">
+            <div class="tabs clear">
+                <ul>
+                    @foreach (var it in EnumHelper.GetObjectsFromEnum(typeof(DAF.SSO.PermissionType), LocaleHelper.Localizer))
+                    {
+                        <li><a href="#data-list-container" onclick="vm.SelectPermissionType(@(it.Item2));">@it.Item1</a></li>
+                    }
+                </ul>
+                <div id="data-list-container">
+                    <!-- ko foreach:vm.GetGroups() -->
+                    <fieldset>
+                        <legend>
+                            <span data-bind="text:GroupName"></span>
+                        </legend>
+                        <ul class="nav nav-pills">
+                            <!-- ko foreach:vm.GetGroupItems($data) -->
+                            <li>
+                                <input type="checkbox" data-bind="checked:HasPermitted" />
+                                <span data-bind="text:PermissionName"></span>
+                            </li>
+                            <!-- /ko -->
+                        </ul>
+                    </fieldset>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-success" type="button" onclick="SaveRolePermissions();">
+                    <i class="icon-ok"></i><span>保存</span></button>
+            </div>
+        </div>
+    </div>
+    <div id="editItem" class="hide" data-bind="with:EditingItem">
+        <form method="post">
+            <table class="table table-bordered">
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.RoleName))</td>
+                    <td><span data-bind="text:RoleName, visible:!$root.IsNew($data)"></span>
+                        @pageModel.TextBoxFor(m => m.RoleName, new { data_bind = "value:RoleName, blur:CheckExists, visible:$root.IsNew($data)" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.ActiveTime))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.ActiveTime, new { @data_bind = "date:ActiveTime" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.ExpiryTime))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.ExpiryTime, new { @data_bind = "date:ExpiryTime" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.Status))</td>
+                    <td>
+                        @(UIHelper.SelectEnumEditor<DataStatus>(attrs: "data-bind='value:Status'"))
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var selectedRole = vm.SelectedRole();
+                if (selectedRole) {
+                    return '@(UrlHelper.ClientUrl("Api/Role"))?client=@(AuthHelper.CurrentClient.ClientId)&parent=' + selectedRole.RoleId();
+                }
+                return '@(UrlHelper.ClientUrl("Api/Role"))';
+            },
+            bindData: function (data) {
+                var selectedRole = vm.SelectedRole();
+                if (selectedRole) {
+                    ko.mapping.fromJS(data, null, selectedRole.Children);
+                    return selectedRole.Children;
+                } else {
+                    ko.mapping.fromJS(data, null, vm.Data);
+                    return vm.Data;
+                }
+            },
+            onQuerySuccess: function (bindedData) {
+                if (!vm.SelectedRole() && bindedData() && bindedData().length > 0) {
+                    vm.SelectRole(bindedData()[0]);
+                }
+                $('#roles').treeview();
+            },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Role"))'; },
+            createItem: function () {
+                return {
+                    RoleId: ko.observable(IdGenerator.NewId()),
+                    ClientId: ko.observable("@(AuthHelper.CurrentClient.ClientId)"),
+                    RoleName: ko.observable(""),
+                    ActiveTime: ko.observable(null),
+                    ExpiryTime: ko.observable(null),
+                    Status: ko.observable(1),
+                    ParentRoleId: ko.observable(null),
+                    Children: ko.observableArray([])
+                };
+            },
+            onInit: function (self) {
+                self.SelectedClient = ko.observable(null);
+                self.SelectedRole = ko.observable(null);
+                self.SelectedPermissionType = ko.observable(null);
+                self.PermissionGroups = ko.observableArray([]);
+                self.Permissions = ko.observableArray([]);
+                self.ParentRoles = [""];
+                self.SelectPermissionType = function (pt) {
+                    self.SelectedPermissionType(pt);
+                };
+                self.SelectRole = function (item) {
+                    self.SelectedRole(item);
+                    if (self.ParentRoles.length > 1) {
+                        self.ParentRoles.splice(1, self.ParentRoles.length - 1);
+                    }
+                    self.ParentRoles.push(item.RoleId());
+                    if (!self.HasChildren(item)) {
+                        vm.GetData();
+                    }
+                    $('#clients-div ul>li[data-key]:first>a').trigger('click');
+                };
+                self.AddRole = function (parent) {
+                    var item = vm.options.createItem();
+                    if (parent) {
+                        item.ParentRoleId(parent.RoleId());
+                    }
+                    item.DataState = DataState.New;
+                    self.EditingItem(item);
+                    ShowDialog('#editItem', "新增角色",
+                        function () {
+                            if ($('#editItem>form').valid()) {
+                                vm.NewItems.push(item);
+                                vm.Save(null, function (info) {
+                                    if (parent) {
+                                        parent.Children.push(item);
+                                    } else {
+                                        vm.Data.push(item);
+                                    }
+                                    vm.SelectRole(item);
+                                });
+                                return false;
+                            }
+                            return true;
+                        });
+                    EnableFormValidation($('#editItem>form'));
+                };
+                self.RemoveRole = function (parent, item) {
+                    ShowConfirm("提示信息", "确认删除？", function () {
+                        if (vm.HasChildren(item)) {
+                            ShowMessage('提示信息', '角色' + item.RoleName() + '下包含子角色，不允许删除！');
+                            return false;
+                        }
+                        vm.DeletedItems.push(item);
+                        vm.Save(null, function (info) {
+                            if (parent && parent.Children) {
+                                parent.Children.remove(item);
+                            } else {
+                                vm.Data.remove(item);
+                            }
+                        });
+                    });
+                };
+                self.HasChildren = function (item) {
+                    return item.Children() && item.Children().length > 0;
+                };
+                self.GetGroups = function () {
+                    return ko.utils.arrayFilter(vm.PermissionGroups(), function (r) {
+                        return (r.PermissionType() == vm.SelectedPermissionType());
+                    });
+                };
+                self.GetGroupItems = function (gpName) {
+                    if (gpName && gpName.length > 0) {
+                        return ko.utils.arrayFilter(vm.Permissions(), function (r) {
+                            return (r.PermissionType() == vm.SelectedPermissionType() && r.GroupName() == gpName);
+                        });
+                    } else {
+                        return ko.utils.arrayFilter(vm.Permissions(), function (r) {
+                            return (r.PermissionType() == vm.SelectedPermissionType());
+                        });
+                    }
+                };
+            },
+            onEdit: function (item) {
+                ShowDialog('#editItem', "编辑角色",
+                    function () {
+                        if ($('#editItem>form').valid()) {
+                            vm.Save();
+                            return false;
+                        }
+                        return true;
+                    }, function () {
+                        vm.UndoEditItem();
+                    });
+                EnableFormValidation($('#editItem>form'));
+            }
+        });
+
+        ko.applyBindings(vm);
+        $(document).off('selectclient').on('selectclient', OnSelectClient);
+        SelectFirstClient();
+        vm.GetData();
+    });
+
+    function OnSelectClient(event, obj) {
+        vm.SelectedClient(obj);
+        GetRolePermissions();
+    }
+
+    function GetRolePermissions() {
+        var role = vm.SelectedRole();
+        if (role) {
+            var roleId = vm.SelectedRole().RoleId();
+            var clientId = vm.SelectedClient().ClientId;
+            GetJson('@(UrlHelper.ClientUrl("Api/Role/Permissions"))?role=' + roleId + '&client=' + clientId,
+                function (data) {
+                    var gs = $.map(data, function (n) { return { PermissionType: n.PermissionType, GroupName: n.GroupName }; });
+                    var gns = gs.unique(function (n, item) { return n.PermissionType == item.PermissionType && n.GroupName.toLowerCase() == item.GroupName.toLowerCase(); });
+                    ko.mapping.fromJS(gns, null, vm.PermissionGroups);
+                    ko.mapping.fromJS(data, null, vm.Permissions);
+                    $('#permissions div.tabs>ul>li:first>a').trigger('click');
+                    ResizeIFrame();
+                });
+        }
+    }
+
+    function CheckExists(item, event) {
+        var name = $(event.target).val();
+        var items = $('#items tr[key="' + name + '"]');
+        if (items.length > 1) {
+            ShowMessage("提示信息", "已经存在名称为“" + name + "”的角色。", function () { $(event.target).val('').focus(); });
+            return false;
+        }
+    }
+
+    function SaveRolePermissions() {
+        var roleId = vm.SelectedRole().RoleId();
+        var clientId = vm.SelectedClient().ClientId;
+        var url = '@(UrlHelper.ClientUrl("Api/Role/Permissions"))?role=' + roleId + '&client=' + clientId;
+        PostJson(url, ko.toJS(vm.Permissions()),
+            function (data) {
+                ShowMessage(data.Title, data.Message);
+            });
+        return false;
+    }
+</script>

@@ -1,0 +1,21 @@
+﻿@{
+}
+<div class="navbar navbar-none pull-right">
+    <div class="navbar-inner">
+        <div class="container">
+            @Html.Partial("_AccountInfo")
+            <ul class="nav pull-right">
+                <li><a href="/Admin">系统管理</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+@Html.CachePartial("banner", 3600, "_Banner")
+
+<div id="main-menu"  class="navbar navbar-primary">
+    <div class="navbar-inner">
+        <div class="container">
+            @Menu.Render(MenuHelper.GetMenuItems("main"))
+        </div>
+    </div>
+</div>

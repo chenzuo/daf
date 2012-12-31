@@ -1,0 +1,94 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.SSO;
+@using DAF.Workflow;
+@using DAF.Workflow.Models;
+@using DAF.Workflow.Info;
+@{
+    Layout = "~/_Dialog.cshtml";
+
+    var pageModel = this.PageModel<StartFlowInfo>();
+
+    string clientId = Request.QueryString["client"].DefaultIfNull(AuthHelper.CurrentClient.ClientId);
+    if (IsPost)
+    {
+        if (Validation.IsValid())
+        {
+            StartFlowInfo info = new StartFlowInfo();
+            info.ClientId = clientId;
+            info.FlowCodeOrTargetType = Request.QueryString["flowCode"].DefaultIfNull(Request.QueryString["targetType"]);
+            info.TargetId = Request.QueryString["targetId"];
+            info.LastTargetFlowId = Request.QueryString["lastTargetFlowId"];
+
+
+            info.FlowTitle = Request.Form["FlowTitle"];
+            info.FlowMessage = Request.Form["FlowMessage"];
+            info.TargetFlowCode = Request.Form["TargetFlowCode"];
+            info.StartTitle = Request.Form["StartTitle"];
+            info.StartMessage = Request.Form["StartMessage"];
+            info.OperationTime = Request.Form["OperationTime"].ConvertTo<DateTime>(DateTime.Now);
+
+            if (AuthHelper.IsAuthenticated)
+            {
+                info.UserId = AuthHelper.CurrentSession.User.UserId;
+                info.UserName = AuthHelper.CurrentSession.User.Name();
+            }
+
+            ServerResponse result = new ServerResponse();
+            var flowSvr = IOC.Current.GetService<IStateFlowService>();
+            var state = flowSvr.StartFlow(info);
+            if (state == null)
+            {
+                result.Status = ResponseStatus.Failed;
+                result.Message = LocaleHelper.Localizer.Get("SaveFailure");
+            }
+            else
+            {
+                result.Status = ResponseStatus.Success;
+                result.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
+            }
+
+            this.Refresh(result);
+        }
+    }
+}
+<div class="row">
+    <div class="span12">
+        <form method="post">
+            @Html.ValidationSummary(true)
+            <table class="table table-bordered">
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.TargetFlowCode))</td>
+                    <td>@(pageModel.TextBoxFor(o => o.TargetFlowCode, new { @class = "span3" }))</td>
+                </tr>
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.FlowTitle))</td>
+                    <td>@(pageModel.TextBoxFor(o => o.FlowTitle, new { @class = "span3" }))</td>
+                </tr>
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.FlowMessage))</td>
+                    <td>@(pageModel.TextBoxFor(o => o.FlowMessage, new { @class = "span3" }))</td>
+                </tr>
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.StartTitle))</td>
+                    <td>@(pageModel.TextBoxFor(o => o.StartTitle, new { @class = "span3" }))</td>
+                </tr>
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.StartMessage))</td>
+                    <td>@(pageModel.TextBoxFor(o => o.StartMessage, new { @class = "span3" }))</td>
+                </tr>
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.OperationTime))</td>
+                    <td>@(pageModel.TextBoxFor(o => o.OperationTime, new { @class = "span3" }))</td>
+                </tr>
+            </table>
+            <div class="form-actions">
+                <button class="btn btn-success" type="submit">
+                    <i class="icon-ok"></i><span>保存</span></button>
+                <button class="btn" type="button" onclick="CloseDialog();">
+                    <i class="icon-close"></i><span>取消</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+

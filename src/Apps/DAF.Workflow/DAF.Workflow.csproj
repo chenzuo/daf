@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D4964EA0-4B09-4780-AEB1-505DCDF5F869}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DAF.Workflow</RootNamespace>
+    <AssemblyName>DAF.Workflow</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\outputs\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\outputs\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\libs\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core">
+      <HintPath>..\..\outputs\DAF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\FlowResult.cs" />
+    <Compile Include="Models\TargetStateExtentsions.cs" />
+    <Compile Include="RepositoryStateFlowManager.cs" />
+    <Compile Include="FlowIncomeNotProvidedException.cs" />
+    <Compile Include="FlowOutcomeNotProvidedException.cs" />
+    <Compile Include="Info\DoOperationInfo.cs" />
+    <Compile Include="Info\StartFlowInfo.cs" />
+    <Compile Include="Info\UploadInfo.cs" />
+    <Compile Include="Info\ResponseInfo.cs" />
+    <Compile Include="IStateFlowManager.cs" />
+    <Compile Include="IStateFlowProvider.cs" />
+    <Compile Include="IStateFlowService.cs" />
+    <Compile Include="Messages\NextTargetFlowCreatedMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messages\TargetIncomeChangedMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messages\TargetOutcomeChangedMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messages\TargetStateChangedMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\BizFlow.cs" />
+    <Compile Include="Models\FileStatus.cs" />
+    <Compile Include="Models\FlowIncome.cs" />
+    <Compile Include="Models\FlowOperation.cs" />
+    <Compile Include="Models\FlowOutcome.cs" />
+    <Compile Include="Models\FlowState.cs" />
+    <Compile Include="Models\FlowStateIncome.cs" />
+    <Compile Include="Models\FlowStateOperation.cs" />
+    <Compile Include="Models\FlowStateOutcome.cs" />
+    <Compile Include="Models\NextBizFlow.cs" />
+    <Compile Include="Models\StateStatus.cs" />
+    <Compile Include="Models\StateType.cs" />
+    <Compile Include="Models\TargetFlow.cs" />
+    <Compile Include="Models\TargetIncome.cs" />
+    <Compile Include="Models\TargetOutcome.cs" />
+    <Compile Include="Models\TargetState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoryStateFlowService.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

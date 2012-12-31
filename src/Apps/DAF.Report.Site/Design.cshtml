@@ -1,0 +1,667 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@{
+    Layout = "~/_Admin.cshtml";
+    Page.Title = "Design";
+}
+
+@AssetsHelper.CDNCss("colorpicker.css")
+@AssetsHelper.Css("/Content/report_design.css")
+@AssetsHelper.Css("/Content/report_eles.css")
+@AssetsHelper.CDNScript("beautify-html.js")
+@AssetsHelper.CDNScript("beautify-css.js")
+@AssetsHelper.CDNScript("beautify-js.js")
+@AssetsHelper.CDNScript("colorpicker.js")
+@AssetsHelper.Script("/Scripts/report_design.js")
+
+<div class="row">
+    <div id="left-bar" class="span3">
+        <div id="clients-container"></div>
+        <button class="btn btn-primary" type="button" onclick="NewReport();">
+            <i class="icon-plus"></i><span>新增报表</span></button>
+        <div data-bind="visible:SelectedClient">
+            <div id="groups" class="accordion" data-bind="foreach:Data">
+                <h3>
+                    <span data-bind="text:Group" class="lgap3"></span>
+                    <button type="button" class="btn btn-mini btn-circle btn-danger" title="删除分组" data-bind="click:$root.DeleteGroup">
+                        <i class="icon-remove"></i>
+                    </button>
+                    <button type="button" class="btn btn-mini btn-circle btn-primary" title="重命名分组" data-bind="click:$root.RenameGroup">
+                        <i class="icon-file icon-white"></i>
+                    </button>
+                </h3>
+                <div>
+                    <ul data-bind="foreach:Reports">
+                        <li>
+                            <a href="javascript:void(0);" data-bind="click:$root.SelectReport.bind($data, $parent)"><span data-bind="text:Report"></span></a>
+                            <button type="button" class="btn btn-mini btn-circle btn-danger" title="删除报表" data-bind="click:$root.DeleteReport.bind($data, $parent)">
+                                <i class="icon-remove"></i>
+                            </button>
+                            <button type="button" class="btn btn-mini btn-circle btn-primary" title="重命名报表" data-bind="click:$root.RenameReport.bind($data, $parent)">
+                                <i class="icon-file icon-white"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="designArea" class="span9">
+        <div id="title-bar" data-bind="with:SelectedReport">
+            <div>
+                <div>
+                    <a href="javascript:void(0);" onclick="$('#left-bar').toggle();$(window).trigger('resizeWindow');">显示/隐藏左侧栏</a>
+                    <a href="javascript:void(0);" onclick="$('#tb-eles').toggle();$(window).trigger('resizeWindow');">显示/隐藏设计栏</a>
+                </div>
+                <div>
+                    <h3>报表分组：<span data-bind="text:vm.SelectedGroup"></span></h3>
+                    <h3>当前报表：<span data-bind="text:Report"></span></h3>
+                    <h3>报表页面：</h3>
+                    <ul data-bind="foreach:Pages">
+                        <li data-bind="css: { selected:$root.IsSelectedPage($data) }">
+                            <a href="javascript:void(0);" data-bind="click:$root.SelectPage"><span data-bind="text:Page"></span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="tb-eles" class="toolbar">
+                <div data-bind="visible:vm.SelectedPage">
+                    <ul>
+                        <li>
+                            <select id="eleType">
+                                <option value="">普通元素</option>
+                                <option value="page-title">页面标题</option>
+                            </select>
+                            <a href="javascript:void(0);" onclick="AddElement($('#eleType').val());">添加元素</a>
+                            <input id="ele-info" style="width: 60px;" value="" />
+                            <a href="javascript:void(0);" onclick="SetId($('#ele-info').val());">设置id</a>
+                            <a href="javascript:void(0);" onclick="AddClass($('#ele-info').val());">添加class</a>
+                            <a href="javascript:void(0);" onclick="RemoveClass($('#ele-info').val());">移除class</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" onclick="ShowDialog('#props-tbl', '添加表格', function() { AddTable($('#rows').val(), $('#cols').val(), $('#hrows').val(),$('#ch').val(), $('#cw').val(), $('#hh').val()); });">添加表格</a>
+                        </li>
+                        <li>高度：<input id="row-height" style="width: 30px;" value="6" />mm
+                    <a href="javascript:void(0);" onclick="SetRowHeight($('#row-height').val());">设置行高</a>
+                        </li>
+                        <li>宽度：<input id="col-width" style="width: 30px;" value="30" />mm
+                    <a href="javascript:void(0);" onclick="SetColumnWidth($('#col-width').val());">设置列宽</a>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <input id="cb_bl" type="checkbox" />左
+                    <input id="cb_bt" type="checkbox" />上
+                    <input id="cb_br" type="checkbox" />右
+                    <input id="cb_bb" type="checkbox" />下
+                    <a href="javascript:void(0);" onclick="SetBorder($('#cb_bl').get(0).checked,$('#cb_bt').get(0).checked,$('#cb_br').get(0).checked,$('#cb_bb').get(0).checked);">设置边框</a>
+                        </li>
+                        <li>
+                            <input id="border-w" style="width: 30px;" value="1" />px
+                    <a href="javascript:void(0);" onclick="SetBorderWidth($('#border-w').val());">设置边框厚宽</a>
+                        </li>
+                        <li>
+                            <div class="colorpicker-holder" func="SetBorderColor"><a href="javascript:void(0);">设置边框颜色</a></div>
+                        </li>
+                        <li>
+                            <div class="colorpicker-holder" func="SetBackgroundColor"><a href="javascript:void(0);">设置背景颜色</a></div>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <select onchange="SetFontFamily($(this).val());">
+                                <option value=""></option>
+                                <option value="宋体">宋体</option>
+                                <option value="华文中宋">华文中宋</option>
+                                <option value="楷体">楷体</option>
+                                <option value="黑体">黑体</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select onchange="SetFontStyle($(this).val());">
+                                <option value=""></option>
+                                <option value="normal">正常</option>
+                                <option value="italic">斜体</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select onchange="SetFontSize($(this).val());">
+                                <option value="2pt">2pt</option>
+                                <option value="4pt">4pt</option>
+                                <option value="6pt">6pt</option>
+                                <option value="8pt">8pt</option>
+                                <option value="9pt" selected="selected">9pt</option>
+                                <option value="10pt">10pt</option>
+                                <option value="12pt">12pt</option>
+                                <option value="14pt">14pt</option>
+                                <option value="16pt">16pt</option>
+                                <option value="18pt">18pt</option>
+                                <option value="20pt">20pt</option>
+                                <option value="22pt">22pt</option>
+                            </select>
+                        </li>
+                        <li>
+                            <div class="colorpicker-holder" func="SetColor"><a href="javascript:void(0);">设置字体颜色</a></div>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" onclick="$('#dbbind').val(GetDbBind()); ShowDialog('#props-dbbind', '设置数据绑定', function() { SetDbBind($('#dbbind').val()); $('#dbbind').val(''); });">设置数据绑定</a>
+                        </li>
+                    </ul>
+                </div>
+                <ul>
+                    <li>
+                        <a href="javascript:void(0);" onclick="vm.SetPage();">新增/设置页面</a>
+                    </li>
+                    <li><a href="javascript:void(0);" onclick="vm.RenamePage();">重命名本页</a></li>
+                    <li><a href="javascript:void(0);" onclick="vm.DeletePage();">删除本页</a></li>
+                    <li><a href="javascript:void(0);" onclick="DeleteSelectedElements();">删除元素</a></li>
+                    <li><a href="javascript:void(0);" onclick="DeleteAllElements();">删除所有元素</a></li>
+                    <li><a href="javascript:void(0);" onclick="ToggleBorder();">显示/隐藏辅助边框</a></li>
+                    <li><a href="javascript:void(0);" onclick="TogglePrint();">仅显示，不打印</a></li>
+                </ul>
+            </div>
+        </div>
+        <div data-bind="with:SelectedReport">
+            <div id="tb-tab" class="toolbar">
+                <ul>
+                    <li><a href="javascript:void(0);" onclick="Preview();">预览</a></li>
+                    <li><a href="javascript:void(0);" onclick="vm.SavePage();">保存</a></li>
+                </ul>
+            </div>
+            <div class="tabs">
+                <ul>
+                    <li><a href="#design-panel">设计</a></li>
+                    <li><a href="#code-panel">代码</a></li>
+                    <li><a href="#css-panel">CSS</a></li>
+                    <li><a href="#js-panel">JS</a></li>
+                </ul>
+                <div id="design-panel">
+                    <!-- ko foreach:Pages -->
+                    <div class="rpt-page-holder" data-bind="attr: { id:'ph_' + Page(), file:File }">
+                    </div>
+                    <!-- /ko -->
+                </div>
+                <div id="code-panel">
+                    <textarea id="html-code" name="html-code" rows="40" cols="40" style="width: 99%; height: 100%;" data-bind="value:$root.Html">
+                    </textarea>
+                </div>
+                <div id="css-panel">
+                    <textarea id="css-code" name="css-code" rows="40" cols="40" style="width: 99%; height: 100%;" data-bind="value:$root.Html">
+                    </textarea>
+                </div>
+                <div id="js-panel">
+                    <textarea id="js-code" name="js-code" rows="40" cols="40" style="width: 99%; height: 100%;" data-bind="value:$root.Html">
+                </textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="props-page" style="display: none;">
+    <table class="table table-bordered">
+        <tr>
+            <td>页面名称：</td>
+            <td colspan="3">
+                <input id="page" name="page" type="text" required="true" /></td>
+        </tr>
+        <tr>
+            <td>选择页面类型：</td>
+            <td colspan="3">
+                <select id="pageType" onchange="ChangePageSize(this);">
+                    <option value="0,0" selected="selected">自定义</option>
+                    <option value="210,297">A4</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>页面宽度：</td>
+            <td>
+                <input id="pageWidth" style="width: 30px;" value="" required="true" />mm</td>
+            <td>页面高度：</td>
+            <td>
+                <input id="pageHeight" style="width: 30px;" value="" required="true" />mm</td>
+        </tr>
+    </table>
+</div>
+<div id="props-tbl" style="display: none;">
+    <table>
+        <tr>
+            <td>表格标题行数：</td>
+            <td>
+                <input id="hrows" style="width: 30px;" value="1" /></td>
+            <td>高度：</td>
+            <td>
+                <input id="hh" style="width: 30px;" value="6" />mm</td>
+        </tr>
+        <tr>
+            <td>表格行数：</td>
+            <td>
+                <input id="rows" style="width: 30px;" value="1" /></td>
+            <td>高度：</td>
+            <td>
+                <input id="ch" style="width: 30px;" value="6" />mm</td>
+        </tr>
+        <tr>
+            <td>表格列数：</td>
+            <td>
+                <input id="cols" style="width: 30px;" value="5" /></td>
+            <td>宽度：</td>
+            <td>
+                <input id="cw" style="width: 30px;" value="20" />mm</td>
+        </tr>
+    </table>
+</div>
+<div id="props-dbbind" style="display: none;">
+    <span>输入绑定内容：</span><br />
+    <input id="dbbind" style="width: 250px;" value="" />
+</div>
+<div id="prewview" style="display: none;">
+    <span>输入数据源地址：</span><br />
+    <input id="dataurl" style="width: 250px;" value="/Sample/ParentChild" />
+</div>
+<div id="newReport" style="display: none;">
+    <table class="table table-bordered">
+        <tr>
+            <td>分组：</td>
+            <td>
+                <input id="group" name="group" type="text" required="true" /></td>
+        </tr>
+        <tr>
+            <td>报表：</td>
+            <td>
+                <input id="report" name="report" type="text" required="true" /></td>
+        </tr>
+    </table>
+</div>
+<div id="rename" style="display: none;">
+    <table class="table table-bordered">
+        <tr>
+            <td>原名称：</td>
+            <td><span data-bind="text:OldName"></span></td>
+        </tr>
+        <tr>
+            <td>新名称：</td>
+            <td>
+                <input id="newName" name="newName" type="text" required="true" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var vm;
+
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var selectedApp = vm.SelectedClient();
+                if (selectedApp) {
+                    return '@UrlHelper.ClientUrl("Api/Report/Reports")?client=' + vm.SelectedClient().ClientId;
+                }
+                return '@(UrlHelper.ClientUrl("Api/Report/Reports"))';
+            },
+            onQuerySuccess: function (bindedData) {
+                if (vm.Data().length > 0) {
+                    if (vm.Data()[0].Reports().length > 0) {
+                        vm.SelectReport(vm.Data()[0], vm.Data()[0].Reports()[0]);
+                    }
+                }
+                $('.accordion').accordion("destroy").accordion();
+            },
+            //getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Report/Save"))'; },
+            createItem: function () {
+                return {
+                    FlowId: ko.observable(IdGenerator.NewId()),
+                    AppName: ko.observable(vm.SelectedClient().ClientId),
+                    Owner: ko.observable(vm.SelectedOwner().Name),
+                    BizGroup: ko.observable(vm.SelectedGroup()),
+                    Name: ko.observable(""),
+                    Code: ko.observable(""),
+                    TargetType: ko.observable(""),
+                    StartUrl: ko.observable(""),
+                    DetailUrl: ko.observable(""),
+                    StopWhenIncomeRequired: ko.observable(true),
+                    StopWhenOutcomeRequired: ko.observable(true)
+                };
+            },
+            onInit: function (self) {
+                self.SelectedClient = ko.observable(null);
+                self.SelectedGroup = ko.observable("");
+                self.SelectedReport = ko.observable(null);
+                self.SelectedPage = ko.observable(null);
+                self.OldName = ko.observable("");
+                self.SelectReport = function (parent, item) {
+                    if (parent) {
+                        self.SelectedGroup(parent.Group());
+                    } else {
+                        self.SelectedGroup(null);
+                    }
+                    self.SelectedReport(item);
+                    if (item) {
+                        if (item.Pages().length > 0) {
+                            self.SelectPage(item.Pages()[0]);
+                        }
+                    }
+                    else {
+                        self.SelectPage(null);
+                    }
+                    $('.tabs').tabs({
+                        show: function (event, ui) {
+                            RefreshHtml();
+                            PreviewCss();
+                        }
+                    });
+
+                    $('.colorpicker-holder').ColorPicker({
+                        onSubmit: function (hsb, hex, rgb, ele) {
+                            var func = $(ele).attr('func');
+                            if (func) {
+                                eval(func + '("#' + hex + '")');
+                            }
+                        }
+                    });
+                };
+                self.RenameGroup = function (item) {
+                    self.OldName(item.Group());
+                    ShowDialog('#rename', '重命名分组',
+                        function () {
+                            var client = self.SelectedClient().ClientId;
+                            var group = item.Group();
+                            var newName = $('#newName').val();
+                            $('#newName').val('');
+                            self.OldName('');
+                            GetJson('@UrlHelper.ClientUrl("Api/Report/RenameGroup")?client=' + escape(client) + '&group=' + escape(group) + '&newName=' + escape(newName),
+                                function (data) {
+                                    var it = $.grep(vm.Data(), function (n, i) { return n.Group() == group; });
+                                    if (it.length > 0) {
+                                        it[0].Group(newName);
+                                    }
+                                    ShowMessage(data.Title, data.Message);
+                                });
+                        });
+                };
+                self.DeleteGroup = function (item) {
+                    ShowConfirm("提示信息", "删除分组将同时删除该分组下的报表，确认删除？",
+                    function () {
+                        var client = self.SelectedClient().ClientId;
+                        var group = item.Group();
+                        GetJson('@UrlHelper.ClientUrl("Api/Report/DeleteGroup")?client=' + escape(client) + '&group=' + escape(group),
+                        function (data) {
+                            var it = $.grep(self.Data(), function (n, i) { return n.Group() == group; });
+                            if (it.length > 0) {
+                                self.Data.remove(it[0]);
+                            }
+                            self.SelectReport(null, null);
+                            ShowMessage(data.Title, data.Message);
+                        });
+                    });
+                };
+                self.RenameReport = function (parent, item) {
+                    self.OldName(item.Report());
+                    ShowDialog('#rename', '重命名报表',
+                        function () {
+                            var client = self.SelectedClient().ClientId;
+                            var group = parent.Group();
+                            var rpt = item.Report();
+                            var newName = $('#newName').val();
+                            $('#newName').val('');
+                            self.OldName('');
+                            GetJson('@UrlHelper.ClientUrl("Api/Report/RenameReport")?client=' + escape(client) + '&group=' + escape(group) + '&report=' + escape(rpt) + '&newName=' + escape(newName),
+                                function (data) {
+                                    var it = $.grep(parent.Reports(), function (n, i) { return n.Report() == rpt; });
+                                    if (it.length > 0) {
+                                        it[0].Report(newName);
+                                    }
+                                    ShowMessage(data.Title, data.Message);
+                                });
+                        });
+                };
+                self.DeleteReport = function (parent, item) {
+                    ShowConfirm("提示信息", "确认要删除报表？",
+                    function () {
+                        var client = self.SelectedClient().ClientId;
+                        var group = parent.Group();
+                        var rpt = item.Report();
+                        GetJson('@UrlHelper.ClientUrl("Api/Report/DeleteReport")?client=' + escape(client) + '&group=' + escape(group) + '&report=' + escape(rpt),
+                        function (data) {
+                            var it = $.grep(parent.Reports(), function (n, i) { return n.Report() == rpt; });
+                            if (it.length > 0) {
+                                parent.Reports.remove(it[0]);
+                            }
+                            self.SelectReport(parent, null);
+                            ShowMessage(data.Title, data.Message);
+                        });
+                    });
+                };
+                self.RenamePage = function () {
+                    var pg = self.SelectedPage();
+                    self.OldName(pg.Page());
+                    ShowDialog('#rename', '重命名报表页面',
+                        function () {
+                            var path = pg.File();
+                            var newName = $('#newName').val();
+                            $('#newName').val('');
+                            GetJson('@UrlHelper.ClientUrl("Api/Report/RenamePage")?path=' + escape(path) + '&newName=' + escape(newName),
+                                function (data) {
+                                    $('#designArea div.rpt-page[id="' + self.OldName() + '"]').attr('id', newName);
+                                    self.OldName('');
+                                    pg.Page(newName);
+                                    pg.File(data.File);
+                                    vm.SavePage(pg);
+                                    ShowMessage(data.Title, data.Message);
+                                });
+                        });
+                };
+                self.DeletePage = function () {
+                    ShowConfirm("提示信息", "确认要删除报表页面？",
+                    function () {
+                        var pg = self.SelectedPage();
+                        var path = pg.File();
+                        GetJson('@UrlHelper.ClientUrl("Api/Report/DeletePage")?path=' + escape(path),
+                        function (data) {
+                            var rpt = self.SelectedReport();
+                            rpt.Pages.remove(pg);
+                            if (rpt.Pages().length > 0) {
+                                self.SelectPage(rpt.Pages()[0]);
+                            }
+                            else {
+                                self.SelectPage(null);
+                            }
+                            ShowMessage(data.Title, data.Message);
+                        });
+                    });
+                };
+                self.SetPage = function () {
+                    var spg = self.SelectedPage();
+                    var pageName = spg ? spg.Page() : "page1";
+                    var opg = $('#' + pageName);
+                    $('#page').val(pageName);
+                    $('#pageWidth').val(opg.width());
+                    $('#pageHeight').val(opg.height());
+                    $('#props-page').dialog({
+                        modal: true,
+                        title: '设置页面',
+                        zIndex: 1200,
+                        width: 450,
+                        height: 300,
+                        buttons: {
+                            "新增页面": function () {
+                                var client = self.SelectedClient().ClientId;
+                                var group = self.SelectedGroup();
+                                var rpt = self.SelectedReport();
+                                var page = $('#page').val();
+                                var it = $.grep(rpt.Pages(), function (n, i) { return n.Page() == page; });
+
+                                if (it.length > 0) {
+                                    ShowMessage("提示信息", "报表" + rpt.Report() + "已经有页面" + page);
+                                    return;
+                                }
+                                GetJson('@UrlHelper.ClientUrl("Api/Report/AddPage")?client=' + escape(client) + '&group=' + escape(group) + '&report=' + escape(rpt.Report()) + '&page=' + escape(page),
+                                    function (data) {
+                                        var pg = { Page: ko.observable(page), File: ko.observable(data.File) };
+                                        rpt.Pages.push(pg);
+                                        SetPageSize($('#page').val(), $('#pageWidth').val(), $('#pageHeight').val());
+                                        self.SelectPage(pg);
+                                        RefreshHtml();
+                                        ResizeIFrame();
+                                        ShowMessage(data.Title, data.Message);
+                                    },
+                                    function (msg) { ShowMessage('提示信息', msg); }
+                                );
+                                $(this).dialog("close");
+                            },
+                            "设置页面": function () {
+                                SetPageSize($('#page').val(), $('#pageWidth').val(), $('#pageHeight').val());
+                                RefreshHtml();
+                                ResizeIFrame();
+                                $(this).dialog("close");
+                            },
+                            "关闭": function () { $(this).dialog("close"); }
+                        }
+                    });
+                };
+                self.SelectPage = function (item) {
+                    self.SelectedPage(item);
+                    if (item) {
+                        var pgName = item.Page();
+                        $('#design-panel div.rpt-page-holder').hide();
+                        var ph = $('#design-panel div.rpt-page-holder[id="ph_' + pgName + '"]');
+                        if (ph.is('div')) {
+                            if (ph.children().length <= 0) {
+                                var url = '@UrlHelper.ClientUrl("Api/Report/GetPage")?path=' + escape(item.File());
+                                GetJson(url, function (data) {
+                                    ph.html(data.Html);
+                                    RefreshHtml();
+                                    $('#css-code').val(BeautifyCss(data.Css));
+                                    $('#js-code').val(BeautifyJs(data.Js));
+                                    Progress();
+                                    SwitchMode("design");
+                                });
+                            } else {
+                                RefreshHtml();
+                            }
+                        }
+                        ph.show();
+                    }
+                    else {
+                        $('#design-panel div.rpt-page-holder').hide();
+                        RefreshHtml();
+                    }
+                    ResizeIFrame();
+                };
+                self.SavePage = function () {
+                    if ($('div.tabs').tabs('option', 'selected') != 1) {
+                        RefreshHtml();
+                    }
+                    var html = BeautifyHtml($('#html-code').val());
+                    var css = BeautifyCss($('#css-code').val());
+                    var js = BeautifyJs($('#js-code').val());
+                    PostJson('@UrlHelper.ClientUrl("Api/Report/SavePage")', { File: self.SelectedPage().File(), Html: html, Css: css, Js: js },
+                    function (data) { ShowMessage(data.Title, data.Message); },
+                    function (error) { ShowMessage('提示信息', error); });
+                };
+                self.IsSelectedPage = function (item) {
+                    var page = self.SelectedPage();
+                    if (page) {
+                        return page.Page() == item.Page();
+                    }
+                    return false;
+                };
+                self.HasItems = function (item) {
+                    return item.Items() && item.Items().length > 0;
+                };
+            }
+        });
+
+        ko.applyBindings(vm);
+        $('.accordion').accordion();
+        $(document).off('selectclient').on('selectclient', OnSelectClient);
+        LoadHtml('#clients-container', '@UrlHelper.SSOUrl("Controls/SelectClients.cshtml")', function () {
+            SelectFirstClient();
+        }, null, false);
+    });
+
+    function OnSelectClient(event, client) {
+        vm.SelectedClient(client);
+        vm.SelectedReport(null);
+        vm.SelectedPage(null);
+        vm.OldName("");
+        vm.GetData();
+    }
+
+    function RefreshHtml() {
+        var page = vm.SelectedPage();
+        var html = "";
+        if (page) {
+            var pgName = page.Page();
+            var html = GetPageTrimmedHtml(pgName);
+            $('#html-code').val(BeautifyHtml(html));
+        }
+        $('#html-code').val(html);
+    }
+
+    function PreviewCss() {
+        CreateStyle('user-css');
+        SetStyles('user-css', $('#css-code').val());
+    }
+
+    function NewReport() {
+        $('#group').val(vm.SelectedGroup());
+        ShowDialog('#newReport', '新增报表',
+            function () {
+                var client = vm.SelectedClient().ClientId;
+                var group = $('#group').val();
+                var rpt = $('#report').val();
+                var it = $.grep(vm.Data(), function (n, i) { return n.Group() == group; });
+                var gp = null;
+
+                if (it.length > 0) {
+                    var gp = it[0];
+                    var rpts = $.grep(gp.Reports(), function (n, i) { return n.Report() == rpt; });
+                    if (rpts.length > 0) {
+                        ShowMessage("提示信息", "已经存在客户" + client + "分组" + group + "报表" + rpt);
+                        return;
+                    }
+                }
+
+                GetJson('@UrlHelper.ClientUrl("Api/Report/Create")?client=' + escape(client) + '&group=' + escape(group) + '&report=' + escape(rpt),
+                            function (data) {
+                                var ops = {};
+                                if (!gp) {
+                                    gp = { Group: ko.observable(group), Reports: ko.observableArray([]) };
+                                    vm.Data.push(gp);
+                                    ops.active = vm.Data().length - 1;
+                                }
+                                else {
+                                    ops.active = $(vm.Data()).index(gp);
+                                }
+                                var nRpt = { Report: ko.observable(rpt), Pages: ko.observableArray([]) };
+                                gp.Reports.push(nRpt);
+                                vm.SelectReport(gp, nRpt);
+                                $('.accordion').accordion("destroy").accordion(ops);
+                                ShowMessage(data.Title, data.Message);
+                            },
+                            function (msg) { ShowMessage('提示信息', msg); }
+                        );
+            });
+        }
+
+        function Preview() {
+            ShowDialog('#prewview', '预览报表', function () {
+                var client = vm.SelectedClient().ClientId;
+                var group = vm.SelectedGroup();
+                var rpt = vm.SelectedReport().Report();
+                var url = $('#dataurl').val();
+                var url = '@UrlHelper.ClientUrl("View")?client=' + escape(client) + '&group=' + escape(group) + '&report=' + escape(rpt) + '&url=' + escape(url);
+                    window.open(url);
+                });
+            }
+
+            function ChangePageSize(ele) {
+                var s = $(ele).val();
+                var size = ParseSize(s);
+                $('#pageWidth').val(size.width);
+                $('#pageHeight').val(size.height);
+                ResizeIFrame();
+            };
+
+</script>

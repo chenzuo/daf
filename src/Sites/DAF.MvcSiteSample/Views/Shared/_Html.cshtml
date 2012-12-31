@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewBag.Title) -- @(LocaleHelper.Localizer.Get("DefaultTitle"))</title>
+    <meta name="keywords" content="@(ViewBag.MetaKeywords ?? LocaleHelper.Localizer.Get("DefaultMetaKeywords"))" />
+    <meta name="description" content="@(ViewBag.MetaDescription ?? LocaleHelper.Localizer.Get("DefaultMetaDescription"))" />
+    <meta name="author" content="" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    @Html.Partial("_HtmlHead")
+    @RenderSection("head", false)
+    <!--[if lt IE 9]>
+    @AssetsHelper.CDNScript("html5.js")
+    <![endif]-->
+</head>
+<body>
+    <div class="page">
+        @RenderBody()
+    </div>
+    @Html.Partial("_HtmlEnd")
+    @RenderSection("end", false)
+</body>
+</html>

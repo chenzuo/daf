@@ -1,0 +1,107 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.SSO;
+@using DAF.Workflow;
+@using DAF.Workflow.Models;
+@using DAF.Workflow.Info;
+@{
+    Layout = "~/_Dialog.cshtml";
+
+    bool planned = Request.QueryString["plan"].ConvertTo<bool>(false);
+    bool cancelled = Request.QueryString["cancel"].ConvertTo<bool>(false);
+
+    var pageModel = this.PageModel<DoOperationInfo>();
+
+    if (IsPost)
+    {
+        if (Validation.IsValid())
+        {
+            DoOperationInfo info = new DoOperationInfo();
+            info.TargetFlowId = Request.QueryString["targetFlowId"];
+            info.TargetStateId = Request.QueryString["targetStateId"];
+            info.TargetId = Request.QueryString["targetId"];
+            info.OperationId = Request.QueryString["operationId"];
+
+            info.Planned = planned;
+            info.Cancelled = cancelled;
+            info.Title = Request.Form["Title"];
+            info.Message = Request.Form["Message"];
+            info.OperationTime = Request.Form["OperationTime"].ConvertTo<DateTime>(DateTime.Now);
+
+            if (AuthHelper.IsAuthenticated)
+            {
+                info.UserId = AuthHelper.CurrentSession.User.UserId;
+                info.UserName = AuthHelper.CurrentSession.User.Name();
+            }
+
+            TargetState state = null;
+
+            ServerResponse result = new ServerResponse();
+            var flowSvr = IOC.Current.GetService<IStateFlowService>();
+            if (info.Planned)
+            {
+                state = flowSvr.Plan(info);
+            }
+            else if (info.Cancelled)
+            {
+                state = flowSvr.Cancel(info);
+            }
+            else
+            {
+                state = flowSvr.Do(info);
+            }
+            if (state == null)
+            {
+                result.Status = ResponseStatus.Failed;
+                result.Message = LocaleHelper.Localizer.Get("SaveFailure");
+            }
+            else
+            {
+                result.Status = ResponseStatus.Success;
+                result.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
+            }
+
+            this.Refresh(result);
+        }
+    }
+}
+<div class="row">
+    <div class="span12">
+        <form method="post">
+            @Html.ValidationSummary(true)
+            @if (cancelled)
+            {
+                <h5>确认要撤销该操作？</h5>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-ok"></i><span>确认撤销</span></button>
+                    <button class="btn" type="button" onclick="CloseDialog();">
+                        <i class="icon-close"></i><span>取消</span></button>
+                </div> 
+            }
+            else
+            {
+                <table class="table table-bordered">
+                    <tr>
+                        <td>@(pageModel.CaptionFor(o => o.Title))</td>
+                        <td>@(pageModel.TextBoxFor(o => o.Title, new { @class = "span3" }))</td>
+                    </tr>
+                    <tr>
+                        <td>@(pageModel.CaptionFor(o => o.Message))</td>
+                        <td>@(pageModel.TextBoxFor(o => o.Message, new { @class = "span3" }))</td>
+                    </tr>
+                    <tr>
+                        <td>@(pageModel.CaptionFor(o => o.OperationTime))</td>
+                        <td>@(pageModel.TextBoxFor(o => o.OperationTime, new { @class = "span3 date" }))</td>
+                    </tr>
+                </table>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-ok"></i><span>保存</span></button>
+                    <button class="btn" type="button" onclick="CloseDialog();">
+                        <i class="icon-close"></i><span>取消</span></button>
+                </div> 
+            }
+        </form>
+    </div>
+</div>

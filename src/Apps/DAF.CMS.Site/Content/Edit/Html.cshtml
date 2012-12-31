@@ -1,0 +1,24 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS.Site.Models;
+@{
+    Layout = "_EditBase.cshtml";
+    Page.ContentType = (int)ContentType.Html;
+    var pageModel = this.PageModel<Content>();
+    Page.PageModel = pageModel;
+}
+<tr>
+    <td>@pageModel.CaptionFor(o => o.HtmlBody)</td>
+    <td>@pageModel.TextAreaFor(o => o.HtmlBody, new { @data_bind = "html:HtmlBody" })</td>
+</tr>
+@section bodyEnd {
+    <script type="text/javascript">
+        $(document).on('bindedData', function (event, bindedData) {
+            bindedData().HtmlBody.subscribe(function (newValue) {
+                var strClean = newValue.replace(/<\/?[^>]+>/gi, '');
+                strClean = strClean.replace(/"/gi, '').replace(/'/gi, '');
+                vm.Data().PlainBody($.trim(strClean));
+            }, null);
+        });
+    </script>
+}

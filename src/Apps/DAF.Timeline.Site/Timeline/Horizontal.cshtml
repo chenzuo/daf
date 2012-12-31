@@ -1,0 +1,17 @@
+﻿@{
+    Layout = null;
+}
+<div class="timeline-container">
+    
+</div>
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM(){
+            getQueryUrl: function() {
+                var qs = window.location.href.substr(window.location.href.indexOf('?'));
+                return "/Timeline/";
+            }
+        });
+    });
+</script>

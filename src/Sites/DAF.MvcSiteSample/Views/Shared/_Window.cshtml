@@ -1,0 +1,25 @@
+﻿@{
+    Layout = "_Html.cshtml";
+}
+@section head {
+    @Html.Partial("_WindowHead")
+    @RenderSection("head", false)
+}
+@section end {
+    @Html.Partial("_WindowEnd")
+    @RenderSection("end", false)
+}
+
+<header class="container page-header">
+    @Html.Partial("_WindowHeader")
+    @RenderSection("header", false)
+</header> 
+
+<div class="page-body">
+    @RenderBody()
+</div>
+
+<footer class="container page-footer">
+    @Html.Partial("_WindowFooter")
+    @RenderSection("footer", false) 
+</footer>

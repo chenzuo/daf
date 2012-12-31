@@ -1,0 +1,63 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@{
+    string options = string.Empty;
+    if (Page.Animation != null)
+    {
+        options += string.Format("options.animation = '{0}';", Page.Animation);
+    }
+    else
+    {
+        options += "options.animation = 'random';";
+    }
+    if (Page.Numbers != null)
+    {
+        options += string.Format("options.numbers = {0};", Page.Numbers.ToString().ToLower());
+    }
+    if (Page.Dots != null)
+    {
+        options += string.Format("options.dots = {0};", Page.Dots.ToString().ToLower());
+    }
+    if (Page.Controls != null)
+    {
+        options += string.Format("options.controls = {0};", Page.Controls.ToString().ToLower());
+    }
+    if (Page.EnableNavigationKeys != null)
+    {
+        options += string.Format("options.enable_navigation_keys = {0};", Page.EnableNavigationKeys.ToString().ToLower());
+    }
+    if (Page.Navigation != null)
+    {
+        options += string.Format("options.navigation = {0};", Page.Navigation.ToString().ToLower());
+    }
+}
+@AssetsHelper.CDNCss("skitter.styles.css")
+@AssetsHelper.CDNScript("jquery.easing.js")
+@AssetsHelper.CDNScript("jquery.animate-colors-min.js")
+@AssetsHelper.CDNScript("jquery.skitter.min.js")
+<div class="image-slider box_skitter">
+    <ul>
+    @foreach (var img in Page.Images)
+    {
+        <li>
+            @if(!string.IsNullOrEmpty(img.LinkUrl))
+            {
+            @:<a target="_blank" href="@img.LinkUrl">
+            }
+            <img src="@img.ImageUrl" alt="@img.Title" />
+            <span>@img.Title</span>
+            @if(!string.IsNullOrEmpty(img.LinkUrl))
+            {
+            @:</a>
+            }
+        </li>
+    }
+    </ul>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var options = {};
+        @Html.Raw(options)
+        $('.box_skitter').skitter(options);
+    });
+</script>

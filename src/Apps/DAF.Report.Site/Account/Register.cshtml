@@ -1,0 +1,85 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.Web.Security;
+@using DAF.SSO.Client;
+@{
+    Layout = "~/_Html.cshtml";
+
+    var redirect = Request.QueryString["redirect"];
+    if (redirect.IsEmpty())
+    {
+        redirect = Href("~/");
+    }
+
+    var pageModel = this.PageModel<RegisterInfo>();
+
+    if (IsPost)
+    {
+        AntiForgery.Validate();
+
+        if (Validation.IsValid())
+        {
+            var response = AuthHelper.Register(Request.Form["Account"], Request.Form["Password"], Request.Form["ConfirmPassword"]);
+            if (response.Status == ResponseStatus.Success)
+            {
+                Context.RedirectLocal(redirect);
+            }
+            else
+            {
+                ModelState.AddFormError(response.Message);
+            }
+        }
+    }
+}
+@section head {
+    @AssetsHelper.CDNScript("jquery.validate.js")
+    @AssetsHelper.CDNScript("jquery.validate.unobtrusive.js")
+    @AssetsHelper.CDNScript("jquery-ui-timepicker-addon.js")
+    <style type="text/css">
+        .main {
+            min-height: 50px;
+            width: 600px;
+            margin: 0px auto;
+            height: 400px;
+            padding: 10px;
+        }
+    </style>
+}
+@section end {
+    <script type="text/javascript">
+        $(function () {
+            $(window).bind('resizeWindow', OnResizeWindow);
+        });
+
+        function OnResizeWindow() {
+            var mt = ($(window).height() - $('div.main').height()) / 2;
+            $('div.main').css({ 'margin-top': mt + 'px' });
+        }
+    </script>
+}
+<div class="span5 well auto-margin">
+    <hgroup>
+        <h1>@(DAF.SSO.Resources.Locale(o => o.Register))</h1>
+    </hgroup>
+    <form method="post">
+        @AntiForgery.GetHtml()
+        @Html.ValidationSummary(true)
+        <table class="table auto-margin">
+            <tr>
+                <td>@(pageModel.CaptionFor(o => o.Account))</td>
+                <td>@(pageModel.TextBoxFor(o => o.Account))</td>
+            </tr>
+            <tr>
+                <td>@(pageModel.CaptionFor(o => o.Password))</td>
+                <td>@(pageModel.PasswordFor(o => o.Password))</td>
+            </tr>
+            <tr>
+                <td>@(pageModel.CaptionFor(o => o.ConfirmPassword))</td>
+                <td>@(pageModel.PasswordFor(o => o.ConfirmPassword))</td>
+            </tr>
+        </table>
+        <div class="form-actions">
+            <button class="btn btn-primary">@(DAF.SSO.Resources.Locale(o => o.Register))</button>
+        </div>
+    </form>
+</div>

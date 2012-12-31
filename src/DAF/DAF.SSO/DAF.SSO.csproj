@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{78505638-B085-4930-8ADA-FB576BE7A663}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DAF.SSO</RootNamespace>
+    <AssemblyName>DAF.SSO</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\outputs\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\outputs\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=2.6.3.862, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\libs\Autofac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Client\ResetPasswordInfo.cs" />
+    <Compile Include="DefaultSSOConfiguration.cs" />
+    <Compile Include="EmailSubscriber.cs" />
+    <Compile Include="ISSOConfiguration.cs" />
+    <Compile Include="Resources.cs" />
+    <Compile Include="Server\ResetPasswordMessage.cs" />
+    <Compile Include="TransferSessionInfo.cs" />
+    <Compile Include="Client\TransferSignOnInfo.cs" />
+    <Compile Include="SessionInfo.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="SimplePermission.cs" />
+    <Compile Include="PermissionType.cs" />
+    <Compile Include="Server\AllowedPermission.cs" />
+    <Compile Include="Server\Permission.cs" />
+    <Compile Include="Server\Role.cs" />
+    <Compile Include="Server\RolePermission.cs" />
+    <Compile Include="Server\ServerSession.cs" />
+    <Compile Include="Sex.cs" />
+    <Compile Include="Server\User.cs" />
+    <Compile Include="Server\UserRole.cs" />
+    <Compile Include="Client\ChangePasswordInfo.cs" />
+    <Compile Include="Client\ISSOClientProvider.cs" />
+    <Compile Include="SSOClient.cs" />
+    <Compile Include="SSOServer.cs" />
+    <Compile Include="UserSession.cs" />
+    <Compile Include="Client\RegisterInfo.cs" />
+    <Compile Include="Server\ISSOServerProvider.cs" />
+    <Compile Include="ISession.cs" />
+    <Compile Include="IUser.cs" />
+    <Compile Include="Client\SignOnInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DAF.Core\DAF.Core.csproj">
+      <Project>{bfd39d66-b5bc-44ff-989d-043379aa20b3}</Project>
+      <Name>DAF.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

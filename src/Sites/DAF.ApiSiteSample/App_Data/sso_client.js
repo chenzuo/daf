@@ -1,0 +1,1 @@
+﻿{ ClientId: "DAF.ApiSiteSample", ClientName: "DAF.ApiSiteSample", BaseUrl: "http://www.apisite.com", EncryptKey: "DAF.ApiSiteSample", EncryptScrect: "DAF.ApiSiteSample" }

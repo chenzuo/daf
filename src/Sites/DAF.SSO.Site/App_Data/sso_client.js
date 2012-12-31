@@ -1,0 +1,1 @@
+﻿{ ClientId: "DAF.SSO.Site", ClientName: "DAF.SSO.Site", BaseUrl: "http://www.sso.com", EncryptKey: "DAF.SSO.Site", EncryptScrect: "DAF.SSO.Site" }

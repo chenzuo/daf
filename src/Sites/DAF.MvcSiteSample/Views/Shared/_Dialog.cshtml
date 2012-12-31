@@ -1,0 +1,18 @@
+﻿@{
+    Layout = "_Html.cshtml";
+}
+@section head {
+    @AssetsHelper.CDNCss("bootstrap.my.dialog.css")
+    @Html.Partial("_DialogHead")
+    @RenderSection("head", false)
+}
+@section end {
+    @Html.Partial("_DialogEnd")
+    @RenderSection("end", false)
+}
+<header class="container page-hader">
+    @RenderSection("header", false)
+</header> 
+<div class="page-body">    
+    @RenderBody()
+</div>

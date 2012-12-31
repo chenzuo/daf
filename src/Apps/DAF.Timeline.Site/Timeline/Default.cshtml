@@ -1,0 +1,50 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@{
+    Layout = null;
+    var clientId = Request.QueryString["client"].DefaultIfNull(AuthHelper.CurrentClient.ClientId);
+    var userId = Request.QueryString["userId"];
+    var userName = Request.QueryString["userName"];
+}
+<div class="timeline-container">
+    
+</div>
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            appendPagingData: true,
+            trackDataChange: false,
+            getQueryUrl: function () {
+                var url = '@(UrlHelper.ClientUrl("Api/Timeline/Items"))?client=@clientId&userId=@userId&count=20';
+                var ets = vm.EventTypes();
+                if (ets && ets.length > 0) {
+                    var etypes = '&eventTypes=';
+                    $(ets).each(function (i, n) {
+                        etypes += n + ','
+                    });
+                    etypes = etypes.substr(0, etypes.len - 1);
+                    url = url + etypes;
+                }
+                var bt = vm.BeginTime();
+                if (bt) {
+                    url = url + '&beginTime=' + bt;
+                }
+                var et = vm.EndTime();
+                if (et) {
+                    url = url + '&endTime=' + et;
+                }
+                return url;
+            },
+            onInit: function (self) {
+                self.ClientId = '@clientId';
+                self.UserId = '@userId';
+                self.UserName = '@userName';
+                self.EventTypes = ko.observableArray([]);
+                self.BeginTime = ko.observable(null);
+            }
+        });
+
+        vm.BeginTime($.now().toString('yyyy-mm-dd'));
+    });
+</script>

@@ -1,0 +1,13 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS.Site.Models;
+@{
+    Layout = "_EditBase.cshtml";
+    Page.ContentType = (int)ContentType.Link;
+    var pageModel = this.PageModel<Content>();
+    Page.PageModel = pageModel;
+}
+<tr>
+    <td>链接地址</td>
+    <td>@pageModel.TextBoxFor(o => o.PlainBody, new { @class = "span8", @data_bind = "value:PlainBody" })</td>
+</tr>

@@ -1,0 +1,324 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.SSO.Server;
+@{
+    var userExtraActions = MenuHelper.GetMenuItems("userExtraActions");
+    var pageModel = this.PageModel<User>();
+}
+
+<div class="row">
+    <div class="span12">
+        <div class="btn-group pull-left">
+            <button class="btn btn-primary" type="button" onclick="vm.AddItem();" title="新增用户">
+                <i class="icon-plus"></i>
+                <span>新增用户</span>
+            </button>
+            <button class="btn btn-success" type="button" onclick="vm.Save();" title="保存">
+                <i class="icon-ok"></i>
+                <span>保存</span>
+            </button>
+        </div>
+        <div id="alpha" class="pull-left tgap1 lgap2">
+            <a id='all' href="javascript:void(0);" onclick="GetUsers('');">所有</a>
+            @for (var a = 'A'; a <= 'Z'; a++)
+            {
+                <a id='@a' href="javascript:void(0);" onclick="GetUsers('@a');">@a</a>
+            }
+        </div>
+    </div>
+    <div class="span12 tgap2">
+        <ul class="nav nav-pills" data-bind="foreach:Data">
+            <li>
+                <div class="well bg-none text-center">
+                    <img class="img-none rect-small ui-corner-all dialog" data-bind="attr: { id: UserId, src: Avatar, href: '@(UrlHelper.ClientUrl("Image/Crop", "DAF.File.Site"))?file=' + $data.Avatar() + '&width=90&height=110&args=' + $data.UserId() }" dialog-width="810" dialog-height="500" title="选择用户的图像" />
+                    <h5 data-bind="text:Account"></h5>
+                    <div class="btn-group pull-left">
+                        <button class="btn btn-info btn-mini" type="button" data-bind="click: $root.EditItem" title="编辑该用户">
+                            <i class="icon-pencil"></i>
+                        </button>
+                        <button class="btn btn-warning btn-mini" type="button" data-bind="click: $root.ResetPassword" title="重置密码">
+                            <i class="icon-edit"></i>
+                        </button>
+                        <button class="btn btn-info btn-mini dialog" type="button" data-bind="click: $root.GetUserRoles" title="设置角色">
+                            <i class="icon-user"></i>
+                        </button>
+                        <button class="btn btn-mini" type="button" data-bind="click: ToggleStates, attr: { title: $root.GetState.bind($data, 'name') }, cls: $root.GetState.bind($data, 'btn')">
+                            <i data-bind="cls: $root.GetState.bind($data, 'icon')"></i>
+                            <span class="caret"></span>
+                        </button>
+                        @if (userExtraActions != null && userExtraActions.Count() > 0)
+                        {
+                            if (userExtraActions.Count() == 1)
+                            {
+                                var mi = userExtraActions.First();
+                            <button class="btn btn-info btn-mini dialog" type="button" data-bind="attr:{href:'@(mi.LinkUrl)?userId='+UserId()}" title="@(mi.Caption)">
+                                <i class="icon-user"></i>
+                            </button>
+                            }
+                            else
+                            {
+                            <button class="btn btn-mini" type="button" data-bind="click: ToggleUserActions" title="设置用户相关属性">
+                                <i class="icon-th"></i>
+                                <span class="caret"></span>
+                            </button>
+                            }
+                        }
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="states" class="dropdown-menu">
+        <ul class="unstyled" data-bind="foreach: States">
+            <li>
+                <button class="btn btn-mini" type="button" data-bind="click: ChangeState, attr: { title: name }, cls: btn">
+                    <i data-bind="cls: icon"></i>
+                </button>
+            </li>
+        </ul>
+    </div>
+    @if (userExtraActions != null && userExtraActions.Count() > 1)
+    {
+        <div id="userExtraActions" class="dropdown-menu">
+            <ul class="unstyled">
+                @foreach (var mi in userExtraActions)
+                {
+                    <li>
+                        <button class="btn btn-info btn-mini" type="button" onclick="DoUserAction('@(mi.LinkUrl)');">
+                            <i class="icon-user"></i>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    <div id="editItem" class="hide" data-bind="with:EditingItem">
+        <form method="post">
+            <table class="table table-bordered">
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.Account))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.Account, new { data_bind = "value:Account" })
+                    </td>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.Password))</td>
+                    <td>
+                        @pageModel.PasswordFor(m => m.Password, new { data_bind = "value:Password" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.NickName))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.NickName, new { data_bind = "value:NickName" })
+                    </td>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.FullName))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.FullName, new { data_bind = "value:FullName" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.Email))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.Email, new { data_bind = "value:Email", type = "email" })
+                    </td>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.Mobile))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.Mobile, new { data_bind = "value:Mobile", type = "tel" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.Locale))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.Locale, new { data_bind = "value:Locale" })
+                    </td>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.TimeZone))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.TimeZone, new { data_bind = "value:TimeZone" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.Theme))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.Theme, new { data_bind = "value:Theme" })
+                    </td>
+                    <td class="caption">@(pageModel.CaptionFor(o => o.Skin))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.Skin, new { data_bind = "value:Skin" })
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div id="editRoles" class="hide" data-bind="with:EditingItem">
+        <h3>用户<span data-bind="text:NickName"></span>的角色</h3>
+        <div>
+            <ul class="well nav horizontal" data-bind="foreach: vm.UserRoles">
+                <li>
+                    <input type="checkbox" data-bind="checked:IsSelected" />
+                    <span data-bind="text:RoleName"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    var nophoto = '/Content/Images/no-img.png';
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var startWith = vm.StartWith();
+                if (startWith && startWith.length > 0) {
+                    return '@(UrlHelper.SSOUrl("Api/User"))?startWith=' + startWith;
+                }
+                return '@(UrlHelper.SSOUrl("Api/User"))';
+            },
+            onQuerySuccess: function (data) { $('.columns', document).trigger('click'); },
+            getSaveUrl: function () { return '@(UrlHelper.SSOUrl("Api/User"))'; },
+            createItem: function () {
+                return {
+                    UserId: ko.observable(IdGenerator.NewId()),
+                    ClientId: ko.observable('@(AuthHelper.CurrentClient.ClientId)'),
+                    Account: ko.observable(""),
+                    Password: ko.observable(""),
+                    NickName: ko.observable(""),
+                    FullName: ko.observable(""),
+                    Sex: ko.observable(1),
+                    Email: ko.observable(""),
+                    Mobile: ko.observable(""),
+                    Locale: ko.observable("zh-CN"),
+                    TimeZone: ko.observable(8),
+                    Theme: ko.observable("Default"),
+                    Skin: ko.observable("Default"),
+                    Avatar: ko.observable(""),
+                    Status: ko.observable(1),
+                };
+            },
+            onInit: function (self) {
+                self.StartWith = ko.observable("");
+                self.UserRoles = ko.observableArray([]);
+                self.ResetPassword = function (item) {
+                    item.Password('123456');
+                };
+                self.States = GetDataStates();
+                self.GetState = function (prop, item) {
+                    var it = $.grep(vm.States, function (n, i) { return n.value == item.Status(); });
+                    if (it && it.length > 0) {
+                        return eval('it[0].' + prop);
+                    }
+                    return null;
+                },
+                self.GetUserRoles = function (item) {
+                    vm.EditingItem(item);
+                    GetJson('@(UrlHelper.SSOUrl("Api/User/Roles"))?id=' + item.UserId(), null,
+                    function (data) {
+                        ko.mapping.fromJS(data, null, self.UserRoles);
+                        ShowDialog('#editRoles', '编辑用户的角色',
+                            function () {
+                                return !vm.SaveUserRoles();
+                            });
+                    });
+                },
+                self.SaveUserRoles = function () {
+                    var id = vm.EditingItem().UserId();
+                    PostJson('@(UrlHelper.SSOUrl("Api/User/Roles"))?id=' + id, ko.mapping.toJS(self.UserRoles),
+                    function (info) {
+                        if (info.Status && info.Message && info.Status > 0) {
+                            ShowMessage('出现错误', info.Message + '\r\n' + url);
+                            return false;
+                        } else {
+                            ShowMessage('提示信息', info.Message);
+                        }
+                    });
+                    return true;
+                }
+            },
+            onAdd: function (item) {
+                ShowDialog('#editItem', "新增用户",
+                    function () {
+                        return !$('#editItem>form').valid();
+                    }, function () {
+                        vm.UndoAddItem();
+                    }, 600, 400);
+                EnableFormValidation($('#editItem>form'));
+            },
+            onEdit: function (item) {
+                ShowDialog('#editItem', "编辑用户",
+                    function () {
+                        return !$('#editItem>form').valid();
+                    }, function () {
+                        vm.UndoEditItem();
+                    }, 600, 400);
+                EnableFormValidation($('#editItem>form'));
+            }
+        });
+
+        ko.applyBindings(vm);
+        $(document).on('click', 'body', function () {
+            $('div.dropdown-menu').hide();
+        });
+        GetUsers('');
+
+        OnReceiveMessage("cropimage", function (msg) {
+            if (msg.dialogId) {
+                CloseDialog(msg.dialogId);
+            }
+            $('#' + msg.args).prop('src', msg.url);
+            var item = ko.dataFor(document.getElementById(msg.args));
+            if (item) {
+                item.Avatar(msg.url);
+            }
+        });
+    });
+
+    function GetUsers(startWith) {
+        $('#alpha>a').removeClass('selected');
+        if (startWith) {
+            $('#alpha>a#' + startWith).addClass('selected');
+        }
+        vm.StartWith(startWith);
+        vm.GetData();
+    }
+
+    function ToggleStates(item, event) {
+        event.stopPropagation();
+        event.preventDefault();
+        var pos = $(event.target).offset();
+        var t = pos.top; // + $(event.target).height();
+        var l = pos.left;
+        $('#states').css({ top: t.toString() + 'px', left: l.toString() + 'px' });
+        $('#states').toggle();
+        $('#states').data('item', item);
+    }
+
+    function ChangeState(state) {
+        var item = $('#states').data('item');
+        if (item) {
+            item.Status(state.value);
+        }
+        $('#states').hide();
+    }
+@if (userExtraActions != null && userExtraActions.Count() > 1)
+{
+    <text>function ToggleUserActions(item, event) {
+    event.stopPropagation();
+    event.preventDefault();
+    var pos = $(event.target).offset();
+    var t = pos.top; // + $(event.target).height();
+    var l = pos.left;
+    $('#userExtraActions').css({ top: t.toString() + 'px', left: l.toString() + 'px' });
+    $('#userExtraActions').toggle();
+    $('#userExtraActions').data('item', item);
+}
+
+    function DoUserAction(url) {
+        var item = $('#userExtraActions').data('item');
+        if (item) {
+            url = AppendUrl(url, 'userId', item.UserId());
+            OpenDialog('设置用户相关属性', url);
+        }
+        $('#userExtraActions').hide();
+    }</text>
+}
+
+</script>

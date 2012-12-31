@@ -1,0 +1,32 @@
+﻿.content,
+.content-body,
+.rpt-pages
+{
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+    height: auto;
+    background: #fff;
+    overflow: hidden;
+}
+
+.title-bar
+{
+    display:none;
+}
+
+.rpt-page
+{
+    background: #fff;
+    z-index:10;
+    border: none;
+    border-width: 0px;
+    margin: 0px;
+    position:relative;
+    overflow: hidden;
+}
+
+.no-print
+{
+    display:none;
+}

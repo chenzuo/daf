@@ -1,0 +1,25 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.Workflow;
+@using DAF.Workflow.Models;
+@{
+    this.Layout = null;
+    string clientId = Request.QueryString["client"].DefaultIfNull(AuthHelper.CurrentClient.ClientId);
+    string flowCodeOrTargetType = Request.QueryString["flowCode"].DefaultIfNull(Request.QueryString["targetType"]);
+    DateTime? beginTime = Request.QueryString["beginTime"].ConvertTo<DateTime?>(null);
+    DateTime? endTime = Request.QueryString["endTime"].ConvertTo<DateTime?>(null);
+    bool? started = Request.QueryString["started"].ConvertTo<bool?>(null);
+    bool? completed = Request.QueryString["completed"].ConvertTo<bool?>(null);
+    FlowResult? result = Request.QueryString["result"].ConvertTo<FlowResult?>(null);
+
+    var flowSvr = IOC.Current.GetService<IStateFlowService>();
+    var targetFlows = flowSvr.LoadFlows(clientId, flowCodeOrTargetType, beginTime, endTime, started, completed, result, true);
+}
+@AssetsHelper.Css("/Content/workflow.css")
+@AssetsHelper.Script("/Scripts/workflow.js")
+<div class="workflow-targets">
+@foreach (var tf in targetFlows)
+{
+    @RenderPage("Line.cshtml", new { TargetFlow = tf, ExcludeStyleAndScripts = true })
+}
+</div>

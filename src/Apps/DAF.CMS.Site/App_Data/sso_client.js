@@ -1,0 +1,1 @@
+﻿{ ClientId: "DAF.CMS.Site", ClientName: "DAF.CMS.Site", BaseUrl: "http://www.cms.com", EncryptKey: "DAF.CMS.Site", EncryptScrect: "DAF.CMS.Site" }

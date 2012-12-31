@@ -1,0 +1,87 @@
+﻿body {
+    color: #000;
+    line-height: normal;
+}
+
+.rpt-page
+{
+    background:#fff;
+    z-index:10;
+    border:solid 2px black;
+    margin: 10px auto;
+    position:relative;
+}
+
+div#unit
+{
+    display: none;
+    width: 1mm !important;
+    height: 1mm !important;
+}
+
+.rpt-page .ele
+{
+    position:absolute;
+    width: 30mm;
+    height: 6mm;
+}
+
+.rpt-page .page-title
+{
+    width: 100mm;
+    font-size:11pt;
+    font-weight:bold;
+}
+
+.rpt-page table
+{
+    border-collapse:collapse;
+}
+
+.rpt-page table th
+{
+    height: 22px;
+    border:solid 1px black;
+}
+
+.rpt-page table td
+{
+    border:solid 1px black;
+}
+
+.rpt-page table thead td
+{
+}
+
+.rpt-page table tbody td
+{
+}
+
+.rpt-page .border-l
+{
+    border-left: solid 1px black;
+}
+
+.rpt-page .border-t
+{
+    border-top: solid 1px black;
+    
+}
+
+.rpt-page .border-r
+{
+    border-right: solid 1px black;
+}
+
+.rpt-page .border-b
+{
+    border-bottom: solid 1px black;
+}
+
+.rpt-page .no-print
+{
+    zoom: 1;
+    opacity: 0.4;                    /* Firefox, Safari(WebKit), Opera */
+    -ms-filter: "alpha(opacity=40)"; /* IE 8 */
+    filter: alpha(opacity=40);       /* IE 4-7 */
+}

@@ -1,0 +1,89 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.File.Site.Models;
+@{
+    Layout = null;
+    string fileType = Request.QueryString["fileType"].DefaultIfNull("files");
+    int maxFiles = Request.QueryString["maxFiles"].ConvertTo<int>(-1);
+    int limitSize = Request.QueryString["limitSize"].ConvertTo<int>(50 * 1024 * 1024); // 50MB
+    string autoStart = Request.QueryString["autoStart"].DefaultIfNull("false");
+    string owner = Request.QueryString["owner"].DefaultIfNull("");
+    string suffix = Request.QueryString["suffix"].DefaultIfNull(DateTime.Now.Ticks.ToString());
+    bool showPreview = Request.QueryString["showPreview"].ConvertTo<bool>(false);
+    
+    var ft = FileType.CommonTypes.FirstOrDefault(o => o.TypeCode == fileType);
+    var fileTypes = ft == null ? ".+$" : ft.RegexPattern;
+}
+
+<form id="uploadForm@(suffix)" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))" method="POST" enctype="multipart/form-data" onload="InitForm">
+<div class="alert alert-block">
+    <h5 class="alert-heading">注：</h5>
+    <ol>
+        @if (!string.IsNullOrEmpty(fileTypes) && fileTypes != ".+$")
+        {
+            <li>仅能上传@(ft.TypeName)文件</li>
+        }
+        @if (limitSize > 0)
+        {
+            <li>文件大小不超过&nbsp;@(FileType.GetFriendlyFileSize(limitSize))</li>
+        }
+        @if (maxFiles > 0)
+        {
+            <li>只能上传@(maxFiles)个文件</li>
+        }
+    </ol>
+</div>
+<div>
+    <button type="button" class="btn btn-primary" onclick="OpenDialog('选择现有文件', '@(UrlHelper.ClientUrl("File"))?fileTypes=@(fileTypes)&owner=@(owner)');" dialog-width="800" dialog-height="600" data-bind="enable: $root.CanAddFile()">
+        <i class="icon-picture"></i>
+        <span>选择现有文件</span>
+    </button>
+    <button type="button" class="btn btn-primary" onclick="$('#fileSelector@(suffix)').trigger('click');" data-bind="enable: $root.CanAddFile()">
+        <i class="icon-plus"></i>
+        <span>选择文件</span>
+    </button>
+    <button type="button" class="btn btn-primary" onclick="vfm@(suffix).StartUpload();">
+        <i class="icon-upload"></i>
+        <span>上传</span>
+    </button>
+</div>
+<div data-bind="foreach:Files">
+    <div class="panel ui-corner-all lgap0">
+        <div>
+            @if(showPreview){
+            <div class="bg-none text-center">
+                <img class="img-none rect-small ui-corner-all" data-bind="attr: { src: $root.GetImageUrl($data) }" />
+            </div>
+            }
+            <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text:name"></span></a>
+            (<span data-bind="text:$root.formatFileSize(size())"></span>)
+            <button type="button" class="btn btn-warning btn-circle btn-mini" data-bind="visible: $root.Uploading($data), click: $root.CancelFile" title="取消上传">
+                <i class="icon-ban-circle"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-circle btn-mini" data-bind="click: $root.RemoveFile" title="删除文件">
+                <i class="icon-remove"></i>
+            </button>
+        </div>
+        <div class="progress progress-striped active" style="height: 8px; margin-bottom: 0px; margin-top: 6px;">
+            <div class="bar" data-bind="style:{ width: $data.progress() + '%'}, attr: { title: $data.progress() + '%'} " style="height: 8px;"></div>
+        </div>
+    </div>
+</div>
+<input id="fileSelector@(suffix)" type="file" name="files[]" style="display: none;">
+</form>
+
+<script type="text/javascript">
+    var vfm@(suffix);
+    $(function () {
+        vfm@(suffix) = new FUVM('uploadForm@(suffix)', {
+            baseUrl: "@(AuthHelper.CurrentClient.BaseUrl.TrimEnd('/'))",
+            acceptFileTypes: /@(fileTypes)/i,
+            maxFiles: @(maxFiles),
+            autoStart: @(autoStart),
+            owner: '@(owner)'
+        });
+        ko.applyBindings(vfm@(suffix), document.getElementById('uploadForm@(suffix)'));
+    });
+
+</script>
+

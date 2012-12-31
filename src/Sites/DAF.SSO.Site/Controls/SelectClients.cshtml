@@ -1,0 +1,40 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@{
+    string id = PageData["id"] ?? "clients-div";
+}
+<div id="@id" class="clear">
+    <ul class="nav nav-pills bgap0">
+        <li class="brand">
+            <h4>@LocaleHelper.Localizer.Get("CurrentSelectedClient", "DAF.SSO")</h4>
+        </li>
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <span id="@(id)-selected"></span>
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="javascript:void(0);" onclick="SelectClient(null);">@LocaleHelper.Localizer.Get("ClearSelectedClient", "DAF.SSO")</a></li>
+                <li class="divider"></li>
+                @foreach(var c in AuthHelper.Clients)
+                {
+                <li data-key="@c.ClientId">
+                    <a href="javascript:void(0);" onclick="SelectClient({ ClientId: '@c.ClientId', ClientName: '@c.ClientName' });">
+                        @c.ClientName
+                    </a>
+                </li>
+                }
+            </ul>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+    function SelectClient(client) {
+        $('#@(id)-selected').text(client ? client.ClientName : "@LocaleHelper.Localizer.Get("NoClientSelected", "DAF.SSO")");
+        $(document).trigger('selectclient', [client]);
+        return false;
+    }
+    function SelectFirstClient() {
+        $('#@(id) ul>li[data-key]:first>a').trigger('click');
+    }
+</script>

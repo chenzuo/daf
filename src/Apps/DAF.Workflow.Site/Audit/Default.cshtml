@@ -1,0 +1,75 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@{
+}
+
+<div class="row">
+    <div class="span12">
+        <fieldset>
+            <legend>显示工作流</legend>
+            <div id="clients-container" class="pull-left"></div>
+            <div class="pull-left" style="padding: 8px;">
+                <span class="caption">工作流编码或业务对象：</span><input type="text" class="span2" id="flowCodeOrTargetType" />
+                <span class="caption">显示方式：</span><input type="radio" name="showType" value="Lines" checked="checked" onclick="vm.ShowType('Lines');" /><span>线状</span>
+                <input type="radio" name="showType" value="Tables" onclick="vm.ShowType('Tables');" /><span>表格</span>
+            </div>
+            <div class="form-actions clear">
+                <button type="button" class="btn btn-primary" onclick="vm.GetData();"><i class="icon-list"></i><span>显示工作流</span></button>
+                <button type="button" class="btn btn-primary" onclick="NewFlow();"><i class="icon-plus"></i><span>启动新工作流</span></button>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="row">
+    <div id="flows" class="span12">
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new WFM();
+        $(document).off('selectclient').on('selectclient', OnSelectClient);
+        LoadHtml('#clients-container', '@UrlHelper.SSOUrl("Controls/SelectClients.cshtml")', function () {
+            SelectFirstClient();
+        }, null, false);
+    });
+
+    function WFM() {
+        var self = this;
+        self.SelectedClient = ko.observable(null);
+        self.FlowCodeOrTargetType = ko.observable('');
+        self.ShowType = ko.observable('Lines');
+        self.getQueryUrl = function () {
+            var selectedClient = vm.SelectedClient();
+            var fc = $('#flowCodeOrTargetType').val();
+            if (!selectedClient || fc.length <= 0) {
+                ShowMessage('提示', '请选择应用程序，并输入工作流编码或业务对象');
+                return null;
+            }
+            return '@(UrlHelper.ClientUrl("Workflow"))/' + vm.ShowType() + '?client=' + selectedClient.ClientId + '&flowCode=' + fc;
+        };
+        self.GetData = function () {
+            var url = self.getQueryUrl();
+            if (url && url.length > 0) {
+                LoadHtml('#flows', url);
+            }
+        };
+    }
+
+    function OnSelectClient(event, obj) {
+        vm.SelectedClient(obj);
+    }
+
+    function NewFlow() {
+        var selectedClient = vm.SelectedClient();
+        var fc = $('#flowCodeOrTargetType').val();
+        if (!selectedClient || fc.length <= 0) {
+            ShowMessage('提示', '请选择应用程序，并输入工作流编码或业务对象');
+            return null;
+        }
+        var url = '/Audit/Start?client=' + selectedClient.ClientId + '&flowCode=' + fc + '&targetId=' + IdGenerator.NewId();
+        OpenDialog('启动新工作流', url);
+    }
+
+</script>

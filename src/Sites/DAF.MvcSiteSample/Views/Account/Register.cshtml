@@ -1,0 +1,65 @@
+﻿@model DAF.SSO.Client.RegisterInfo
+@{
+    Layout = "~/Views/Shared/_Html.cshtml";
+}
+@section head {
+    @AssetsHelper.CDNScript("jquery.unobtrusive-ajax.js")
+    @AssetsHelper.CDNScript("jquery.validate.js")
+    @AssetsHelper.CDNScript("jquery.validate.unobtrusive.js")
+    @AssetsHelper.CDNScript("jquery-ui-timepicker-addon.js")
+    <style type="text/css">
+        .main
+        {
+            min-height: 50px;
+            width: 600px;
+            margin: 0px auto;
+            height: 400px;
+            padding: 10px;
+        }
+    </style>
+}
+@section end {
+    <script type="text/javascript">
+        $(function () {
+            $(window).bind('resizeWindow', OnResizeWindow);
+        });
+
+        function OnResizeWindow() {
+            var mt = ($(window).height() - $('div.main').height()) / 2;
+            $('div.main').css({ 'margin-top': mt + 'px' });
+        }
+    </script>
+}
+<div class="span5 well auto-margin">
+    <hgroup>
+        <h1>@ViewBag.Title</h1>
+        @*<h2>@ViewBag.Description</h2>*@
+    </hgroup>
+
+    @using (Html.BeginForm(new { redirect = ViewBag.Redirect, autoLogin = ViewBag.AutoLogin }))
+    {
+        @Html.ValidationSummary()
+        @Html.Hidden("ClientId", AuthHelper.CurrentClient.ClientId)
+        @Html.Hidden("SessionId", Session.SessionID)
+        @Html.Hidden("DeviceId", Request.UserHostAddress)
+        @Html.Hidden("DeviceInfo", Request.UserAgent)
+        <table class="table auto-margin">
+            <tr>
+                <td>@Html.LabelFor(m => m.Account)</td>
+                <td>@Html.TextBoxFor(m => m.Account)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Password)</td>
+                <td>@Html.PasswordFor(m => m.Password)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.ConfirmPassword)</td>
+                <td>@Html.PasswordFor(m => m.ConfirmPassword)</td>
+            </tr>
+        </table>
+        <div class="form-actions">
+            <button class="btn btn-primary">@(DAF.SSO.Resources.Locale(o => o.Register))</button>
+            <a href="@(DAF.Web.UrlHelper.ClientUrl("Auth/SignOn"))">@(DAF.SSO.Resources.Locale(o => o.SignOn)))</a>
+        </div>
+    }
+</div>

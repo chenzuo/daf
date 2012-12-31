@@ -1,0 +1,73 @@
+﻿@using DAF.SSO;
+@using DAF.SSO.Client;
+@model DAF.SSO.Client.SignOnInfo
+@{
+    Layout = "~/Views/Shared/_Html.cshtml";
+    var clientProvider = IOC.Current.GetService<IObjectProvider<SSOClient>>();
+    var client = clientProvider.GetObject();
+}
+@section head {
+    @AssetsHelper.CDNScript("jquery.unobtrusive-ajax.js")
+    @AssetsHelper.CDNScript("jquery.validate.js")
+    @AssetsHelper.CDNScript("jquery.validate.unobtrusive.js")
+    @AssetsHelper.CDNScript("jquery-ui-timepicker-addon.js")
+}
+@section end {
+    <script type="text/javascript">
+        $(function () {
+            $(window).bind('resizeWindow', OnResizeWindow);
+        });
+
+        function OnResizeWindow() {
+            var mt = ($(window).height() - $('div.well').height()) / 2 - 50;
+            $('div.well').css({ 'margin-top': mt + 'px' });
+        }
+    </script>
+}
+    <div class="span5 well auto-margin">
+        <hgroup>
+            <h1>@ViewBag.Title</h1>
+            @*<h2>@ViewBag.Description</h2>*@
+        </hgroup>
+
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary()
+            @Html.Hidden("ClientId", AuthHelper.CurrentClient.ClientId)
+            @Html.Hidden("SessionId", Session.SessionID)
+            @Html.Hidden("DeviceId", Request.UserHostAddress)
+            @Html.Hidden("DeviceInfo", Request.UserAgent)
+            <table class="table auto-margin">
+                <tr>
+                    <td>@Html.LabelFor(m => m.AccountOrEmailOrMobile)</td>
+                    <td>@Html.TextBoxFor(m => m.AccountOrEmailOrMobile)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.Password)</td>
+                    <td>@Html.PasswordFor(m => m.Password)</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input id="RememberMe" name="RememberMe" type="checkbox" />
+                        <span>@(LocaleHelper.Localizer.GetProperty<SignOnInfo>("RememberMe"))</span>
+                    </td>
+                </tr>
+                @if (ViewBag.HasTriedLogin)
+                { 
+                    <tr>
+                        <td>@(LocaleHelper.Localizer.GetProperty<SignOnInfo>("Captcha"))</td>
+                        <td>
+                            <input id="Captcha" name="Captcha" type="text" />
+                            <img id="imgCaptcha" src="/Captcha/Get?v=@DateTime.Now.Ticks" />
+                            <a href="javascript:void(0);" onclick="$('#imgCaptcha').attr('src', '/Captcha/Get?v=' + (new Date().getTime()));">@LocaleHelper.Localizer.Get("RefreshCaptcha", "DAF.SSO")</a>
+                        </td>
+                    </tr>        
+                }
+            </table>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">@(DAF.SSO.Resources.Locale(o => o.SignOn))</button>
+                <a href="/Account/Register">@(DAF.SSO.Resources.Locale(o => o.Register))</a>
+                <a href="/Account/ForgetPassword">@(DAF.SSO.Resources.Locale(o => o.ForgetPassword))</a>
+            </div>
+        }
+    </div>

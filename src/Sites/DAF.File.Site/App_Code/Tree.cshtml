@@ -1,0 +1,28 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.Core.Collections;
+@using DAF.Core.Security;
+
+@helper Render(IEnumerable<TreeNode> roots, Func<dynamic, object> itemTemplate = null, int depth = 99, int currentDepth = 0)
+{
+    int total = roots == null ? 0 : roots.Count();
+    if (total > 0 && currentDepth < depth)
+    {
+    <ul>
+    @foreach (var item in roots)
+    {
+        <li data-key="@item.Key">
+            @if (itemTemplate == null)
+            {
+                @:<span>@item.Caption</span>
+            }
+            else
+            {
+            @itemTemplate(item)
+            }
+            @Render(item.ChildNodes, itemTemplate, depth, currentDepth + 1)
+        </li>
+    }
+    </ul>       
+    }
+}

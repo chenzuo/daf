@@ -1,0 +1,684 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@{
+    Layout = "~/_Dialog.cshtml";
+    Page.Title = "工作流管理";
+    var flowId = Request.QueryString["id"];
+}
+<div class="row">
+    <div class="data-container span12">
+        <div>
+            <h3 data-bind="with:Data"><span data-bind="text:Owner"></span>-- <span data-bind="text:BizGroup"></span>工作流：<span data-bind="text:Name"></span>[<span data-bind="text:Code"></span>]</h3>
+        </div>
+        <div id="flowDetail">
+            <ul>
+                <li><a href="#states">状态</a></li>
+                <li><a href="#operations">操作</a></li>
+                <li><a href="#incomes">输入材料</a></li>
+                <li><a href="#outcomes">输出产物</a></li>
+                <li><a href="#nextflows">后续工作流</a></li>
+            </ul>
+            <div id="states" data-bind="with:Data">
+                <div class="span3">
+                    <ul data-bind="foreach:States">
+                        <li>
+                            <a href="#" data-bind="click:vm.SelectState"><span data-bind="text:Name"></span></a>
+                            <button type="button" class="btn btn-mini" data-bind="click:vm.RemoveState">
+                                <i class="icon-remove"></i>
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="clear">
+                        <button type="button" class="btn btn-primary" data-bind="click:vm.AddState">
+                            <i class="icon-plus"></i>
+                            <span>新增状态</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="stateDetail" class="span8 lgap1">
+                    <div class="span8">
+                        <table class="table table-bordered" data-bind="with:vm.SelectedState">
+                            <tr>
+                                <td class="caption">状态编码：</td>
+                                <td>
+                                    <input type="text" onblur="CheckUniqueStateCode(this);" required="true" data-bind="value:Code" /></td>
+                                <td class="caption">状态名称：</td>
+                                <td>
+                                    <input type="text" onblur="CheckUniqueStateName(this);" required="true" data-bind="value:Name" /><br />
+                                </td>
+                                <td class="caption">状态类型：</td>
+                                <td>
+                                    <select id="stateType" required="true" data-bind="value:StateType" onchange="ChangeStateType();">
+                                        <option value=""></option>
+                                        <option value="0">开始</option>
+                                        <option value="1">节点</option>
+                                        <option value="5">过程开始</option>
+                                        <option value="6">过程节点</option>
+                                        <option value="7">过程结束</option>
+                                        <option value="9">结束</option>
+                                    </select>
+                                    <select id="stateResult" data-bind="value:Result" class="hide">
+                                        <option value=""></option>
+                                        <option value="0">无</option>
+                                        <option value="1">是</option>
+                                        <option value="2">否</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="caption">设置期限：</td>
+                                <td>
+                                    <select data-bind="value:IntervalType">
+                                        <option value=""></option>
+                                        <option value="1">年</option>
+                                        <option value="2">月</option>
+                                        <option value="3">日</option>
+                                        <option value="4">周</option>
+                                        <option value="5">小时</option>
+                                        <option value="6">分钟</option>
+                                        <option value="7">秒</option>
+                                        <option value="8">季</option>
+                                    </select>
+                                </td>
+                                <td class="caption">响应期限：</td>
+                                <td>
+                                    <input type="number" class="span1" data-bind="value:ResponseIntervalValue" /></td>
+                                <td class="caption">处理期限：</td>
+                                <td>
+                                    <input type="number" class="span1"  data-bind="value:TreatIntervalValue" /></td>
+                            </tr>
+                            <tr>
+                                <td class="caption">状态说明：</td>
+                                <td colspan="5">
+                                    <input type="text" style="width: 98%" data-bind="value:Guide" /></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="clear" data-bind="visible:vm.SelectedState">
+                        <fieldset class="span8">
+                            <legend>该状态允许的操作</legend>
+                            <div data-bind="foreach:Operations">
+                                <input type="checkbox" data-bind="checkChange: { data: OperationId, checkChanged: CheckStateOp, isChecked: SelectStateOp }" />
+                                <span data-bind="text:Name"></span>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="clear" data-bind="visible:vm.SelectedState">
+                        <fieldset class="span8">
+                            <legend>该状态所需的输入材料</legend>
+                            <div class="pull-left">
+                                <select id="state-incomes" data-bind="options:Incomes, optionsText:'Name', optionsValue:'IncomeId'" size="8" multiple="true">
+                                </select>
+                            </div>
+                            <div class="pull-left">
+                                <button type="button" class="btn btn-mini" data-bind="click:vm.AddStateIncome">
+                                    <i class="icon-arrow-right"></i>
+                                </button>
+                            </div>
+                            <div class="span4">
+                                <table class="table table-bordered lgap1" data-bind="with:vm.SelectedState">
+                                    <thead>
+                                        <tr>
+                                            <th>材料名称</th>
+                                            <th>必需提供</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach:Incomes">
+                                        <tr>
+                                            <td><span data-bind="text:GetIncomeName($data.IncomeId())"></span></td>
+                                            <td>
+                                                <input type="checkbox" data-bind="checked:IsRequired" /></td>
+                                            <td>
+                                                <button type="button" class="btn btn-mini" data-bind="click:vm.RemoveStateIncome">
+                                                    <i class="icon-remove"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="clear" data-bind="visible:vm.SelectedState">
+                        <fieldset class="span8">
+                            <legend>该状态所需的输出产物</legend>
+                            <div class="pull-left">
+                                <select id="state-outcomes" data-bind="options:Outcomes, optionsText:'Name', optionsValue:'OutcomeId'" size="8" multiple="true">
+                                </select>
+                            </div>
+                            <div class="pull-left">
+                                <button type="button" class="btn btn-mini" data-bind="click:vm.AddStateOutcome">
+                                    <i class="icon-arrow-right"></i>
+                                </button>
+                            </div>
+                            <div class="span4">
+                                <table class="table table-bordered lgap1" data-bind="with:vm.SelectedState">
+                                    <thead>
+                                        <tr>
+                                            <th>产物名称</th>
+                                            <th>必需提供</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach:Outcomes">
+                                        <tr>
+                                            <td><span data-bind="text:GetOutcomeName($data.OutcomeId())"></span></td>
+                                            <td>
+                                                <input type="checkbox" data-bind="checked:IsRequired" /></td>
+                                            <td>
+                                                <button type="button" class="btn btn-mini" data-bind="click:vm.RemoveStateOutcome">
+                                                    <i class="icon-remove"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div id="operations" data-bind="with:Data">
+                <div class="span3">
+                    <ul data-bind="foreach:Operations">
+                        <li>
+                            <a href="#" data-bind="click:vm.SelectOperation"><span data-bind="text:Name"></span></a>
+                            <button type="button" class="btn btn-mini" data-bind="click:vm.RemoveOperation">
+                                <i class="icon-remove"></i>
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="clear">
+                        <button type="button" class="btn btn-primary" data-bind="click:vm.AddOperation">
+                            <i class="icon-plus"></i>
+                            <span>新增操作</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="opDetail" class="span8">
+                    <table data-bind="with:vm.SelectedOperation" class="table table-bordered">
+                        <tr>
+                            <td class="caption">操作编码：</td>
+                            <td>
+                                <input type="text" onblur="CheckUniqueOperationCode(this);" required="true" data-bind="value:Code" /></td>
+                            <td class="caption">操作名称：</td>
+                            <td>
+                                <input type="text" onblur="CheckUniqueOperationName(this);" required="true" data-bind="value:Name" /></td>
+                        </tr>
+                        <tr>
+                            <td class="caption">操作地址：</td>
+                            <td>
+                                <input type="text" required="true" data-bind="value:OperationUrl" /></td>
+                            <td class="caption">操作参数：</td>
+                            <td>
+                                <input type="text" data-bind="value:OperationArgs" /></td>
+                        </tr>
+                        <tr>
+                            <td class="caption">操作后默认状态：</td>
+                            <td>
+                                <select required="true" data-bind="value:DefaultNextStateId, options:$parent.States, optionsText:'Name', optionsValue:'StateId', optionsCaption:'请选择状态'">
+                                </select>
+                            </td>
+                            <td colspan="2">
+                                <input type="checkbox" data-bind="checked:CanPlanned" /><span>可计划</span>&nbsp;&nbsp;
+                                <input type="checkbox" data-bind="checked:CanCancelled" /><span>可撤销</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="caption">操作说明：</td>
+                            <td colspan="3">
+                                <input type="text" style="width: 98%;" data-bind="value:Guide" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="incomes" data-bind="with:Data">
+                <div class="span3">
+                    <ul data-bind="foreach:Incomes">
+                        <li>
+                            <a href="#" data-bind="click:vm.SelectIncome"><span data-bind="text:Name"></span></a>
+                            <button type="button" class="btn btn-mini" data-bind="click:vm.RemoveIncome">
+                                <i class="icon-remove"></i>
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="clear">
+                        <button type="button" class="btn btn-primary" data-bind="click:vm.AddIncome">
+                            <i class="icon-plus"></i>
+                            <span>新增材料</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="incomeDetail" class="span8">
+                    <table data-bind="with:vm.SelectedIncome" class="table table-bordered">
+                        <tr>
+                            <td class="caption">材料编码：</td>
+                            <td>
+                                <input type="text" onblur="CheckUniqueIncomeCode(this);" required="true" data-bind="value:Code" /></td>
+                            <td class="caption">材料名称：</td>
+                            <td>
+                                <input type="text" onblur="CheckUniqueIncomeName(this);" required="true" data-bind="value:Name" /></td>
+                        </tr>
+                        <tr>
+                            <td class="caption">材料类型：</td>
+                            <td>
+                                <input type="text" data-bind="value:FileType" /></td>
+                            <td class="caption">处理地址：</td>
+                            <td>
+                                <input type="text" required="true" data-bind="value:UploadUrl" /></td>
+                        </tr>
+                        <tr>
+                            <td class="caption">材料说明：</td>
+                            <td colspan="3">
+                                <input type="text" style="width: 98%;" data-bind="value:Description" /></td>
+                        </tr>
+                        <tr>
+                            <td class="caption">示例材料：</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="outcomes" data-bind="with:Data">
+                <div class="span3">
+                    <ul data-bind="foreach:Outcomes">
+                        <li>
+                            <a href="#" data-bind="click:vm.SelectOutcome"><span data-bind="text:Name"></span></a>
+                            <button type="button" class="btn btn-mini" data-bind="click:vm.RemoveOutcome">
+                                <i class="icon-remove"></i>
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="clear">
+                        <button type="button" class="btn btn-primary" data-bind="click:vm.AddOutcome">
+                            <i class="icon-plus"></i>
+                            <span>新增产物</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="outcomeDetail" class="span8">
+                    <table data-bind="with:vm.SelectedOutcome" class="table table-bordered">
+                        <tr>
+                            <td class="caption">产物编码：</td>
+                            <td>
+                                <input type="text" onblur="CheckUniqueOutcomeCode(this);" required="true" data-bind="value:Code" /></td>
+                            <td class="caption">产物名称：</td>
+                            <td>
+                                <input type="text" onblur="CheckUniqueOutcomeName(this);" required="true" data-bind="value:Name" /></td>
+                        </tr>
+                        <tr>
+                            <td class="caption">产物类型：</td>
+                            <td>
+                                <input type="text" data-bind="value:FileType" /></td>
+                            <td class="caption">处理地址：</td>
+                            <td>
+                                <input type="text" required="true" data-bind="value:UploadUrl" /></td>
+                        </tr>
+                        <tr>
+                            <td class="caption">产物说明：</td>
+                            <td colspan="3">
+                                <input type="text" style="width: 98%;" data-bind="value:Description" /></td>
+                        </tr>
+                        <tr>
+                            <td class="caption">示例产物：</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="nextflows" data-bind="with:Data">
+                <p>选择该工作流结束后的后续可能进行的工作流</p>
+                <!-- ko foreach: vm.OtherFlows -->
+                <input type="checkbox" data-bind="checkChange: { data: FlowId, checkChanged: CheckNextFlow, isChecked: SelectNextFlow }" />
+                <span data-bind="text:Name"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="form-actions clear">
+            <button class="btn btn-primary" type="button" onclick="vm.Save();">
+                <i class="icon-ok"></i><span>保存</span></button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    var flowId = '@(flowId)';
+    $(function () {
+        vm = new KVO({
+            getQueryUrl: function () {
+                return '@(UrlHelper.ClientUrl("Api/Workflow/GetFlow"))?id=@(flowId)';
+            },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Workflow/SaveFlow"))'; },
+            onQuerySuccess: function (bindedData) {
+                GetJson('@(UrlHelper.ClientUrl("Api/Workflow/Flows"))?client=' + bindedData().ClientId(), null, function (data) {
+                    ko.mapping.fromJS(data, null, vm.Flows);
+                });
+            },
+            onInit: function (self) {
+                self.SelectedState = ko.observable();
+                self.SelectedOperation = ko.observable();
+                self.SelectedIncome = ko.observable();
+                self.SelectedOutcome = ko.observable();
+                self.Flows = ko.observableArray([]);
+                self.OtherFlows = ko.computed(function () {
+                    var fs = $.grep(self.Flows(), function (n, i) { return n.FlowId() != flowId });
+                    return fs;
+                });
+                self.SelectState = function (item) {
+                    self.SelectedState(item);
+                    ChangeStateType();
+                };
+                self.SelectOperation = function (item) {
+                    self.SelectedOperation(item);
+                };
+                self.SelectIncome = function (item) {
+                    self.SelectedIncome(item);
+                };
+                self.SelectOutcome = function (item) {
+                    self.SelectedOutcome(item);
+                };
+                self.AddState = function () {
+                    var it = {
+                        StateId: ko.observable(IdGenerator.NewId()),
+                        FlowId: ko.observable(flowId),
+                        Code: ko.observable(""),
+                        Name: ko.observable(""),
+                        Guide: ko.observable(""),
+                        StateType: ko.observable(1),
+                        Result: ko.observable(null),
+                        IntervalType: ko.observable(null),
+                        ResponseIntervalValue: ko.observable(null),
+                        TreatIntervalValue: ko.observable(null),
+                        Incomes: ko.observableArray([]),
+                        Outcomes: ko.observableArray([]),
+                        Operations: ko.observableArray([])
+                    };
+
+                    self.Data().States.push(it);
+                    self.SelectState(it);
+                };
+                self.RemoveState = function (item) {
+                    self.Data().States.remove(item);
+                };
+                self.AddStateIncome = function () {
+                    var selIncomes = $('#state-incomes').val();
+                    for (var i = 0; i < selIncomes.length; i++) {
+                        var incomes = self.SelectedState().Incomes;
+                        var incomeId = selIncomes[i];
+                        var found = $.grep(incomes(), function (n, i) {
+                            return n.IncomeId() == incomeId;
+                        });
+                        if (found.length <= 0) {
+                            var it = {
+                                StateId: ko.observable(self.SelectedState().StateId()),
+                                IncomeId: ko.observable(incomeId),
+                                IsRequired: ko.observable(false)
+                            };
+                            incomes.push(it);
+                        }
+                    }
+                };
+                self.RemoveStateIncome = function (item) {
+                    self.SelectedState().Incomes.remove(item);
+                };
+                self.AddStateOutcome = function () {
+                    var selOutcomes = $('#state-outcomes').val();
+                    for (var i = 0; i < selOutcomes.length; i++) {
+                        var outcomes = self.SelectedState().Outcomes;
+                        var outcomeId = selOutcomes[i];
+                        var found = $.grep(outcomes(), function (n, i) {
+                            return n.OutcomeId() == outcomeId;
+                        });
+                        if (found.length <= 0) {
+                            var it = {
+                                StateId: ko.observable(self.SelectedState().StateId()),
+                                OutcomeId: ko.observable(outcomeId),
+                                IsRequired: ko.observable(false)
+                            };
+                            outcomes.push(it);
+                        }
+                    }
+                };
+                self.RemoveStateOutcome = function (item) {
+                    self.SelectedState().Outcomes.remove(item);
+                };
+                self.AddOperation = function (item) {
+                    var it = {
+                        OperationId: ko.observable(IdGenerator.NewId()),
+                        FlowId: ko.observable(flowId),
+                        Code: ko.observable(""),
+                        Name: ko.observable(""),
+                        Guide: ko.observable(""),
+                        OperationUrl: ko.observable(""),
+                        OperationArgs: ko.observable(""),
+                        PermissionUri: ko.observable(""),
+                        DefaultNextStateId: ko.observable(""),
+                        CanPlanned: ko.observable(false),
+                        CanCancelled: ko.observable(false)
+                    };
+                    self.Data().Operations.push(it);
+                    self.SelectOperation(it);
+                };
+                self.RemoveOperation = function (item) {
+                    self.Data().Operations.remove(item);
+                };
+                self.AddIncome = function (item) {
+                    var it = {
+                        IncomeId: ko.observable(IdGenerator.NewId()),
+                        FlowId: ko.observable(flowId),
+                        Code: ko.observable(""),
+                        Name: ko.observable(""),
+                        Description: ko.observable(""),
+                        FileType: ko.observable(""),
+                        IsRequired: ko.observable(false),
+                        SampleFileUrl: ko.observable(""),
+                        UploadUrl: ko.observable("")
+                    };
+                    self.Data().Incomes.push(it);
+                    self.SelectIncome(it);
+                };
+                self.RemoveIncome = function (item) {
+                    self.Data().Incomes.remove(item);
+                };
+                self.AddOutcome = function (item) {
+                    var it = {
+                        OutcomeId: ko.observable(IdGenerator.NewId()),
+                        FlowId: ko.observable(flowId),
+                        Code: ko.observable(""),
+                        Name: ko.observable(""),
+                        Description: ko.observable(""),
+                        FileType: ko.observable(""),
+                        IsRequired: ko.observable(false),
+                        SampleFileUrl: ko.observable(""),
+                        UploadUrl: ko.observable("")
+                    };
+                    self.Data().Outcomes.push(it);
+                    self.SelectOutcome(it);
+                };
+                self.RemoveOutcome = function (item) {
+                    self.Data().Outcomes.remove(item);
+                };
+            },
+            validate: function () {
+                var validated = true;
+                $.each(vm.Data().States(), function (i, n) {
+                    if (n.StateType() == "9" && (!n.Result() || n.Result().length <= 0)) {
+                        ShowMessage('提示信息', '状态' + n.Name() + '是“结束”结点，必须设置“结果”。');
+                        validated = false;
+                        return false;
+                    }
+                });
+                return validated;
+            }
+        });
+
+        ko.applyBindings(vm);
+        $('#flowDetail').tabs();
+        vm.GetData();
+    });
+
+    function CheckStateOp(checked, data) {
+        var ops = vm.SelectedState().Operations;
+        if (checked) {
+            var sid = vm.SelectedState().StateId();
+            var nop = { StateId: ko.observable(sid), OperationId: ko.observable(data) };
+            ops.push(nop);
+        } else {
+            var found = $.grep(ops(), function (n, i) {
+                return n.OperationId() == data;
+            });
+            $.each(found, function (i, n) {
+                ops.remove(n);
+            });
+        }
+    }
+
+    function SelectStateOp(data) {
+        var selectedState = vm.SelectedState();
+        if (selectedState) {
+            var ops = selectedState.Operations;
+            var found = $.grep(ops(), function (n, i) {
+                return n.OperationId() == data;
+            });
+
+            return found.length > 0;
+        }
+        return false;
+    }
+
+    function ChangeStateType() {
+        var val = $('#stateType').val();
+        if (val == "9") {
+            $('#stateResult').show();
+        } else {
+            $('#stateResult').hide();
+        }
+    }
+
+    function CheckNextFlow(checked, data, ele) {
+        var nfid = $(ele).attr('id');
+        var nfs = vm.Data().NextBizFlows;
+        if (checked) {
+            var nf = { FlowId: ko.observable(data), NextFlowId: ko.observable(nfid) };
+            nfs.push(nf);
+        } else {
+            var found = $.grep(nfs(), function (n, i) {
+                return n.NextFlowId() == nfid;
+            });
+            $.each(found, function (i, n) {
+                nfs.remove(n);
+            });
+        }
+    }
+
+    function SelectNextFlow(data, ele) {
+        var nfid = $(ele).attr('id');
+        var nfs = vm.Data().NextBizFlows;
+        var found = $.grep(nfs(), function (n, i) {
+            return n.NextFlowId() == nfid;
+        });
+        return found.length > 0;
+    }
+
+    function GetIncomeName(incomeId) {
+        var incomes = vm.Data().Incomes();
+        var found = $.grep(incomes, function (n, i) {
+            return n.IncomeId() == incomeId;
+        });
+        if (found.length > 0) {
+            return found[0].Name();
+        }
+        return incomeId;
+    }
+
+    function GetOutcomeName(outcomeId) {
+        var outcomes = vm.Data().Outcomes();
+        var found = $.grep(outcomes, function (n, i) {
+            return n.OutcomeId() == outcomeId;
+        });
+        if (found.length > 0) {
+            return found[0].Name();
+        }
+        return outcomeId;
+    }
+
+    function CheckUniqueStateCode(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data().States(), function (n, i) { return n.Code() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在编码为“" + txt + "”的状态", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+    function CheckUniqueStateName(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data().States(), function (n, i) { return n.Name() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在名为“" + txt + "”的状态", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+
+    function CheckUniqueOperationCode(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data().Operations(), function (n, i) { return n.Code() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在编码为“" + txt + "”的操作", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+    function CheckUniqueOperationName(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data().Operations(), function (n, i) { return n.Name() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在名为“" + txt + "”的操作", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+
+    function CheckUniqueIncomeCode(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data().Incomes(), function (n, i) { return n.Code() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在编码为“" + txt + "”的材料", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+    function CheckUniqueIncomeName(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data().Incomes(), function (n, i) { return n.Name() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在名为“" + txt + "”的材料", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+
+    function CheckUniqueOutcomeCode(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data().Outcomes(), function (n, i) { return n.Code() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在编码为“" + txt + "”的产物", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+
+    function CheckUniqueOutcomeName(ele) {
+        var txt = $(ele).val();
+        if ($.grep(vm.Data().Outcomes(), function (n, i) { return n.Name() == txt; }).length > 1) {
+            ShowMessage("提示信息", "已经存在名为“" + txt + "”的产物", function () {
+                $(ele).val('');
+                $(ele).focus();
+            });
+        }
+    }
+
+</script>

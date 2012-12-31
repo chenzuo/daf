@@ -1,0 +1,38 @@
+﻿.title-bar
+{
+    clear:both;
+    height:auto;
+    overflow:hidden;
+}
+.title-bar div
+{
+    float:left;
+}
+.menu-bar
+{
+}
+
+.menu-bar ul
+{
+   
+}
+
+.menu-bar ul li
+{
+    float:left;
+    margin: 3px 8px;
+}
+
+.rpt-pages
+{
+    background: #ccc;
+    overflow:auto;
+}
+
+.rpt-page
+{
+    background:#fff;
+    z-index:10;
+    border:solid 2px black;
+    margin: 10px auto;
+}

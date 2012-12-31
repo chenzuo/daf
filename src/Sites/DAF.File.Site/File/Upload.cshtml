@@ -1,0 +1,83 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.File.Site.Models;
+@{
+    Layout = "~/_Dialog.cshtml";
+    string fileType = Request.QueryString["fileType"].DefaultIfNull("files");
+    int maxFiles = Request.QueryString["maxFiles"].ConvertTo<int>(-1);
+    int limitSize = Request.QueryString["limitSize"].ConvertTo<int>(50 * 1024 * 1024); // 50MB
+    string autoStart = Request.QueryString["autoStart"].DefaultIfNull("false");
+    string owner = Request.QueryString["owner"].DefaultIfNull("");
+
+    var ft = FileType.CommonTypes.FirstOrDefault(o => o.TypeCode == fileType);
+    var fileTypes = ft == null ? ".+$" : ft.RegexPattern; 
+}
+@section head {
+    @AssetsHelper.CDNScript("jquery.iframe-transport.js")
+    @AssetsHelper.CDNScript("jquery.fileupload.js")
+    @AssetsHelper.CDNScript("jquery.fileupload-fp.js")
+    @AssetsHelper.CDNScript("jquery.fileupload.vm.js")
+}
+@section end {
+    <script type="text/javascript">
+        var vfm;
+        $(function () {
+            vfm = new FUVM('uploadForm', {
+                baseUrl: "@(AuthHelper.CurrentClient.BaseUrl.TrimEnd('/'))",
+                owner: '@(owner)',
+                acceptFileTypes: /'@(fileTypes)'/i,
+                maxFiles: @(maxFiles),
+                autoStart: @(autoStart)
+            });
+            ko.applyBindings(vfm, document.getElementById('uploadForm'));
+        });
+
+    </script>
+}
+<form id="uploadForm" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))" method="POST" enctype="multipart/form-data" onload="InitForm">
+<div class="alert alert-block">
+    <h5 class="alert-heading">注：</h5>
+    <ol>
+        @if (!string.IsNullOrEmpty(fileTypes) && fileTypes != ".+$")
+        {
+            <li>仅能上传后缀名为(@(fileTypes))的文件</li>
+        }
+        @if (limitSize > 0)
+        {
+            <li>文件大小不超过&nbsp;@(FileType.GetFriendlyFileSize(limitSize))</li>
+        }
+        @if (maxFiles > 0)
+        {
+            <li>只能上传@(maxFiles)个文件</li>
+        }
+    </ol>
+</div>
+<div>
+    <button type="button" class="btn btn-primary" onclick="$('#fileSelector').trigger('click');" data-bind="enable: $root.CanAddFile()">
+        <i class="icon-picture"></i>
+        <span>选择文件</span>
+    </button>
+    <button type="button" class="btn btn-primary" onclick="vfm.StartUpload();">
+        <i class="icon-upload"></i>
+        <span>上传</span>
+    </button>
+</div>
+<div data-bind="foreach:Files">
+    <div class="panel ui-corner-all lgap0">
+        <div>
+            <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text:name"></span></a>
+            (<span data-bind="text:$root.formatFileSize(size())"></span>)
+            <button type="button" class="btn btn-warning btn-circle btn-mini" data-bind="visible: $root.Uploading($data), click: $root.CancelFile" title="取消上传">
+                <i class="icon-ban-circle"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-circle btn-mini" data-bind="visible: $root.Uploaded($data), click: $root.RemoveFile" title="删除文件">
+                <i class="icon-remove"></i>
+            </button>
+        </div>
+        <div class="progress progress-striped active" style="height: 8px; margin-bottom: 0px; margin-top: 6px;">
+            <div class="bar" data-bind="style:{ width: $data.progress() + '%'}, attr: { title: $data.progress() + '%'} " style="height: 8px;"></div>
+        </div>
+    </div>
+</div>
+<input id="fileSelector" type="file" name="files[]" style="display: none;">
+</form>

@@ -1,0 +1,1 @@
+﻿{ ClientId: "DAF.MvcSiteSample", ClientName: "DAF.MvcSiteSample", BaseUrl: "http://www.mvcsite.com", EncryptKey: "DAF.MvcSiteSample", EncryptScrect: "DAF.MvcSiteSample" }
