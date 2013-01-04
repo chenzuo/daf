@@ -65,6 +65,12 @@
     <Reference Include="DAF.Core.ServiceBus">
       <HintPath>..\..\outputs\DAF.Core.ServiceBus.dll</HintPath>
     </Reference>
+    <Reference Include="DAF.Core.ServiceBus.CommonMessageHandlers">
+      <HintPath>..\..\outputs\DAF.Core.ServiceBus.CommonMessageHandlers.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.Template.RazorTemplates">
+      <HintPath>..\..\outputs\DAF.Core.Template.RazorTemplates.dll</HintPath>
+    </Reference>
     <Reference Include="DAF.SSO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\outputs\DAF.SSO.dll</HintPath>
@@ -99,6 +105,9 @@
     </Reference>
     <Reference Include="NServiceBus.ObjectBuilder.Autofac">
       <HintPath>..\..\libs\NServiceBus.ObjectBuilder.Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="RazorTemplates.Core">
+      <HintPath>..\..\libs\RazorTemplates.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
       <Private>True</Private>
@@ -176,6 +185,7 @@
     <Content Include="Localization\DAF_SSO_Site.js" />
     <Content Include="Localization\DAF_Web.js" />
     <Content Include="Services\SSOServerService.svc" />
+    <Content Include="Templates\placeholder.txt" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner-mask.png" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_1.jpg" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_2.jpg" />
@@ -252,6 +262,7 @@
     <Content Include="Controls\_PageStart.cshtml" />
     <Content Include="Account\ResetPassword.cshtml" />
     <Content Include="Account\ResetPasswordSuccess.cshtml" />
+    <Content Include="Templates\DAF.SSO\ResetPassword.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -25,6 +25,38 @@ namespace DAF.Core.Template
 
             FileInfo fi  = fileProvider.GetFile(file);
             if (!fi.Exists)
+            {
+                file = string.Format("/{0}/{1}/{2}/{3}",
+                templateProperty.Language, templateProperty.Year,
+                templateProperty.BizGroup, templateProperty.TemplateName);
+                fi = fileProvider.GetFile(file);
+            }
+            if (!fi.Exists)
+            {
+                file = string.Format("/{0}/{1}/{2}",
+                templateProperty.Language,
+                templateProperty.BizGroup, templateProperty.TemplateName);
+                fi = fileProvider.GetFile(file);
+            }
+            if (!fi.Exists)
+            {
+                file = string.Format("/{0}/{1}/{2}",
+                templateProperty.Year,
+                templateProperty.BizGroup, templateProperty.TemplateName);
+                fi = fileProvider.GetFile(file);
+            }
+            if (!fi.Exists)
+            {
+                file = string.Format("/{0}/{1}",
+                templateProperty.BizGroup, templateProperty.TemplateName);
+                fi = fileProvider.GetFile(file);
+            }
+            if (!fi.Exists)
+            {
+                file = string.Format("/{0}", templateProperty.TemplateName);
+                fi = fileProvider.GetFile(file);
+            }
+            if (!fi.Exists)
                 throw new FileNotFoundException(DAF.Core.Resources.Locale(o => o.FileNotFound), file);
 
             string body = File.ReadAllText(fi.FullName);

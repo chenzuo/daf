@@ -11,9 +11,6 @@ namespace DAF.Core.ServiceBus
     {
         public void OnApplicationStart(IContainer container, object context)
         {
-            //var busCreator = container.ResolveOptional<IBusCreator>();
-            //if (busCreator != null)
-            //    busCreator.ConfigBus(container);
             var bus = Configure.With(DAF.Core.Config.TypesToScan)
                  .AsMasterNode()
                  .AutofacBuilder(container)
@@ -25,6 +22,8 @@ namespace DAF.Core.ServiceBus
                  .UnicastBus()
                      .ImpersonateSender(false)
                  .MsmqSubscriptionStorage()
+                 .DefiningEventsAs(o => o.Namespace.EndsWith("Events"))
+                 .DefiningMessagesAs(o => o.Namespace.EndsWith("Messages"))
                 .CreateBus()
                 .Start(() => Configure.Instance.ForInstallationOn<NServiceBus.Installation.Environments.Windows>().Install());
         }

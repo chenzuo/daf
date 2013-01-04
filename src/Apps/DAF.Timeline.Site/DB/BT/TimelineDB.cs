@@ -6,7 +6,7 @@ using DAF.SSO;
 using DAF.SSO.Client;
 using DAF.SSO.Server;
 using DAF.Core.Data.BLToolkit;
-using DAF.Timeline.Site.Models;
+using DAF.Timeline.Models;
 
 namespace DAF.Timeline.Site.DB.BT
 {
@@ -24,6 +24,7 @@ namespace DAF.Timeline.Site.DB.BT
                 return new Type[]
                 {
                     typeof(TimelineItem),
+                    typeof(TimelineItemHistory),
                 };
             }
         }

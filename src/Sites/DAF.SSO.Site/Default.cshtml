@@ -1,5 +1,8 @@
 ﻿@using DAF.Web;
-@{
+@using DAF.Core;
+@using NServiceBus;
+
+@{    
     AuthHelper.RequireAuthorization();
     Layout = "~/_Window.cshtml";
     Page.Title = "主页";

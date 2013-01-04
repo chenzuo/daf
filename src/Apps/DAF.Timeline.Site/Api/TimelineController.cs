@@ -8,46 +8,34 @@ using DAF.Core;
 using DAF.Web;
 using DAF.Core.Data;
 using DAF.Core.Generators;
-using DAF.Timeline.Site.Models;
+using DAF.Timeline;
+using DAF.Timeline.Models;
 
 namespace DAF.Timeline.Site.Api
 {
     public class TimelineController : ApiController
     {
-        private IIdGenerator generator;
-        private IRepository<TimelineItem> repoTi;
+        private ITimelineProvider provider;
 
-        public TimelineController(IIdGenerator generator, IRepository<TimelineItem> repoTi)
+        public TimelineController(ITimelineProvider provider)
         {
-            this.generator = generator;
-            this.repoTi = repoTi;
+            this.provider = provider;
         }
 
         [HttpGet]
-        public IEnumerable<TimelineItem> Items(string client, string userId, DateTime beginTime, int count = 20, string eventTypes = null)
+        public IEnumerable<TimelineItem> LoadItems(string client, string userId, DateTime beginTime, int count = 20, string eventTypes = null)
         {
-            var items = repoTi.Query(o => o.ClientId == client && o.UserId == userId && o.ActionTime >= beginTime);
-            if (!string.IsNullOrEmpty(eventTypes))
-            {
-                string[] ets = eventTypes.Split(new char[','], StringSplitOptions.RemoveEmptyEntries);
-                items = items.Where(o => ets.Contains(o.EventType));
-            }
-            if (count > 0)
-            {
-                items = items.Take(count);
-            }
-            return items.ToArray();
+            return provider.LoadItems(client, userId, beginTime, count, eventTypes);
         }
 
         [HttpGet]
-        public ServerResponse AddActivity(string client, string userId, string eventType, string eventName, DateTime actionTime,
+        public ServerResponse SaveActivity(string client, string userId, string eventType, string eventName, DateTime actionTime,
             string userType, string userName, string title, string desp, 
             string imgUrl, string detailUrl, string linkUrl, string userUrl, string siteName, string siteUrl,
             string keywords)
         {
             var obj = new TimelineItem()
             {
-                ItemId = generator.NewId(),
                 ClientId = client,
                 UserId = userId,
                 EventType = eventType,
@@ -69,7 +57,7 @@ namespace DAF.Timeline.Site.Api
             ServerResponse result = new ServerResponse();
             try
             {
-                if (repoTi.Insert(obj))
+                if (provider.SaveActivity(obj))
                 {
                     result.Status = ResponseStatus.Success;
                 }
@@ -88,12 +76,12 @@ namespace DAF.Timeline.Site.Api
         }
 
         [HttpPost]
-        public ServerResponse AddActivity([FromBody]TimelineItem obj)
+        public ServerResponse SaveActivity([FromBody]TimelineItem obj)
         {
             ServerResponse result = new ServerResponse();
             try
             {
-                if (repoTi.Insert(obj))
+                if (provider.SaveActivity(obj))
                 {
                     result.Status = ResponseStatus.Success;
                 }

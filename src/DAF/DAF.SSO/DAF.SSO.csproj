@@ -49,10 +49,10 @@
   <ItemGroup>
     <Compile Include="Client\ResetPasswordInfo.cs" />
     <Compile Include="DefaultSSOConfiguration.cs" />
-    <Compile Include="EmailSubscriber.cs" />
     <Compile Include="ISSOConfiguration.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Server\ResetPasswordMessage.cs" />
+    <Compile Include="Server\ResetPasswordToEmailMessageMapper.cs" />
     <Compile Include="TransferSessionInfo.cs" />
     <Compile Include="Client\TransferSignOnInfo.cs" />
     <Compile Include="SessionInfo.cs" />

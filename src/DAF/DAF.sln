@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Core.Serialization.Json
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Core.ServiceBus", "DAF.Core.ServiceBus\DAF.Core.ServiceBus.csproj", "{1571EAD7-F33D-46E1-B8E5-FF7190CF5626}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Core.ServiceBus.CommonMessageHandlers", "DAF.Core.ServiceBus.CommonMessageHandlers\DAF.Core.ServiceBus.CommonMessageHandlers.csproj", "{20D6769A-00FF-4C80-9BA7-943DACF33809}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Core.Template.RazorTemplates", "DAF.Core.Template.RazorTemplates\DAF.Core.Template.RazorTemplates.csproj", "{9E51C565-E85B-44F1-ACFE-81AE04D8E027}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +113,14 @@ Global
 		{1571EAD7-F33D-46E1-B8E5-FF7190CF5626}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1571EAD7-F33D-46E1-B8E5-FF7190CF5626}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1571EAD7-F33D-46E1-B8E5-FF7190CF5626}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20D6769A-00FF-4C80-9BA7-943DACF33809}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20D6769A-00FF-4C80-9BA7-943DACF33809}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20D6769A-00FF-4C80-9BA7-943DACF33809}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20D6769A-00FF-4C80-9BA7-943DACF33809}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E51C565-E85B-44F1-ACFE-81AE04D8E027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E51C565-E85B-44F1-ACFE-81AE04D8E027}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E51C565-E85B-44F1-ACFE-81AE04D8E027}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E51C565-E85B-44F1-ACFE-81AE04D8E027}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,5 +142,7 @@ Global
 		{768EECAC-95B3-48DB-BE98-B7C8A54A3DEF} = {07EB6936-B335-4A07-8FAA-574D91BF0D43}
 		{B39C4064-E1A7-4DDC-8C52-49AAC8B26058} = {07EB6936-B335-4A07-8FAA-574D91BF0D43}
 		{1571EAD7-F33D-46E1-B8E5-FF7190CF5626} = {07EB6936-B335-4A07-8FAA-574D91BF0D43}
+		{20D6769A-00FF-4C80-9BA7-943DACF33809} = {07EB6936-B335-4A07-8FAA-574D91BF0D43}
+		{9E51C565-E85B-44F1-ACFE-81AE04D8E027} = {07EB6936-B335-4A07-8FAA-574D91BF0D43}
 	EndGlobalSection
 EndGlobal

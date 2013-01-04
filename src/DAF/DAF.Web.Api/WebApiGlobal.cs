@@ -21,7 +21,7 @@ namespace DAF.Web.Api
         {
             ContainerBuilder builder = base.BuildContainer();
 
-            Config.AssembiesToScan.ForEach(asm =>
+            Config.Current.AssembiesToScan.ForEach(asm =>
                 {
                     builder.RegisterApiControllers(asm);
                 });

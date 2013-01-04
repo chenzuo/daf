@@ -12,7 +12,7 @@ namespace DAF.Core.Serialization.JsonNet
 
         public JsonNetSerializer(PreserveReferencesHandling preserveReferencesHandling)
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings = new JsonSerializerSettings();
             settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             settings.PreserveReferencesHandling = preserveReferencesHandling;
             settings.ContractResolver = new EFContractResolver();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Autofac;
+using DAF.Core.Messaging;
 
 namespace DAF.Core.ServiceBus
 {
@@ -10,9 +11,7 @@ namespace DAF.Core.ServiceBus
     {
         protected override void Load(ContainerBuilder builder)
         {
-            //builder.RegisterType<NBusPublisher>().As<IPublisher>().SingleInstance();
-            //builder.RegisterType<MsmqBusCreator>().As<IBusCreator>().SingleInstance();
-            //builder.RegisterType<NBusAppEventHandler>().As<IAppEventHandler>();
+            builder.RegisterType<NBusSender>().As<IMessageSender>().SingleInstance();
         }
     }
 }

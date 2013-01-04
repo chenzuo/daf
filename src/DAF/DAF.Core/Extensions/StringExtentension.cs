@@ -401,8 +401,19 @@ namespace DAF.Core
                 else
                     path = "~" + path;
             }
-            if(HttpContext.Current != null)
+            if (HttpContext.Current != null)
                 return HttpContext.Current.Server.MapPath(path);
+            else
+            {
+                path = path.Replace("~/", "").Replace("/", "\\");
+                string fp = string.Format("{0}{1}", HttpRuntime.AppDomainAppPath, path);
+                if (File.Exists(fp))
+                    return fp;
+
+                fp = string.Format("{0}{1}", HttpRuntime.BinDirectory, path);
+                if (File.Exists(fp))
+                    return fp;
+            }
             return HostingEnvironment.MapPath(path);
         }
 

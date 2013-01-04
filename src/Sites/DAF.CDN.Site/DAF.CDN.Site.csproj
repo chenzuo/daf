@@ -1345,6 +1345,8 @@
     <Content Include="Scripts\localization\jquery.ui.datepicker-zh-TW.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\raphael.js" />
+    <Content Include="Scripts\slides.jquery.js" />
+    <Content Include="Scripts\slides.min.jquery.js" />
     <Content Include="Scripts\svgs\chars.js" />
     <Content Include="Scripts\svgs\icons.js" />
     <Content Include="Scripts\svgs\tiger.js" />

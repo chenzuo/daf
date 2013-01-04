@@ -4,7 +4,7 @@ using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DAF.Timeline.Site.Models
+namespace DAF.Timeline.Models
 {
     [Table("tl_TimelineItem")]
     public class TimelineItem
@@ -24,8 +24,7 @@ namespace DAF.Timeline.Site.Models
         [Required]
         [StringLength(50)]
         public string UserId { get; set; }
-        [Required]
-        [StringLength(50)]
+        [StringLength(10)]
         public string UserType { get; set; }
         [StringLength(50)]
         public string UserName { get; set; }

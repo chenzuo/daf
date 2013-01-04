@@ -12,12 +12,12 @@ using DAF.Core.Generators;
 using DAF.SSO;
 using DAF.SSO.Server;
 using DAF.SSO.Client;
+using DAF.Core.Messaging;
 
 namespace DAF.SSO.LocalProvider
 {
     public class SSOServerProvider : ISSOServerProvider
     {
-        private IPublisher publisher;
         private IObjectProvider<SSOServer> serverProvider;
         private IObjectProvider<SSOClient[]> clientsProvider;
         private ISSOConfiguration config;
@@ -34,14 +34,13 @@ namespace DAF.SSO.LocalProvider
 
         private List<Tuple<string, PermissionType, List<Permission>>> appProtectedUris;
 
-        public SSOServerProvider(IPublisher publisher, IObjectProvider<SSOClient[]> clientsProvider, IObjectProvider<SSOServer> serverProvider,
+        public SSOServerProvider(IObjectProvider<SSOClient[]> clientsProvider, IObjectProvider<SSOServer> serverProvider,
             ISSOConfiguration config, IRandomTextGenerator randomGenerator, IIdGenerator idGenerator, IPasswordEncryptionProvider pwdEncryptor,
             ITransactionManager trans,
             IRepository<User> repoUser, IRepository<Role> repoRole,
             IRepository<UserRole> repoUserRole, IRepository<RolePermission> repoRolePermission, IRepository<Permission> repoPermission,
             IRepository<ServerSession> repoServerSession)
         {
-            this.publisher = publisher;
             this.serverProvider = serverProvider;
             this.clientsProvider = clientsProvider;
             this.config = config;
@@ -404,7 +403,7 @@ namespace DAF.SSO.LocalProvider
                     }
                     if(!string.IsNullOrEmpty(msg.Email) || !string.IsNullOrEmpty(msg.Mobile))
                     {
-                        publisher.Publish<ResetPasswordMessage>(msg);
+                        MessageManager.Publish<ResetPasswordMessage>(msg);
                     }
 
                     response.Status = ResponseStatus.Success;

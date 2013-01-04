@@ -41,5 +41,7 @@ namespace DAF.Core
         public ConstString DeleteFailure = "DeleteFailure";
 
         public ConstString FileNotFound = "FileNotFound";
+
+        public ConstString MessageSendingFailed = "MessageSendingFailed";
     }
 }

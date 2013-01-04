@@ -17,21 +17,22 @@ namespace DAF.Web
 
         protected virtual void ConfigureTypesToScan()
         {
-            Config.With();
+            Config.Current.IgnoreAssemblies("system", "autofac", "bltoolkit", "entityframework", "microsoft", "newtonsoft", "nservicebus", "log4net", "emitmapper")
+                .With();
         }
 
         protected virtual ContainerBuilder BuildContainer()
         {
             ContainerBuilder builder = new ContainerBuilder();
             List<IAutoRegisterContainerWithType> autoRegisters = new List<IAutoRegisterContainerWithType>();
-            Config.TypesToScan.Where(t => typeof(IAutoRegisterContainerWithType).IsAssignableFrom(t))
+            Config.Current.TypesToScan.Where(t => typeof(IAutoRegisterContainerWithType).IsAssignableFrom(t))
                 .ForEach(o =>
                 {
                     if (o.GetConstructor(Type.EmptyTypes) != null)
                         autoRegisters.Add(Activator.CreateInstance(o) as IAutoRegisterContainerWithType);
                 });
 
-            Config.TypesToScan.ForEach(t =>
+            Config.Current.TypesToScan.ForEach(t =>
             {
                 autoRegisters.ForEach(o => o.Register(builder, t));
             });

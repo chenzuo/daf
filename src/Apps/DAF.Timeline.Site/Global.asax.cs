@@ -27,6 +27,8 @@ namespace DAF.Timeline.Site
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"
                 );
+
+            DAF.Core.ServiceBus.NBus.Msmq();
         }
     }
 }

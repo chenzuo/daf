@@ -109,9 +109,11 @@
     <Compile Include="Helpers\HttpHelper.cs" />
     <Compile Include="Helpers\LocaleHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
-    <Compile Include="IPublisher.cs" />
+    <Compile Include="Messaging\AutoRegisterMessageMapper.cs" />
+    <Compile Include="Messaging\IMessageMapper.cs" />
+    <Compile Include="Messaging\MessageManager.cs" />
+    <Compile Include="Messaging\IMessageSender.cs" />
     <Compile Include="IServerResponse.cs" />
-    <Compile Include="ISubscriber.cs" />
     <Compile Include="ExecuteOrder.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\DimensionExtensions.cs" />
@@ -146,6 +148,7 @@
     <Compile Include="IOrdered.cs" />
     <Compile Include="IServiceFactory.cs" />
     <Compile Include="IStartup.cs" />
+    <Compile Include="Messaging\IMessageHandler.cs" />
     <Compile Include="JsonFileObjectProvider.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -153,8 +156,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="KeyEqualityComparer.cs" />
-    <Compile Include="Messaging\IEmailSender.cs" />
-    <Compile Include="Messaging\ISMSSender.cs" />
+    <Compile Include="Messages\EmailMessage.cs" />
+    <Compile Include="Messages\SMSMessage.cs" />
     <Compile Include="ResourceBase.cs" />
     <Compile Include="Localization\ILocalizer.cs" />
     <Compile Include="Localization\LocalizationInfo.cs" />
@@ -167,7 +170,6 @@
     <Compile Include="Logging\NullLoggerFactory.cs" />
     <Compile Include="Map\IMapProvider.cs" />
     <Compile Include="Map\ReflectionMapProvider.cs" />
-    <Compile Include="NullPublisher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProviderBaseWithLogger.cs" />
     <Compile Include="ProviderBaseWithLoggerNLocalizer.cs" />

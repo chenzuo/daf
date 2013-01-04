@@ -39,18 +39,15 @@
       <HintPath>..\..\libs\log4net.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="NServiceBus, Version=3.3.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="NServiceBus">
       <HintPath>..\..\libs\NServiceBus.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="NServiceBus.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="NServiceBus.Core">
       <HintPath>..\..\libs\NServiceBus.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="NServiceBus.ObjectBuilder.Autofac, Version=3.3.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="NServiceBus.ObjectBuilder.Autofac">
       <HintPath>..\..\libs\NServiceBus.ObjectBuilder.Autofac.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -63,11 +60,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IBusCreator.cs" />
-    <Compile Include="MsmqBusCreator.cs" />
-    <Compile Include="NBusAppEventHandler.cs" />
+    <Compile Include="NBus.cs" />
     <Compile Include="NBusModule.cs" />
-    <Compile Include="NBusPublisher.cs" />
+    <Compile Include="NBusSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

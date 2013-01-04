@@ -8,6 +8,7 @@ using DAF.Core;
 using DAF.Core.Data;
 using DAF.Core.Generators;
 using DAF.Core.Security;
+using DAF.Core.Messaging;
 using DAF.Workflow.Models;
 using DAF.Workflow.Messages;
 using DAF.Workflow.Info;
@@ -16,7 +17,6 @@ namespace DAF.Workflow
 {
     public class RepositoryStateFlowService : IStateFlowService
     {
-        private IPublisher publisher;
         private IIdGenerator idGenerator;
         private ITransactionManager trans;
         private IRepository<BizFlow> repoBizFlow;
@@ -33,7 +33,7 @@ namespace DAF.Workflow
         private IRepository<TargetOutcome> repoTargetOutcome;
         private IRepository<NextBizFlow> repoNextFlow;
 
-        public RepositoryStateFlowService(IPublisher publisher,
+        public RepositoryStateFlowService(
             IIdGenerator idGenerator,
             ITransactionManager trans,
             IRepository<BizFlow> repoStateFlow,
@@ -50,7 +50,6 @@ namespace DAF.Workflow
             IRepository<TargetOutcome> repoTargetOutcome,
             IRepository<NextBizFlow> repoNextFlow)
         {
-            this.publisher = publisher;
             this.idGenerator = idGenerator;
             this.trans = trans;
             this.repoBizFlow = repoStateFlow;
@@ -211,7 +210,7 @@ namespace DAF.Workflow
         public TargetState LoadState(string targetStateId, bool loadAllInfo = true)
         {
             var tstate = repoTargetState.Query(o => o.TargetStateId == targetStateId).OrderByDescending(o => o.OperateTime).FirstOrDefault();
-            if(tstate == null)
+            if (tstate == null)
                 throw new NullReferenceException(string.Format("Target Flow state {0} not found!", targetStateId));
 
             if (loadAllInfo)
@@ -303,24 +302,21 @@ namespace DAF.Workflow
                 {
                     tflow.LastTargetFlowId = info.LastTargetFlowId;
 
-                    if (publisher != null)
+                    NextTargetFlowCreatedMessage msg = new NextTargetFlowCreatedMessage()
                     {
-                        NextTargetFlowCreatedMessage msg = new NextTargetFlowCreatedMessage()
-                        {
-                            FinishedTargetFlow = LoadFlow(info.LastTargetFlowId, false),
-                            CreatedTargetFlow = tflow,
-                            OperateTime = info.OperationTime,
-                            OperatorId = info.UserId,
-                            OperatorName = info.UserName
-                        };
-                        try
-                        {
-                            publisher.Publish<NextTargetFlowCreatedMessage>(msg);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw ex;
-                        }
+                        FinishedTargetFlow = LoadFlow(info.LastTargetFlowId, false),
+                        CreatedTargetFlow = tflow,
+                        OperateTime = info.OperationTime,
+                        OperatorId = info.UserId,
+                        OperatorName = info.UserName
+                    };
+                    try
+                    {
+                        MessageManager.Publish<NextTargetFlowCreatedMessage>(msg);
+                    }
+                    catch (Exception ex)
+                    {
+                        //throw ex;
                     }
                 }
 
@@ -368,26 +364,23 @@ namespace DAF.Workflow
                 throw ex;
             }
 
-            if (publisher != null)
+            TargetStateChangedMessage tscMsg = new TargetStateChangedMessage()
             {
-                TargetStateChangedMessage msg = new TargetStateChangedMessage()
-                {
-                    OldTargetState = null,
-                    NewTargetState = tstate,
-                    OperationId = null,
-                    DataOperation = DataOperation.Insert,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = info.UserName
-                };
-                try
-                {
-                    publisher.Publish<TargetStateChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+                OldTargetState = null,
+                NewTargetState = tstate,
+                OperationId = null,
+                DataOperation = DataOperation.Insert,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = info.UserName
+            };
+            try
+            {
+                MessageManager.Publish<TargetStateChangedMessage>(tscMsg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
 
             //tstate.State = startState;
@@ -433,26 +426,23 @@ namespace DAF.Workflow
                 throw ex;
             }
 
-            if (publisher != null)
+            TargetStateChangedMessage msg = new TargetStateChangedMessage()
             {
-                TargetStateChangedMessage msg = new TargetStateChangedMessage()
-                {
-                    OldTargetState = null,
-                    NewTargetState = tstate,
-                    OperationId = null,
-                    DataOperation = DataOperation.Insert,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = info.UserName
-                };
-                try
-                {
-                    publisher.Publish<TargetStateChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+                OldTargetState = null,
+                NewTargetState = tstate,
+                OperationId = null,
+                DataOperation = DataOperation.Insert,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = info.UserName
+            };
+            try
+            {
+                MessageManager.Publish<TargetStateChangedMessage>(msg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
             return tstate;
         }
@@ -469,26 +459,23 @@ namespace DAF.Workflow
             tstate.StateStatus = StateStatus.Responsed;
 
             repoTargetState.Update(tstate);
-            if (publisher != null)
+            TargetStateChangedMessage msg = new TargetStateChangedMessage()
             {
-                TargetStateChangedMessage msg = new TargetStateChangedMessage()
-                {
-                    OldTargetState = tstate,
-                    NewTargetState = null,
-                    OperationId = null,
-                    DataOperation = DataOperation.Update,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = info.UserName
-                };
-                try
-                {
-                    publisher.Publish<TargetStateChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+                OldTargetState = tstate,
+                NewTargetState = null,
+                OperationId = null,
+                DataOperation = DataOperation.Update,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = info.UserName
+            };
+            try
+            {
+                MessageManager.Publish<TargetStateChangedMessage>(msg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
 
             return tstate;
@@ -610,27 +597,24 @@ namespace DAF.Workflow
                 trans.Rollback();
                 throw ex;
             }
-            if (publisher != null)
+            TargetStateChangedMessage msg = new TargetStateChangedMessage()
             {
-                TargetStateChangedMessage msg = new TargetStateChangedMessage()
-                {
-                    OldTargetState = tstate,
-                    NewTargetState = nextTargetState,
-                    OperationId = fop.OperationId,
-                    DataOperation = DataOperation.Update,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = info.UserName
-                };
+                OldTargetState = tstate,
+                NewTargetState = nextTargetState,
+                OperationId = fop.OperationId,
+                DataOperation = DataOperation.Update,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = info.UserName
+            };
 
-                try
-                {
-                    publisher.Publish<TargetStateChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+            try
+            {
+                MessageManager.Publish<TargetStateChangedMessage>(msg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
             return nextTargetState;
         }
@@ -703,27 +687,24 @@ namespace DAF.Workflow
                     throw ex;
                 }
             }
-            if (publisher != null)
+            TargetStateChangedMessage msg = new TargetStateChangedMessage()
             {
-                TargetStateChangedMessage msg = new TargetStateChangedMessage()
-                {
-                    OldTargetState = tstate,
-                    NewTargetState = null,
-                    OperationId = null,
-                    DataOperation = DataOperation.Delete,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = state.StateType == StateType.Begin ? tstate.OperatorName : tstate.TreaterName
-                };
+                OldTargetState = tstate,
+                NewTargetState = null,
+                OperationId = null,
+                DataOperation = DataOperation.Delete,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = state.StateType == StateType.Begin ? tstate.OperatorName : tstate.TreaterName
+            };
 
-                try
-                {
-                    publisher.Publish<TargetStateChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+            try
+            {
+                MessageManager.Publish<TargetStateChangedMessage>(msg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
 
             return lastTState;
@@ -760,24 +741,21 @@ namespace DAF.Workflow
 
                 bool result = repoTargetIncome.Insert(tobj);
 
-                if (publisher != null)
+                TargetIncomeChangedMessage msg = new TargetIncomeChangedMessage()
                 {
-                    TargetIncomeChangedMessage msg = new TargetIncomeChangedMessage()
-                    {
-                        TargetIncome = tobj,
-                        DataOperation = DataOperation.Insert,
-                        OperateTime = info.OperationTime,
-                        OperatorId = info.UserId,
-                        OperatorName = info.UserName
-                    };
-                    try
-                    {
-                        publisher.Publish<TargetIncomeChangedMessage>(msg);
-                    }
-                    catch (Exception ex)
-                    {
-                        //throw ex;
-                    }
+                    TargetIncome = tobj,
+                    DataOperation = DataOperation.Insert,
+                    OperateTime = info.OperationTime,
+                    OperatorId = info.UserId,
+                    OperatorName = info.UserName
+                };
+                try
+                {
+                    MessageManager.Publish<TargetIncomeChangedMessage>(msg);
+                }
+                catch (Exception ex)
+                {
+                    //throw ex;
                 }
                 return result;
             }
@@ -794,24 +772,21 @@ namespace DAF.Workflow
                     tobj.UploaderName = info.UserName;
                     bool result = repoTargetIncome.Update(tobj);
 
-                    if (publisher != null)
+                    TargetIncomeChangedMessage msg = new TargetIncomeChangedMessage()
                     {
-                        TargetIncomeChangedMessage msg = new TargetIncomeChangedMessage()
-                        {
-                            TargetIncome = tobj,
-                            DataOperation = DataOperation.Insert,
-                            OperateTime = info.OperationTime,
-                            OperatorId = info.UserId,
-                            OperatorName = info.UserName
-                        };
-                        try
-                        {
-                            publisher.Publish<TargetIncomeChangedMessage>(msg);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw ex;
-                        }
+                        TargetIncome = tobj,
+                        DataOperation = DataOperation.Insert,
+                        OperateTime = info.OperationTime,
+                        OperatorId = info.UserId,
+                        OperatorName = info.UserName
+                    };
+                    try
+                    {
+                        MessageManager.Publish<TargetIncomeChangedMessage>(msg);
+                    }
+                    catch (Exception ex)
+                    {
+                        //throw ex;
                     }
                     return result;
                 }
@@ -842,24 +817,21 @@ namespace DAF.Workflow
 
             bool result = repoTargetIncome.Update(tobj);
 
-            if (publisher != null)
+            TargetIncomeChangedMessage msg = new TargetIncomeChangedMessage()
             {
-                TargetIncomeChangedMessage msg = new TargetIncomeChangedMessage()
-                {
-                    TargetIncome = tobj,
-                    DataOperation = DataOperation.Update,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = info.UserName
-                };
-                try
-                {
-                    publisher.Publish<TargetIncomeChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+                TargetIncome = tobj,
+                DataOperation = DataOperation.Update,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = info.UserName
+            };
+            try
+            {
+                MessageManager.Publish<TargetIncomeChangedMessage>(msg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
             return result;
         }
@@ -872,24 +844,21 @@ namespace DAF.Workflow
 
             bool result = repoTargetIncome.Delete(tobj);
 
-            if (publisher != null)
+            TargetIncomeChangedMessage msg = new TargetIncomeChangedMessage()
             {
-                TargetIncomeChangedMessage msg = new TargetIncomeChangedMessage()
-                {
-                    TargetIncome = tobj,
-                    DataOperation = DataOperation.Delete,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = info.UserName
-                };
-                try
-                {
-                    publisher.Publish<TargetIncomeChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+                TargetIncome = tobj,
+                DataOperation = DataOperation.Delete,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = info.UserName
+            };
+            try
+            {
+                MessageManager.Publish<TargetIncomeChangedMessage>(msg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
             return result;
         }
@@ -925,26 +894,23 @@ namespace DAF.Workflow
 
                 bool result = repoTargetOutcome.Insert(tobj);
 
-                if (publisher != null)
+                TargetStateChangedMessage msg = new TargetStateChangedMessage()
                 {
-                    TargetStateChangedMessage msg = new TargetStateChangedMessage()
-                    {
-                        OldTargetState = targetState,
-                        NewTargetState = null,
-                        OperationId = null,
-                        DataOperation = DataOperation.Update,
-                        OperateTime = info.OperationTime,
-                        OperatorId = info.UserId,
-                        OperatorName = info.UserName
-                    };
-                    try
-                    {
-                        publisher.Publish<TargetStateChangedMessage>(msg);
-                    }
-                    catch (Exception ex)
-                    {
-                        //throw ex;
-                    }
+                    OldTargetState = targetState,
+                    NewTargetState = null,
+                    OperationId = null,
+                    DataOperation = DataOperation.Update,
+                    OperateTime = info.OperationTime,
+                    OperatorId = info.UserId,
+                    OperatorName = info.UserName
+                };
+                try
+                {
+                    MessageManager.Publish<TargetStateChangedMessage>(msg);
+                }
+                catch (Exception ex)
+                {
+                    //throw ex;
                 }
                 return result;
             }
@@ -961,24 +927,21 @@ namespace DAF.Workflow
                     tobj.UploaderName = info.UserName;
                     bool result = repoTargetOutcome.Update(tobj);
 
-                    if (publisher != null)
+                    TargetOutcomeChangedMessage msg = new TargetOutcomeChangedMessage()
                     {
-                        TargetOutcomeChangedMessage msg = new TargetOutcomeChangedMessage()
-                        {
-                            TargetOutcome = tobj,
-                            DataOperation = DataOperation.Insert,
-                            OperateTime = info.OperationTime,
-                            OperatorId = info.UserId,
-                            OperatorName = info.UserName
-                        };
-                        try
-                        {
-                            publisher.Publish<TargetOutcomeChangedMessage>(msg);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw ex;
-                        }
+                        TargetOutcome = tobj,
+                        DataOperation = DataOperation.Insert,
+                        OperateTime = info.OperationTime,
+                        OperatorId = info.UserId,
+                        OperatorName = info.UserName
+                    };
+                    try
+                    {
+                        MessageManager.Publish<TargetOutcomeChangedMessage>(msg);
+                    }
+                    catch (Exception ex)
+                    {
+                        //throw ex;
                     }
                     return result;
                 }
@@ -1009,24 +972,21 @@ namespace DAF.Workflow
 
             bool result = repoTargetOutcome.Update(tobj);
 
-            if (publisher != null)
+            TargetOutcomeChangedMessage msg = new TargetOutcomeChangedMessage()
             {
-                TargetOutcomeChangedMessage msg = new TargetOutcomeChangedMessage()
-                {
-                    TargetOutcome = tobj,
-                    DataOperation = DataOperation.Update,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = info.UserName
-                };
-                try
-                {
-                    publisher.Publish<TargetOutcomeChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+                TargetOutcome = tobj,
+                DataOperation = DataOperation.Update,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = info.UserName
+            };
+            try
+            {
+                MessageManager.Publish<TargetOutcomeChangedMessage>(msg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
             return result;
         }
@@ -1039,24 +999,21 @@ namespace DAF.Workflow
 
             bool result = repoTargetOutcome.Delete(tobj);
 
-            if (publisher != null)
+            TargetOutcomeChangedMessage msg = new TargetOutcomeChangedMessage()
             {
-                TargetOutcomeChangedMessage msg = new TargetOutcomeChangedMessage()
-                {
-                    TargetOutcome = tobj,
-                    DataOperation = DataOperation.Delete,
-                    OperateTime = info.OperationTime,
-                    OperatorId = info.UserId,
-                    OperatorName = info.UserName
-                };
-                try
-                {
-                    publisher.Publish<TargetOutcomeChangedMessage>(msg);
-                }
-                catch (Exception ex)
-                {
-                    //throw ex;
-                }
+                TargetOutcome = tobj,
+                DataOperation = DataOperation.Delete,
+                OperateTime = info.OperationTime,
+                OperatorId = info.UserId,
+                OperatorName = info.UserName
+            };
+            try
+            {
+                MessageManager.Publish<TargetOutcomeChangedMessage>(msg);
+            }
+            catch (Exception ex)
+            {
+                //throw ex;
             }
             return result;
         }

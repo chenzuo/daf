@@ -23,7 +23,6 @@ namespace DAF.Web
 #else
             builder.RegisterType<Core.Data.DefaultTransactionManager>().As<Core.Data.ITransactionManager>();
 #endif
-            builder.RegisterType<NullPublisher>().As<IPublisher>();
             builder.RegisterType<Security.DefaultCaptchaGenerator>().As<Security.ICaptchaGenerator>();
             builder.RegisterType<Serialization.JavascriptConvert>().As<Core.Serialization.IJsonSerializer>();
 

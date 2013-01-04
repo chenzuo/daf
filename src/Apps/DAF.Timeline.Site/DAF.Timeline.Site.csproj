@@ -19,6 +19,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,6 +63,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\outputs\DAF.Core.Serialization.JsonNet.dll</HintPath>
     </Reference>
+    <Reference Include="DAF.Core.ServiceBus">
+      <HintPath>..\..\outputs\DAF.Core.ServiceBus.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.ServiceBus.CommonMessageHandlers">
+      <HintPath>..\..\outputs\DAF.Core.ServiceBus.CommonMessageHandlers.dll</HintPath>
+    </Reference>
     <Reference Include="DAF.SSO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\outputs\DAF.SSO.dll</HintPath>
@@ -84,6 +91,15 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NServiceBus">
+      <HintPath>..\..\libs\NServiceBus.dll</HintPath>
+    </Reference>
+    <Reference Include="NServiceBus.Core">
+      <HintPath>..\..\libs\NServiceBus.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NServiceBus.ObjectBuilder.Autofac">
+      <HintPath>..\..\libs\NServiceBus.ObjectBuilder.Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http">
       <Private>True</Private>
     </Reference>
@@ -94,6 +110,7 @@
     <Reference Include="System.Net.Http.WebRequest">
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Channels" />
     <Reference Include="System.ServiceModel.Discovery" />
@@ -158,6 +175,7 @@
     <Content Include="Localization\DAF_SSO.js" />
     <Content Include="Localization\DAF_Timeline_Site.js" />
     <Content Include="Localization\DAF_Web.js" />
+    <Content Include="Services\TimelineService.svc" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner-mask.png" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_1.jpg" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_2.jpg" />
@@ -173,12 +191,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201301021401032_Init.cs" />
+    <Compile Include="Migrations\201301021401032_Init.Designer.cs">
+      <DependentUpon>201301021401032_Init.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\TimelineItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\TimelineService.svc.cs">
+      <DependentUpon>TimelineService.svc</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Configurations\autofac.config" />
+    <Content Include="Configurations\autofac.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Configurations\connectionStrings.config" />
     <Content Include="Configurations\appSettings.config" />
     <Content Include="Default.cshtml" />
@@ -238,6 +264,25 @@
     <Content Include="_Html.cshtml" />
     <Content Include="_Window.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DAF.Timeline.MessageHandlers\DAF.Timeline.MessageHandlers.csproj">
+      <Project>{f32fe706-3bf3-4b21-8cea-b12f5a111f19}</Project>
+      <Name>DAF.Timeline.MessageHandlers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DAF.Timeline.WcfProviders\DAF.Timeline.WcfProviders.csproj">
+      <Project>{51f62db5-51ad-4ef6-aa0a-29558d9da203}</Project>
+      <Name>DAF.Timeline.WcfProviders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DAF.Timeline\DAF.Timeline.csproj">
+      <Project>{795f1b74-3429-4087-a594-3a6acdd916c7}</Project>
+      <Name>DAF.Timeline</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201301021401032_Init.resx">
+      <DependentUpon>201301021401032_Init.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -256,7 +301,7 @@
           <IISUrl>http://localhost:20556/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>True</UseCustomServer>
-          <CustomServerUrl>http://www.apisite.com</CustomServerUrl>
+          <CustomServerUrl>http://www.timeline.com</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>

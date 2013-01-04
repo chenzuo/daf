@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
-using Autofac;
 using DAF.Core;
 using DAF.Workflow;
 using DAF.Workflow.Models;
@@ -19,7 +18,7 @@ namespace DAF.App.Workflow.Services
 
         public StateFlowService()
         {
-            svr = IOC.Current.Resolve<IStateFlowService>();
+            svr = IOC.Current.GetService<IStateFlowService>();
         }
 
         public IEnumerable<TargetFlow> LoadFlows(string appName, string flowCodeOrTargetType, DateTime? beginTime, DateTime? endTime, bool? started, bool? completed, FlowResult? result, bool loadAllInfo)

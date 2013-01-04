@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DAF.Core
+namespace DAF.Core.Messaging
 {
-    public interface ISubscriber<T> where T : class
+    public interface IMessageSender
     {
-        void OnReceive(T msg);
+        void Send(params object[] msgs);
     }
 }

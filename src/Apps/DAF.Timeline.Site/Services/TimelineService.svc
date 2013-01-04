@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="DAF.Timeline.Site.Services.TimelineService" CodeBehind="TimelineService.svc.cs" %>

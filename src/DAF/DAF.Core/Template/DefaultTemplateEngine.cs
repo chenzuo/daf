@@ -26,11 +26,9 @@ namespace DAF.Core.Template
             TemplateResult result = null;
             foreach (var g in generators)
             {
-                if (g.SupportTemplate(templateProperty))
-                {
-                    result = g.GenerateResult(data, content);
+                result = g.GenerateResult(data, content);
+                if (result != null)
                     break;
-                }
             }
 
             return result;

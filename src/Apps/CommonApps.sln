@@ -19,6 +19,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Report.Site", "DAF.Repo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Timeline.Site", "DAF.Timeline.Site\DAF.Timeline.Site.csproj", "{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Timeline", "DAF.Timeline\DAF.Timeline.csproj", "{795F1B74-3429-4087-A594-3A6ACDD916C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Timeline.WcfProviders", "DAF.Timeline.WcfProviders\DAF.Timeline.WcfProviders.csproj", "{51F62DB5-51AD-4EF6-AA0A-29558D9DA203}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAF.Timeline.MessageHandlers", "DAF.Timeline.MessageHandlers\DAF.Timeline.MessageHandlers.csproj", "{F32FE706-3BF3-4B21-8CEA-B12F5A111F19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +55,18 @@ Global
 		{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4601F23-BDE7-4F02-9DD5-1C0FFE159063}.Release|Any CPU.Build.0 = Release|Any CPU
+		{795F1B74-3429-4087-A594-3A6ACDD916C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{795F1B74-3429-4087-A594-3A6ACDD916C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{795F1B74-3429-4087-A594-3A6ACDD916C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{795F1B74-3429-4087-A594-3A6ACDD916C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51F62DB5-51AD-4EF6-AA0A-29558D9DA203}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51F62DB5-51AD-4EF6-AA0A-29558D9DA203}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51F62DB5-51AD-4EF6-AA0A-29558D9DA203}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51F62DB5-51AD-4EF6-AA0A-29558D9DA203}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F32FE706-3BF3-4B21-8CEA-B12F5A111F19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F32FE706-3BF3-4B21-8CEA-B12F5A111F19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F32FE706-3BF3-4B21-8CEA-B12F5A111F19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F32FE706-3BF3-4B21-8CEA-B12F5A111F19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

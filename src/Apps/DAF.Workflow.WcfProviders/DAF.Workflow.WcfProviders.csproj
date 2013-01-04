@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="DAF.Core">
       <HintPath>..\..\outputs\DAF.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -55,6 +56,7 @@
     <ProjectReference Include="..\DAF.Workflow\DAF.Workflow.csproj">
       <Project>{d4964ea0-4b09-4780-aeb1-505dcdf5f869}</Project>
       <Name>DAF.Workflow</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

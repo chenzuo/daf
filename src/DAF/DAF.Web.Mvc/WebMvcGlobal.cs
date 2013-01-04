@@ -20,7 +20,7 @@ namespace DAF.Web.Mvc
         {
             ContainerBuilder builder = base.BuildContainer();
 
-            Config.AssembiesToScan.ForEach(asm =>
+            Config.Current.AssembiesToScan.ForEach(asm =>
                 {
                     builder.RegisterControllers(asm);
                 });

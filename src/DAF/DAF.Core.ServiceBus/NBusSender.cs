@@ -4,21 +4,22 @@ using System.Linq;
 using System.Text;
 using NServiceBus;
 using DAF.Core;
+using DAF.Core.Messaging;
 
 namespace DAF.Core.ServiceBus
 {
-    public class NBusPublisher : IPublisher
+    public class NBusSender : IMessageSender
     {
         private IBus bus;
 
-        public NBusPublisher(IBusCreator busCreator)
+        public NBusSender(IBus bus)
         {
-            this.bus = busCreator.CreateBus();
+            this.bus = bus;
         }
 
-        public void Publish<T>(T msg) where T : class
+        public void Send(params object[] msgs)
         {
-            bus.Publish(msg);
+            bus.Send(msgs);
         }
     }
 }

@@ -35,9 +35,11 @@
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\..\libs\Autofac.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DAF.Core">
       <HintPath>..\..\outputs\DAF.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />

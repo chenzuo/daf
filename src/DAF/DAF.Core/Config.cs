@@ -11,15 +11,39 @@ namespace DAF.Core
 {
     public class Config
     {
-        private static readonly IEnumerable<string> defaultAssemblyExclusions = new[] { "system.", "autofac", };
-        private static readonly IEnumerable<string> defaultTypeExclusions = new[] { "system.", "autofac" };
-        private static List<string> assemliesExclusions = new List<string>();
-        private static List<string> typesExclusions = new List<string>();
-        private static Predicate<Assembly> assemblyExcludeFunc = null;
-        private static Predicate<Type> typeExcludeFunc = null;
-        private static Config instance;
+        private static Config current;
+        public static Config Current
+        {
+            get
+            {
+                if (current == null)
+                    current = new Config(ScanMode.Exclude);
+                return current;
+            }
+        }
 
-        public static Config With()
+        private List<string> assembliesExclusions = new List<string>();
+        private List<string> typesExclusions = new List<string>();
+        private Predicate<Assembly> assemblyExcludeFunc = null;
+        private Predicate<Type> typeExcludeFunc = null;
+        private List<string> assembliesOnly = new List<string>();
+        private List<string> typesOnly = new List<string>();
+        private Predicate<Assembly> assemblyOnlyFunc = null;
+        private Predicate<Type> typeOnlyFunc = null;
+        private ScanMode scanMode = ScanMode.Exclude;
+
+        public Config(ScanMode scanMode)
+        {
+            this.scanMode = scanMode;
+        }
+
+        public Config Mode(ScanMode scanMode)
+        {
+            this.scanMode = scanMode;
+            return this;
+        }
+
+        public Config With()
         {
             if (HttpContext.Current != null)
                 return With(HttpRuntime.BinDirectory);
@@ -27,48 +51,64 @@ namespace DAF.Core
             return With(AppDomain.CurrentDomain.BaseDirectory);
         }
 
-        public static Config With(string probeDirectory)
+        public Config With(string probeDirectory)
         {
             return With(GetAssembliesInDirectory(probeDirectory));
         }
 
-        public static Config With(params Assembly[] assemblies)
+        public Config With(params Assembly[] assemblies)
         {
             return With(assemblies);
         }
 
-        public static Config With(IEnumerable<Assembly> assemblies)
+        public Config With(IEnumerable<Assembly> assemblies)
         {
-            if (instance == null)
-                instance = new Config();
             AssembiesToScan = assemblies;
             var types = new List<Type>();
-            AssembiesToScan.ForEach(
-                a =>
-                {
-                    try
+            if (scanMode == ScanMode.Exclude)
+            {
+                AssembiesToScan.ForEach(
+                    a =>
                     {
-                        types.AddRange(a.GetTypes()
-                            .Where(t => t.FullName == null
-                                || !defaultTypeExclusions.Any(exclusion => t.FullName.ToLower().StartsWith(exclusion))
-                                || !typesExclusions.Any(exclusion => t.FullName.ToLower().StartsWith(exclusion))
-                                || (typeExcludeFunc != null && typeExcludeFunc(t))
-                                ));
-                    }
-                    catch (ReflectionTypeLoadException)
+                        try
+                        {
+                            types.AddRange(a.GetTypes()
+                                .Where(t => t.FullName != null && 
+                                    (!typesExclusions.Any(exclusion => t.FullName.ToLower().StartsWith(exclusion))
+                                    || !(typeExcludeFunc != null && typeExcludeFunc(t)))
+                                    ));
+                        }
+                        catch (ReflectionTypeLoadException)
+                        {
+                            return;//intentionally swallow exception
+                        }
+                    });
+            }
+            else if (scanMode == ScanMode.Only)
+            {
+                AssembiesToScan.ForEach(
+                    a =>
                     {
-                        return;//intentionally swallow exception
-                    }
-                });
+                        try
+                        {
+                            types.AddRange(a.GetTypes()
+                                .Where(t => t.FullName != null &&
+                                    (typesOnly.Any(only => t.FullName.ToLower().StartsWith(only))
+                                    || (typeOnlyFunc != null && typeOnlyFunc(t)))
+                                    ));
+                        }
+                        catch (ReflectionTypeLoadException)
+                        {
+                            return;//intentionally swallow exception
+                        }
+                    });
+            }
 
             return With(types, false);
         }
 
-        public static Config With(IEnumerable<Type> typesToScan, bool addAssemblies = false)
+        public Config With(IEnumerable<Type> typesToScan, bool addAssemblies = false)
         {
-            if (instance == null)
-                instance = new Config();
-
             TypesToScan = typesToScan;
 
             if (addAssemblies)
@@ -81,41 +121,65 @@ namespace DAF.Core
                 });
                 AssembiesToScan = asms;
             }
-            return instance;
+            return this;
         }
 
-        public static Config IgnoreAssemblies(params string[] assemlyFileNameStartWithName)
+        public Config IgnoreAssemblies(params string[] assemlyFileNameStartWithName)
         {
-            assemliesExclusions.AddRange(assemlyFileNameStartWithName);
-            return instance;
+            assembliesExclusions.AddRange(assemlyFileNameStartWithName);
+            return this;
         }
 
-        public static Config IgnoreTypes(params string[] typeFullNameStartWithName)
+        public Config IgnoreTypes(params string[] typeFullNameStartWithName)
         {
             typesExclusions.AddRange(typeFullNameStartWithName);
-            return instance;
+            return this;
         }
 
-        public static Config IgnoreAssemblies(Predicate<Assembly> assemblyExcludePredicate)
+        public Config IgnoreAssemblies(Predicate<Assembly> assemblyExcludePredicate)
         {
             assemblyExcludeFunc = assemblyExcludePredicate;
-            return instance;
+            return this;
         }
 
-        public static Config IgnoreTypes(Predicate<Type> typeExcludePredicate)
+        public Config IgnoreTypes(Predicate<Type> typeExcludePredicate)
         {
             typeExcludeFunc = typeExcludePredicate;
-            return instance;
+            return this;
         }
 
-        public static IEnumerable<Assembly> GetAssembliesInDirectory(string path, params string[] assembliesToSkip)
+        public Config AssembliesOnly(params string[] assemlyFileNameStartWithName)
         {
-            foreach (var a in GetAssembliesInDirectoryWithExtension(path, "*.exe", assembliesToSkip))
+            assembliesOnly.AddRange(assemlyFileNameStartWithName);
+            return this;
+        }
+
+        public Config TypesOnly(params string[] typeFullNameStartWithName)
+        {
+            typesOnly.AddRange(typeFullNameStartWithName);
+            return this;
+        }
+
+        public Config AssembliesOnly(Predicate<Assembly> assemblyOnlyPredicate)
+        {
+            assemblyOnlyFunc = assemblyOnlyPredicate;
+            return this;
+        }
+
+        public Config TypesOnly(Predicate<Type> typeOnlyPredicate)
+        {
+            typeOnlyFunc = typeOnlyPredicate;
+            return this;
+        }
+
+        public IEnumerable<Assembly> GetAssembliesInDirectory(string path)
+        {
+            foreach (var a in GetAssembliesInDirectoryWithExtension(path, "*.exe"))
                 yield return a;
-            foreach (var a in GetAssembliesInDirectoryWithExtension(path, "*.dll", assembliesToSkip))
+            foreach (var a in GetAssembliesInDirectoryWithExtension(path, "*.dll"))
                 yield return a;
         }
-        private static IEnumerable<Assembly> GetAssembliesInDirectoryWithExtension(string path, string extension, params string[] assembliesToSkip)
+        private IEnumerable<Assembly> GetAssembliesInDirectoryWithExtension(string path, string extension)
         {
             var result = new List<Assembly>();
 
@@ -123,15 +187,27 @@ namespace DAF.Core
             {
                 try
                 {
-                    if (defaultAssemblyExclusions.Any(exclusion => file.Name.ToLower().StartsWith(exclusion)))
-                        continue;
-                    if (assemliesExclusions.Any(exclusion => file.Name.ToLower().StartsWith(exclusion)))
-                        continue;
-                    if (assembliesToSkip.Contains(file.Name, StringComparer.InvariantCultureIgnoreCase))
-                        continue;
+                    if (scanMode == ScanMode.Exclude)
+                    {
+                        if (assembliesExclusions.Any(exclusion => file.Name.ToLower().StartsWith(exclusion)))
+                            continue;
+                    }
+                    else if (scanMode == ScanMode.Only)
+                    {
+                        if (!assembliesOnly.Any(only => file.Name.ToLower().StartsWith(only)))
+                            continue;
+                    }
                     var asm = Assembly.LoadFrom(file.FullName);
-                    if (assemblyExcludeFunc != null && assemblyExcludeFunc(asm))
-                        continue;
+                    if (scanMode == ScanMode.Exclude)
+                    {
+                        if (assemblyExcludeFunc != null && assemblyExcludeFunc(asm))
+                            continue;
+                    }
+                    else if (scanMode == ScanMode.Only)
+                    {
+                        if (assemblyOnlyFunc != null && !assemblyOnlyFunc(asm))
+                            continue;
+                    }
                     result.Add(asm);
                 }
                 catch (BadImageFormatException bif)
@@ -151,7 +227,13 @@ namespace DAF.Core
             return result;
         }
 
-        public static IEnumerable<Type> TypesToScan { get; private set; }
-        public static IEnumerable<Assembly> AssembiesToScan { get; private set; }
+        public IEnumerable<Type> TypesToScan { get; private set; }
+        public IEnumerable<Assembly> AssembiesToScan { get; private set; }
+    }
+
+    public enum ScanMode
+    {
+        Exclude,
+        Only
     }
 }
