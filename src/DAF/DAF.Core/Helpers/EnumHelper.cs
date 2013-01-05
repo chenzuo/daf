@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Reflection;
 using System.Collections.Specialized;
@@ -12,12 +13,14 @@ namespace DAF.Core
     /// </summary>
     public class EnumHelper
     {
+        private static ConcurrentDictionary<Type, List<Tuple<string, object>>> enumDic = new ConcurrentDictionary<Type, List<Tuple<string, object>>>();
+
         /// <summary>
         /// 获取枚举类型对象集合
         /// </summary>
         /// <param name="typeName">枚举类型名称</param>
         /// <returns>对象集合</returns>
-        public static List<Tuple<string, int>> GetObjectsFromEnum(string typeName, ILocalizer localizer = null)
+        public static List<Tuple<string, object>> GetObjectsFromEnum(string typeName, ILocalizer localizer = null)
         {
             Type enumType = Type.GetType(typeName);
             return GetObjectsFromEnum(enumType, localizer);
@@ -28,11 +31,14 @@ namespace DAF.Core
         /// </summary>
         /// <param name="enumType">枚举类型</param>
         /// <returns>对象集合</returns>
-        public static List<Tuple<string, int>> GetObjectsFromEnum(Type enumType, ILocalizer localizer = null)
+        public static List<Tuple<string, object>> GetObjectsFromEnum(Type enumType, ILocalizer localizer = null)
         {
             if (enumType == null || !enumType.IsEnum)
                 return null;
-            List<Tuple<string, int>> objs = new List<Tuple<string, int>>();
+            if (enumDic.ContainsKey(enumType))
+                return enumDic[enumType];
+
+            List<Tuple<string, object>> objs = new List<Tuple<string, object>>();
             Type typeDescription = typeof(DescriptionAttribute);
             Type typeBrowsable = typeof(BrowsableAttribute);
             FieldInfo[] fields = enumType.GetFields();
@@ -41,7 +47,7 @@ namespace DAF.Core
                 if (field.FieldType.IsEnum == true)
                 {
                     string name;
-                    int value;
+                    object value;
                     object[] arr = field.GetCustomAttributes(typeBrowsable, true);
                     if (arr.Length > 0)
                     {
@@ -67,11 +73,17 @@ namespace DAF.Core
                         name = localizer.Get(string.Format("{0}_{1}", enumType.Name, field.Name), enumType.AssemblyName());
                     }
                     string enumName = enumType.InvokeMember(field.Name, BindingFlags.GetField, null, null, null).ToString();
-                    value = Convert.ToInt32(Enum.Parse(enumType, enumName));
+                    value = Enum.Parse(enumType, enumName);
 
-                    objs.Add(new Tuple<string, int>(name, value));
+                    objs.Add(new Tuple<string, object>(name, value));
                 }
             }
+
+            if (objs.Count > 0)
+            {
+                enumDic.AddOrUpdate(enumType, objs, (o, n) => n);
+            }
+
             return objs;
         }
 
@@ -87,30 +99,26 @@ namespace DAF.Core
                 return string.Empty;
             if (enumType.IsEnum)
             {
-                Type typeDescription = typeof(DescriptionAttribute);
-                FieldInfo[] fields = enumType.GetFields();
-                foreach (FieldInfo field in fields)
+                List<Tuple<string, object>> enumList = null;
+                if (enumDic.ContainsKey(enumType))
                 {
-                    if (field.FieldType.IsEnum == true && field.Name == value.ToString())
+                    enumList = GetObjectsFromEnum(enumType, localizer);
+                }
+                else
+                {
+                    enumList = enumDic.GetOrAdd(enumType, new List<Tuple<string, object>>());
+                }
+
+                if (enumList != null)
+                {
+                    foreach (var el in enumList)
                     {
-                        object[] arr = field.GetCustomAttributes(typeDescription, true);
-                        if (localizer == null)
-                        {
-                            if (arr.Length > 0)
-                            {
-                                DescriptionAttribute aa = (DescriptionAttribute)arr[0];
-                                return aa.Description;
-                            }
-                        }
-                        else
-                        {
-                            return localizer.Get(string.Format("{0}_{1}", enumType.Name, field.Name), enumType.AssemblyName());
-                        }
+                        if (el.Item2 == value)
+                            return el.Item1;
                     }
                 }
             }
             return value.ToString();
         }
-
     }
 }

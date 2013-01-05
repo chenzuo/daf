@@ -97,8 +97,6 @@
     <Compile Include="Menu\MenuItem.cs" />
     <Compile Include="Menu\MenuItemType.cs" />
     <Compile Include="Resources.cs" />
-    <Compile Include="Scheduling\SchedulingAppEventHandler.cs" />
-    <Compile Include="Scheduling\SchedulingModule.cs" />
     <Compile Include="Security\DomainAssetProtectionFilter.cs" />
     <Compile Include="Security\IAssetProtectionFilter.cs" />
     <Compile Include="Security\IProtectedAssetChecker.cs" />
@@ -120,11 +118,6 @@
     <Compile Include="WebModule.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DAF.Core.Scheduling.Provider\DAF.Core.Scheduling.Provider.csproj">
-      <Project>{5b0d73bf-91cc-4eba-9b87-360cf6bbb99d}</Project>
-      <Name>DAF.Core.Scheduling.Provider</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\DAF.Core\DAF.Core.csproj">
       <Project>{bfd39d66-b5bc-44ff-989d-043379aa20b3}</Project>
       <Name>DAF.Core</Name>

@@ -7,7 +7,7 @@ using DAF.SSO.Client;
 using DAF.SSO.Server;
 using DAF.Core.Data.BLToolkit;
 
-namespace DAF.SSO.Site.DB.BT
+namespace DAF.SSO.LocalProvider.DB.BT
 {
     public class SSODB : IEntitySet
     {

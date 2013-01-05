@@ -6,7 +6,7 @@ using Autofac;
 using DAF.Core;
 using DAF.Core.Scheduling;
 
-namespace DAF.Web.Scheduling
+namespace DAF.Core.Scheduling.Provider
 {
     public class SchedulingAppEventHandler : IAppEventHandler
     {

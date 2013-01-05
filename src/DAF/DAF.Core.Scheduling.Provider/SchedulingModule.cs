@@ -8,7 +8,7 @@ using DAF.Core;
 using DAF.Core.Scheduling;
 using DAF.Core.Scheduling.Provider;
 
-namespace DAF.Web.Scheduling
+namespace DAF.Core.Scheduling.Provider
 {
     public class SchedulingModule : Autofac.Module
     {

@@ -1,4 +1,4 @@
-namespace DAF.SSO.Server.Site.Migrations
+namespace DAF.SSO.LocalProvider.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;

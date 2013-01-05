@@ -176,8 +176,6 @@
     <Content Include="App_Data\sso_client.js" />
     <Content Include="App_Data\sso_server.js" />
     <Content Include="App_Data\sso_clients.js" />
-    <Content Include="DB\Versions\0.1\install_sql.sql" />
-    <Content Include="DB\Versions\0.1\uninstall_sql.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Localization\DAF_Core.js" />
@@ -199,16 +197,9 @@
     <Compile Include="Api\UserController.cs" />
     <Compile Include="Api\RoleController.cs" />
     <Compile Include="Api\PermissionController.cs" />
-    <Compile Include="DB\BT\SSODB.cs" />
-    <Compile Include="DB\EF\SSODB.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201212101427116_Init.cs" />
-    <Compile Include="Migrations\201212101427116_Init.Designer.cs">
-      <DependentUpon>201212101427116_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\SSOServerService.svc.cs">
       <DependentUpon>SSOServerService.svc</DependentUpon>
@@ -274,11 +265,6 @@
     <Content Include="_Dialog.cshtml" />
     <Content Include="_Html.cshtml" />
     <Content Include="_Window.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201212101427116_Init.resx">
-      <DependentUpon>201212101427116_Init.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

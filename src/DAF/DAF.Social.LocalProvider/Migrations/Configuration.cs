@@ -1,18 +1,19 @@
-﻿namespace DAF.Social.Models.Migrations
+﻿namespace DAF.Social.LocalProvider.Migrations
 {
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using DAF.Social.Models;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<DAF.Social.Models.DB.EF.SocialDB>
+    internal sealed class Configuration : DbMigrationsConfiguration<DAF.Social.LocalProvider.DB.EF.SocialDB>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(DAF.Social.Models.DB.EF.SocialDB context)
+        protected override void Seed(DAF.Social.LocalProvider.DB.EF.SocialDB context)
         {
             context.Contacts.Add(new Contact() { ContactType = "qq", ValidationRegex = @"\d+" });
             context.Contacts.Add(new Contact() { ContactType = "weibo", ValidationRegex = @"\d+" });

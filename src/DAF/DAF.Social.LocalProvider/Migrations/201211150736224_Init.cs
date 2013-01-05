@@ -1,4 +1,4 @@
-namespace DAF.Social.Models.Migrations
+namespace DAF.Social.LocalProvider.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;

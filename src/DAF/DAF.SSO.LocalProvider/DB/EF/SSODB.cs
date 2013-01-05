@@ -7,7 +7,7 @@ using DAF.SSO;
 using DAF.SSO.Client;
 using DAF.SSO.Server;
 
-namespace DAF.SSO.Server.Site.DB
+namespace DAF.SSO.LocalProvider.DB
 {
     public class SSODB : DbContext, DAF.Core.IStartup
     {

@@ -52,6 +52,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleTask.cs" />
     <Compile Include="ScheduleTaskTrigger.cs" />
+    <Compile Include="SchedulingAppEventHandler.cs" />
+    <Compile Include="SchedulingModule.cs" />
     <Compile Include="SheduleTaskExecuteLog.cs" />
   </ItemGroup>
   <ItemGroup>

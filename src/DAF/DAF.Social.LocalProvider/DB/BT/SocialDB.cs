@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using DAF.Core.Data.BLToolkit;
+using DAF.Social.Models;
 
-namespace DAF.Social.Models.DB.BT
+namespace DAF.Social.LocalProvider.DB.BT
 {
     public class SocialDB : IEntitySet
     {

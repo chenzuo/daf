@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
+using DAF.Social.Models;
 
-namespace DAF.Social.Models.DB.EF
+namespace DAF.Social.LocalProvider.DB.EF
 {
     public class SocialDB : DbContext, DAF.Core.IStartup
     {

@@ -1,4 +1,4 @@
-namespace DAF.SSO.Server.Site.Migrations
+namespace DAF.SSO.LocalProvider.Migrations
 {
     using System;
     using System.Data.Entity;
@@ -10,15 +10,16 @@ namespace DAF.SSO.Server.Site.Migrations
     using DAF.Core.Serialization;
     using DAF.Core.Serialization.JsonNet;
     using DAF.Web;
+    using DAF.SSO.Server;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<DAF.SSO.Server.Site.DB.SSODB>
+    internal sealed class Configuration : DbMigrationsConfiguration<DAF.SSO.LocalProvider.DB.SSODB>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(DAF.SSO.Server.Site.DB.SSODB context)
+        protected override void Seed(DAF.SSO.LocalProvider.DB.SSODB context)
         {
             var encrypt = new HashEncryptionProvider();
 

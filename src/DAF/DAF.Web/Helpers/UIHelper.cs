@@ -30,10 +30,10 @@ namespace DAF.Web
             return result;
         }
 
-        public static IEnumerable<SelectListItem> EnumListItems<T>(int? selectedValue = null)
+        public static IEnumerable<SelectListItem> EnumListItems<T>(object selectedValue = null)
         {
             var enums = EnumHelper.GetObjectsFromEnum(typeof(T), LocaleHelper.Localizer);
-            return enums.Select(o => new SelectListItem() { Text = o.Item1, Value = o.Item2.ToString(), Selected = selectedValue.HasValue && o.Item2 == selectedValue.Value });
+            return enums.Select(o => new SelectListItem() { Text = o.Item1, Value = o.Item2.ToString(), Selected = o.Item2 == selectedValue });
         }
 
         #region controls
@@ -70,7 +70,7 @@ namespace DAF.Web
             foreach (var en in enums)
             {
                 sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", en.Item2, LocaleHelper.Localizer.Get(en.Item1, enumType.AssemblyName()),
-                    val != null && en.Item2 == (int)val ? " selected" : "");
+                    val != null && en.Item2 == val ? " selected" : "");
             }
             sb.Append("</select>");
             return new HtmlString(sb.ToString());
@@ -112,7 +112,7 @@ namespace DAF.Web
                 var enums = EnumHelper.GetObjectsFromEnum(enumType, LocaleHelper.Localizer);
                 foreach (var en in enums)
                 {
-                    if (en.Item2 == (int)val)
+                    if (en.Item2 == val)
                     {
                         text = en.Item1;
                         break;

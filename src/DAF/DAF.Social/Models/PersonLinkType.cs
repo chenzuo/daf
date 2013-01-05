@@ -24,6 +24,6 @@ namespace DAF.Social.Models
 
         ClassMate = 20,
         SchollMate = 21,
-
+        Friend = 30
     }
 }
