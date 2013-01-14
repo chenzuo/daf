@@ -74,12 +74,8 @@ namespace DAF.Timeline
             if (string.IsNullOrEmpty(obj.ItemId))
             {
                 obj.ItemId = generator.NewId();
-                return repoTi.Insert(obj);
             }
-            else
-            {
-                return repoTi.Update(obj);
-            }
+            return repoTi.Save(o => o.ItemId == obj.ItemId, obj);
         }
 
         public void MoveItemsToHistory(DateTime endTime)

@@ -405,17 +405,22 @@ namespace DAF.Core
                 return HttpContext.Current.Server.MapPath(path);
             else
             {
-                path = path.Replace("~/", "").Replace("/", "\\");
-                string fp = string.Format("{0}{1}", HttpRuntime.AppDomainAppPath, path);
+                var tpath = path.Replace("~/", "").Replace("/", "\\");
+                string fp = string.Format("{0}{1}", HttpRuntime.AppDomainAppPath, tpath);
+                if (Directory.Exists(fp))
+                    return fp;
+
                 if (File.Exists(fp))
                     return fp;
 
-                fp = string.Format("{0}{1}", HttpRuntime.BinDirectory, path);
+                fp = string.Format("{0}{1}", HttpRuntime.BinDirectory, tpath);
                 if (File.Exists(fp))
                     return fp;
             }
-            return HostingEnvironment.MapPath(path);
-        }
+            if (!string.IsNullOrEmpty(path))
+                return HostingEnvironment.MapPath(path);
 
+            return path;
+        }
     }
 }

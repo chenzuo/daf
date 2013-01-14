@@ -44,37 +44,69 @@ namespace DAF.Social.LocalProvider
 
         public Person GetPerson(string personId, bool loadAllInfo = false)
         {
-            throw new NotImplementedException();
+            var person = repoPerson.Query(o => o.PersonId == personId).FirstOrDefault();
+            if (person != null && loadAllInfo)
+            {
+                person.Contacts = repoPersonContact.Query(o => o.PersonId == personId).ToArray();
+                person.Certificates = repoPersonCert.Query(o => o.PersonId == personId).ToArray();
+                person.WorkResume = repoWorkResume.Query(o => o.PersonId == personId).ToArray();
+                person.StudyResume = repoStudyResume.Query(o => o.PersonId == personId).ToArray();
+                person.WorkResume.ForEach(w =>
+                    {
+                        w.Org = repoOrg.Query(o => o.OrgId == w.OrgId).FirstOrDefault();
+                    });
+                person.StudyResume.ForEach(w =>
+                {
+                    w.School = repoSchool.Query(o => o.SchoolId == w.SchoolId).FirstOrDefault();
+                });
+            }
+
+            return person;
         }
 
         public bool SavePerson(Person person)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(person.PersonId))
+            {
+                person.PersonId = generator.NewId();
+            }
+            return repoPerson.Save(o => o.PersonId == person.PersonId, person);
         }
 
         public bool RemovePerson(string personId)
         {
-            throw new NotImplementedException();
+            return repoPerson.DeleteBatch(o => o.PersonId == personId);
         }
 
         public IEnumerable<PersonLink> GetPersonLinks(string personId, PersonLinkType[] linkTypes = null)
         {
-            throw new NotImplementedException();
+            var query = repoPersonLink.Query(o => o.PersonId == personId);
+            if (linkTypes != null && linkTypes.Length > 0)
+            {
+                query = query.Where(o => linkTypes.Contains(o.LinkType));
+            }
+            return query.ToArray();
         }
 
         public IEnumerable<string> GetPersonLinkIds(string personId, PersonLinkType[] linkTypes = null)
         {
-            throw new NotImplementedException();
+            var query = repoPersonLink.Query(o => o.PersonId == personId);
+            if (linkTypes != null && linkTypes.Length > 0)
+            {
+                query = query.Where(o => linkTypes.Contains(o.LinkType));
+            }
+            var ids = query.Select(o => o.LinkPersonId).ToArray();
+            return ids;
         }
 
         public bool SavePersonLink(PersonLink personLink)
         {
-            throw new NotImplementedException();
+            return repoPersonLink.Save(o => o.PersonId == personLink.PersonId && o.LinkPersonId == personLink.LinkPersonId, personLink);
         }
 
         public bool RemovePersonLink(string personId, string linkPersonId)
         {
-            throw new NotImplementedException();
+            return repoPersonLink.DeleteBatch(o => o.PersonId == personId && o.LinkPersonId == linkPersonId);
         }
     }
 }
