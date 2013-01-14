@@ -271,6 +271,13 @@ img {
     padding: 6px;
 }
 
+    .dropdown-menu li > i {
+    }
+
+    .dropdown-menu li > a {
+        display: inline-block;
+        padding: 3px 10px 3px 6px;
+    }
 
 /* navigations */
 
