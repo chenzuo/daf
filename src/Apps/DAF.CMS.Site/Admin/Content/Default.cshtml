@@ -1,0 +1,179 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS.Models;
+@{
+    var enumContentTypes = EnumHelper.GetObjectsFromEnum(typeof(ContentType), LocaleHelper.Localizer);
+    var pageModel = this.PageModel<Content>();
+}
+@AssetsHelper.CDNCss("jquery.treeview.css")
+@AssetsHelper.CDNScript("jquery.treeview.js")
+
+<div class="row">
+    <div class="span12">
+        @RenderPage("~/Controls/_SelectSites.cshtml")
+    </div>
+    <div class="span3">
+        <div class="well">
+            <h3>网站栏目</h3>
+            <div><a href="javascript:void(0);" onclick="SelectCategory(null, null);">未发布到栏目</a></div>
+            <div id="cates"></div>
+        </div>
+    </div>
+    <div class="span9 lgap1">
+        @if (enumContentTypes != null && enumContentTypes.Count > 0)
+        {
+            var first = enumContentTypes[0];
+            <div class="btn-group pull-left rgap1">
+                <button type="button" class="btn btn-success" onclick="NewContent('@((int)first.Item2)');" title="@first.Item1">
+                    <i class="icon-plus"></i>
+                    <span>@first.Item1</span>
+                </button>
+                <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    @foreach (var li in enumContentTypes)
+                    {
+                        <li>
+                            <a href="javascript:void(0);" onclick="NewContent('@((int)li.Item2)');" title="@li.Item1">
+                                <span>@li.Item1</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        <h3><span data-bind="with:SelectedCate">当前栏目：<span data-bind="text:Name"></span></span><span data-bind="visible:!SelectedCate()">未发布到任何栏目</span></h3>
+        <div class="tgap1">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            <input type="checkbox" onchange="$('table td input:checkbox').prop('checked', this.checked);" />
+                        </th>
+                        <th>@(pageModel.CaptionFor(o => o.Title))</th>
+                        <th>@(pageModel.CaptionFor(o => o.ContentType))</th>
+                        <th>@(pageModel.CaptionFor(o => o.Published))</th>
+                        <th>@(pageModel.CaptionFor(o => o.ReadCount))</th>
+                        <th>@(pageModel.CaptionFor(o => o.CreatorName))</th>
+                        <th>@(pageModel.CaptionFor(o => o.CreateTime))</th>
+                        <th>@(pageModel.CaptionFor(o => o.PublisherName))</th>
+                        <th>@(pageModel.CaptionFor(o => o.PublishTime))</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach:Data">
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox" data-bind="attr: { key: ContentId, id: 'cb_' + ContentId() }" /></td>
+                        <td><a href="javascript:void(0);" data-bind="event:{ click: EditContent }"><span data-bind="text:Title"></span></a></td>
+                        <td data-bind="text:ContentTypeInfo(ContentType()).Caption"></td>
+                        <td>
+                            <i data-bind="css: { 'icon-ok' : Published(), 'icon-ban-circle': !Published() }"></i>
+                        </td>
+                        <td data-bind="text:ReadCount"></td>
+                        <td data-bind="text:CreatorName"></td>
+                        <td data-bind="format:CreateTime, provider:'date', pattern:'yy-mm-dd'"></td>
+                        <td data-bind="text:PublisherName"></td>
+                        <td data-bind="format:PublishTime, provider:'date', pattern:'yy-mm-dd'"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var url = '@(UrlHelper.ClientUrl("Api/Content/Data"))?siteId=' + vm.SelectedSite();
+                if (vm.SelectedCate()) {
+                    url = url + '&cate=' + vm.SelectedCate().Code;
+                }
+                return url;
+            },
+            onInit: function (self) {
+                self.SelectedSite = ko.observable(null);
+                self.SelectedCate = ko.observable("");
+                self.SelectSite = function (siteId) {
+                    vm.SelectedSite(siteId);
+                    var url = '@(UrlHelper.ClientUrl("Admin/Category/Tree"))?siteId=' + siteId;
+                    LoadHtml('#cates', url,
+                        function () {
+                            Progress();
+                            $('#cates').treeview();
+                            vm.SelectCate(null, null);
+                        },
+                        function (msg) { ShowMessage('提示信息', msg); },
+                        false);
+                };
+                self.SelectCate = function (cate) {
+                    vm.SelectedCate(cate);
+                    vm.GetData();
+                };
+            },
+        });
+
+        ko.applyBindings(vm);
+
+        $('button.dropdown-toggle').click(function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+            $(this).closest('div.btn-group').toggleClass('open');
+        });
+
+        $(document).click(function () {
+            $('div.btn-group').removeClass('open');
+        });
+
+        $(document).off('selectsite').on('selectsite', OnSelectSite);
+        SelectFirstSite();
+    });
+
+    function OnSelectSite(event, siteId) {
+        vm.SelectSite(siteId);
+    }
+
+    function NewContent(type) {
+        var url = '@(UrlHelper.ClientUrl("Admin/Content/Edit"))/' + ContentTypeInfo(type).Name + '?siteId=' + vm.SelectedSite();
+        //var title = $(event.target).prop('title') || $(event.currentTarget).prop('title');
+        OpenBlank(url);
+        //OpenDialog(title, url, 1020, 600);
+    }
+
+    function EditContent(obj) {
+        var url = '@(UrlHelper.ClientUrl("Admin/Content/Edit"))/' + ContentTypeInfo(obj.ContentType()).Name + '?id=' + obj.ContentId() + '&siteId=' + vm.SelectedSite();
+        //var title = $(event.target).prop('title') || $(event.currentTarget).prop('title');
+        OpenBlank(url);
+        //OpenDialog(title, url, 1020, 600);
+    }
+
+    function ContentTypeInfo(ct) {
+        switch (ct.toString()) {
+            case '0':
+                return { Name: "Html", Caption: "Html" };
+            case '1':
+                return { Name: "Image", Caption: "图片" };
+            case '2':
+                return { Name: "File", Caption: "文件" };
+            case '3':
+                return { Name: "Link", Caption: "链接" };
+            case '4':
+                return { Name: "Text", Caption: "文本" };
+            case '5':
+                return { Name: "Audio", Caption: "音频" };
+            case '6':
+                return { Name: "Video", Caption: "视频" };
+            case '10':
+                return { Name: "Org", Caption: "机构" };
+            case '11':
+                return { Name: "Person", Caption: "人物" };
+            case '12':
+                return { Name: "Contact", Caption: "联系" };
+        }
+        return ct;
+    }
+
+</script>
+

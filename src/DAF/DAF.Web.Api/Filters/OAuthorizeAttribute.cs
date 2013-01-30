@@ -39,8 +39,17 @@ namespace DAF.Web.Api.Filters
                 AuthHelper.AutoSignOn(
                     () =>
                     {
-                        var sessionCookie = actionContext.Request.Headers.GetCookies().FirstOrDefault().Cookies.FirstOrDefault(o => o.Name == "sid");
-                        return sessionCookie == null ? null : sessionCookie.Value.Replace(" ", "+");
+                        string authInfo = null;
+                        if (actionContext.Request.Headers.Authorization != null)
+                            authInfo = actionContext.Request.Headers.Authorization.Parameter;
+
+                        if (string.IsNullOrEmpty(authInfo))
+                        {
+                            var sessionCookie = actionContext.Request.Headers.GetCookies().FirstOrDefault().Cookies.FirstOrDefault(o => o.Name == "sid");
+                            if (sessionCookie != null)
+                                authInfo = sessionCookie.Value.Replace(" ", "+");
+                        }
+                        return authInfo;
                     },
                     () =>
                     {

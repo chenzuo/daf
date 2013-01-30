@@ -19,24 +19,34 @@ namespace DAF.Web.Menu
         }
 
         [Required]
-        [Key]
+        [Key, Column(Order = 0)]
+        [StringLength(50)]
+        public string MenuGroupName { get; set; }
+        [Required]
+        [Key, Column(Order = 1)]
+        [StringLength(50)]
         public string Name { get; set; }
         [Required]
+        [StringLength(50)]
         public string Caption { get; set; }
         [StringLength(200)]
         public string Icon { get; set; }
+        [StringLength(50)]
         public string Shortcut { get; set; }
+        [StringLength(50)]
         public string Tooltip { get; set; }
         [StringLength(200)]
         public string LinkUrl { get; set; }
+        [StringLength(200)]
         public string ProtectedUri { get; set; }
+        [StringLength(50)]
         public string Target { get; set; }
         public MenuItemType ItemType { get; set; }
-        public string MenuGroupName { get; set; }
+        [StringLength(50)]
         public string ParentName { get; set; }
         public int ShowOrder { get; set; }
 
-        [ForeignKey("ParentName")]
+        [ForeignKey("MenuGroupName, ParentName")]
         public virtual MenuItem Parent { get; set; }
         [ForeignKey("MenuGroupName")]
         public virtual MenuGroup MenuGroup { get; set; }

@@ -10,65 +10,35 @@ using DAF.Core.Generators;
 using DAF.Web;
 using DAF.Web.Menu;
 using DAF.Core.Data;
-using DAF.CMS.Site.Models;
+using DAF.CMS.Models;
 
 namespace DAF.CMS.Site.Controllers
 {
     public class AppSettingsController : ApiController
     {
-        private ITransactionManager trans;
-        private IRepository<AppSetting> repoAs;
+        private IAppSettingProvider provider;
 
-        public AppSettingsController(ITransactionManager trans, IRepository<AppSetting> repoAs)
+        public AppSettingsController(IAppSettingProvider provider)
         {
-            this.trans = trans;
-            this.repoAs = repoAs;
+            this.provider = provider;
         }
 
         [HttpGet]
-        public IEnumerable<string> Categories(string client)
+        public IEnumerable<string> Categories(string siteId)
         {
-            var cates = repoAs.Query(a => a.SiteName == AuthHelper.CurrentClient.ClientId && a.ClientId == client).Select(a => a.Category).Distinct().ToArray();
-            return cates;
+            return provider.GetCategoryNames(siteId);
         }
 
         [HttpGet]
-        public IEnumerable<AppSetting> Data(string client = null, string cate = null)
+        public IEnumerable<AppSetting> Data(string siteId, string cate = null)
         {
-            var query = repoAs.Query(o => o.SiteName == AuthHelper.CurrentClient.ClientId);
-            if (!string.IsNullOrEmpty(client))
-                query = query.Where(o => o.ClientId == client);
-            if (!string.IsNullOrEmpty(cate))
-                query = query.Where(o => o.Category == cate);
-            query = query.OrderBy(o => o.ClientId).ThenBy(o => o.Category).ThenBy(o => o.ShowOrder);
-            var objs = query.ToArray();
-            return objs;
+            return provider.Query(siteId, cate);
         }
 
         [HttpPost]
         public ServerResponse Save(ChangedData<AppSetting> items)
         {
-            ServerResponse response = new ServerResponse();
-            try
-            {
-                if (repoAs.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems))
-                {
-                    response.Status = ResponseStatus.Success;
-                    response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-                }
-                else
-                {
-                    response.Status = ResponseStatus.Failed;
-                    response.Message = LocaleHelper.Localizer.Get("SaveFailure");
-                }
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
-
-            return response;
+            return items.Save(o => provider.Save(o));
         }
     }
 }

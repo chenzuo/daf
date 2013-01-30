@@ -7,6 +7,6 @@ namespace DAF.Core.Caching
 {
     public interface ICacheManager
     {
-        ICacheProvider CreateCacheProvider(CacheScope cacheScope);
+        ICacheProvider CreateCacheProvider(CacheScope scope);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.IO;
 using DAF.Core;
 
 namespace DAF.Web
@@ -27,6 +28,28 @@ namespace DAF.Web
                 skin = AuthHelper.CurrentSession.Skin;
             }
             return skin;
+        }
+
+        public static IEnumerable<string> GetThemes()
+        {
+            string path = "Themes".GetPhysicalPath();
+            var dir = new DirectoryInfo(path);
+            if (dir.Exists)
+            {
+                return dir.GetDirectories().Select(o => o.Name);
+            }
+            return Enumerable.Empty<string>();
+        }
+
+        public static IEnumerable<string> GetSkins(string theme)
+        {
+            string path = string.Format("Themes/{0}/Skins", theme).GetPhysicalPath();
+            var dir = new DirectoryInfo(path);
+            if (dir.Exists)
+            {
+                return dir.GetDirectories().Select(o => o.Name);
+            }
+            return Enumerable.Empty<string>();
         }
 
         public static string ThemePartial(string file)

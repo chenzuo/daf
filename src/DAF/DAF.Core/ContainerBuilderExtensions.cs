@@ -20,14 +20,5 @@ namespace DAF.Core
         {
             return container.BeginLifetimeScope("workunit");
         }
-
-        //public static void RegisterRemoteProxy<T>(this ContainerBuilder builder)
-        //{
-        //    builder.Register<T>(container =>
-        //        {
-        //            IRemoteProxy agent = container.Resolve<IRemoteProxy>();
-        //            return agent.CreateProxy<T>();
-        //        });
-        //}
     }
 }

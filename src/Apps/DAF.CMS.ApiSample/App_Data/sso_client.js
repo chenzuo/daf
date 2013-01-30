@@ -1,0 +1,1 @@
+﻿{ ClientId: "DAF.CMS.ApiSample", ClientName: "DAF.CMS.ApiSample", BaseUrl: "http://www.cmsapi.com", EncryptKey: "DAF.CMS.ApiSample", EncryptScrect: "DAF.CMS.ApiSample" }

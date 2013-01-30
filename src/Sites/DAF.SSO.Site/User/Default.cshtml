@@ -272,9 +272,9 @@
     });
 
     function GetUsers(startWith) {
-        $('#alpha>a').removeClass('selected');
+        $('#alpha>a').removeClass('active');
         if (startWith) {
-            $('#alpha>a#' + startWith).addClass('selected');
+            $('#alpha>a#' + startWith).addClass('active');
         }
         vm.StartWith(startWith);
         vm.GetData();

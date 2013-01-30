@@ -7,10 +7,10 @@ using DAF.Core.Caching;
 
 namespace DAF.Web.Caching
 {
-    public class RequestCacheProvider : DictionaryCacheProviderBase
+    public class RequestCacheProvider : SimpleDictionaryCacheProvider
     {
         public RequestCacheProvider()
-            : base(HttpContext.Current == null ? new Dictionary<string, object>() : HttpContext.Current.Items)
+            : base(HttpContext.Current.Items)
         {
         }
     }

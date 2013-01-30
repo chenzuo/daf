@@ -47,7 +47,6 @@ namespace DAF.Core.FileSystem
             {
                 return new DirectoryInfo[] { parent };
             }
-            string[] patterns = relativePathPattern.Split(new char[] { PathSlash }, StringSplitOptions.RemoveEmptyEntries);
 
             if(recursive)
             {
@@ -55,6 +54,7 @@ namespace DAF.Core.FileSystem
             }
             else
             {
+                string[] patterns = relativePathPattern.Split(new char[] { PathSlash }, StringSplitOptions.RemoveEmptyEntries);
                 List<DirectoryInfo> dirs = new List<DirectoryInfo>();
                 Stack<Tuple<DirectoryInfo, int>> st = new Stack<Tuple<DirectoryInfo, int>>();
                 st.Push(new Tuple<DirectoryInfo, int>(parent, 0));

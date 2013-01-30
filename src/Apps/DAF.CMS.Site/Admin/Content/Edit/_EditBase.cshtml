@@ -1,0 +1,403 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS.Models;
+@{
+    Layout = "~/_Admin.cshtml";
+    var id = Request.QueryString["id"];
+    var siteId = Request.QueryString["siteId"];
+    var pageModel = Page.PageModel as DAF.Web.Api.Metadata.PageModel<Content>;
+}
+@AssetsHelper.CDNCss("jquery.treeview.css")
+@AssetsHelper.CDNScript("jquery.treeview.js")
+@AssetsHelper.CDNScript("bootstrap.js")
+@AssetsHelper.CDNScript("jquery.iframe-transport.js")
+@AssetsHelper.CDNScript("jquery.fileupload.js")
+@AssetsHelper.CDNScript("jquery.fileupload-fp.js")
+@AssetsHelper.CDNScript("jquery.fileupload.vm.js")
+
+@AssetsHelper.Script("ckeditor/ckeditor.js", AssetsHelper.CDNUrl)
+@AssetsHelper.Script("ckfinder/ckfinder.js", AssetsHelper.CDNUrl)
+
+<style type="text/css">
+    .tabs-left > .nav-tabs > li > a, .tabs-right > .nav-tabs > li > a
+    {
+        min-width: 40px;
+    }
+</style>
+<div class="row">
+    <div class="data-container span9">
+        <form method="post">
+            <table class="table table-bordered span9 lgap0" data-bind="with:Data">
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.Title))</td>
+                    <td>
+                        @pageModel.TextBoxFor(o => o.Title, new { @class = "span8", @data_bind = "value:Title" })
+                        <button type="button" class="btn btn-mini pull-right" data-bind="css:{ 'btn-success':Published }, event:{ click: vm.TogglePublish }">
+                            <i class="icon-tasks"></i>
+                            <span data-bind="visible:Published()">已发布</span>
+                            <span data-bind="visible:!Published()">未发布</span>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.ShortUrl))</td>
+                    <td>@pageModel.TextBoxFor(o => o.ShortUrl, new { @class = "span8", @data_bind = "value:ShortUrl", onblur = "MakeShortUrl(this);" })</td>
+                </tr>
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.Description))</td>
+                    <td>@pageModel.TextAreaFor(o => o.Description, new { @class = "span8", @data_bind = "value:Description", rows = "1", cols = "80" })
+                        <button type="button" class="btn" onclick="$('#Description').prop('rows', 4);">
+                            <i class="icon-chevron-down"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.Keywords))</td>
+                    <td>@pageModel.TextBoxFor(o => o.Keywords, new { @class = "span8", @data_bind = "value:Keywords" })</td>
+                </tr>
+                @RenderBody()
+                <tr>
+                    <td>关联内容</td>
+                    <td>
+                        <div class="pull-left">
+                            <ul data-bind="template:{ name:'rc-template', foreach:RelatedContents}"></ul>
+                        </div>
+                        <button type="button" class="btn btn-mini pull-right" onclick="$('#publishDiv').hide();$('#relatedDiv').show();ResizeIFrame();">
+                            <i class="icon-list"></i>
+                            <span>设置相关附件</span>
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div id="publishDiv" class="span3 well tgap1 lgap1" data-bind="with:Data">
+        <h3>发布</h3>
+        <div class="tgap1" data-bind="visible:Published()">
+            <span class="pull-left rgap1">@(pageModel.CaptionFor(o => o.PublishTime))</span>
+            @pageModel.TextBoxFor(o => o.PublishTime, new { @class = "input-small", data_bind = "date:PublishTime" })
+        </div>
+        <div id="cates" class="tgap1" data-bind="visible:Published()">
+            <ul data-bind="template:{ name:'item-template', foreach:$root.Categories}"></ul>
+        </div>
+        <div class="tgap1" data-bind="visible:!Published()">
+            <p>请先发布内容，再设置发布的相关设置。</p>
+        </div>
+    </div>
+    <div id="relatedDiv" class="span3 well tgap1 lgap1 hide">
+        <h3>关联内容</h3>
+        <div class="tgap1 tabbable tabs-left">
+            <ul class="nav nav-tabs">
+                @*<li class="active"><a href="#html" data-toggle="tab">Html</a></li>*@
+                <li class="active"><a href="#image" data-toggle="tab">图片</a></li>
+                <li><a href="#file" data-toggle="tab">下载</a></li>
+                <li><a href="#link" data-toggle="tab">链接</a></li>
+                @*<li><a href="#text" data-toggle="tab">文本</a></li>*@
+                <li><a href="#audio" data-toggle="tab">音频</a></li>
+                <li><a href="#video" data-toggle="tab">视频</a></li>
+                <li><a href="#org" data-toggle="tab">机构</a></li>
+                <li><a href="#person" data-toggle="tab">人物</a></li>
+                <li><a href="#contact" data-toggle="tab">联系</a></li>
+            </ul>
+            <div class="tab-content">
+                @*<div id="html" data-content-type="0" class="tab-pane active">
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(0)}"></ul>
+                </div>*@
+                <div id="image" data-content-type="1" data-relation-type="1" class="tab-pane active">
+                    <div id="imageuploader"></div>
+                    <div class="panel ui-corner-all lgap0" data-bind="foreach:vm.GetRelatedContents(1)">
+                        <div data-bind="with:RelatedContent">
+                            <div class="bg-none text-center">
+                                <img class="img-none rect-small ui-corner-all" data-bind="attr:{src: ContentUrl }" />
+                            </div>
+                            <a data-bind="attr:{href:ContentUrl}" target="_blank"><span data-bind="text:Title"></span></a>
+                            <button type="button" class="btn btn-mini btn-danger" data-bind="click: vm.DeleteRelatedContent" title="删除关联内容">
+                                <i class="icon-remove"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="file" data-content-type="2" data-relation-type="1" class="tab-pane">
+                    <div id="fileuploader"></div>
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(2)}"></ul>
+                </div>
+                <div id="link" data-content-type="3" data-relation-type="1" class="tab-pane">
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(3)}"></ul>
+                </div>
+                @*<div id="text" data-content-type="4" class="tab-pane">
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(4)}"></ul>
+                </div>*@
+                <div id="audio" data-content-type="5" data-relation-type="1" class="tab-pane">
+                    <div id="audiouploader"></div>
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(5)}"></ul>
+                </div>
+                <div id="video" data-content-type="6" data-relation-type="1" class="tab-pane">
+                    <div id="videouploader"></div>
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(6)}"></ul>
+                </div>
+                <div id="org" data-content-type="10" data-relation-type="1" class="tab-pane">
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(10)}"></ul>
+                </div>
+                <div id="person" data-content-type="11" data-relation-type="1" class="tab-pane">
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(11)}"></ul>
+                </div>
+                <div id="contact" data-content-type="12" data-relation-type="1" class="tab-pane">
+                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(12)}"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-actions clear">
+        <button class="btn btn-primary" type="button" onclick="vm.Save();">
+            <i class="icon-ok"></i><span>保存</span></button>
+    </div>
+</div>
+<script type="text/html" id="item-template">
+    <li>
+        <input type="checkbox" data-bind="checkChange:{ checkChanged: $root.CheckCategory, isChecked:$root.IsCategorySelected, data:Key }" />
+        <span data-bind="text:Caption"></span>
+        <button type="button" class="btn btn-mini" data-bind="click: vm.ToggleTop, css: { 'btn-success': vm.IsTop($data) }" title="在该栏目中设置为置顶">
+            <i class="icon-chevron-up"></i>
+        </button>
+        <button type="button" class="btn btn-mini" data-bind="click: vm.ToggleHot, css: { 'btn-danger': vm.IsHot($data) }" title="在该栏目中设置为热点">
+            <i class="icon-fire"></i>
+        </button>
+        <!-- ko if:$data.ChildNodes().length > 0 -->
+        <ul data-bind="template:{ name:'item-template', foreach:ChildNodes }"></ul>
+        <!-- /ko -->
+    </li>
+</script>
+<script type="text/html" id="rc-template">
+    <li data-bind="with:RelatedContent">
+        <a data-bind="attr: { href: ContentUrl }" target="_blank"><span data-bind="text:Title"></span></a>
+        <button type="button" class="btn btn-mini btn-danger" data-bind="click: vm.DeleteRelatedContent" title="删除关联内容">
+            <i class="icon-remove"></i>
+        </button>
+    </li>
+</script>
+<script type="text/javascript">
+    var vm;
+    var id = '@id';
+    $(function () {
+        vm = new KVO({
+            getQueryUrl: function () {
+                var url = '@(UrlHelper.ClientUrl("Api/Content/Detail"))?siteId=@(siteId)&contentType=@(Page.ContentType)';
+                if (id && id.length > 0) {
+                    url = url + '&id=' + id;
+                }
+                return url;
+            },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Content/Save"))'; },
+            onQuerySuccess: function (bindedData) {
+                $(document).trigger('bindedData', bindedData);
+            },
+            onInit: function (self) {
+                self.Categories = ko.observableArray([]);
+                self.GetContentCategory = function (cate) {
+                    if (vm.Data()) {
+                        var cates = vm.Data().Categories();
+                        if (cates.length > 0) {
+                            var founded = $.grep(cates, function (n, i) { return n.CategoryId() == cate });
+                            return founded.length > 0 ? founded[0] : null;
+                        }
+                    }
+                    return null;
+                }
+                self.IsCategorySelected = function (item) {
+                    var cate = vm.GetContentCategory(item);
+                    return cate != null;
+                };
+                self.CheckCategory = function (checked, item) {
+                    var obj = vm.Data();
+                    if (obj) {
+                        var cate = vm.GetContentCategory(item);
+                        if (checked) {
+                            if (cate == null) {
+                                var cc = {
+                                    SiteId: ko.observable(@(siteId)),
+                                    CategoryId: ko.observable(item),
+                                    ContentId: ko.observable(obj.ContentId()),
+                                    TopIndex: ko.observable(-1),
+                                    HotIndex: ko.observable(-1),
+                                    PublishTime: ko.observable(new Date()),
+                                    OnTime: ko.observable(null),
+                                    OffTime: ko.observable(null)
+                                };
+                                obj.Categories.push(cc);
+                            }
+                        }
+                        else {
+                            if (cate != null) {
+                                obj.Categories.remove(cate);
+                            }
+                        }
+                    }
+                };
+                self.TogglePublish = function (item) {
+                    item.Published(!item.Published());
+                    $('#relatedDiv').hide();
+                    $('#publishDiv').show();
+                    $('#cates').treeview();
+                    ResizeIFrame();
+                };
+                self.IsTop = function (item) {
+                    var cate = vm.GetContentCategory(item.Key());
+                    if (cate != null) {
+                        return cate.TopIndex && cate.TopIndex() >= 0;
+                    }
+                    return false;
+                };
+                self.ToggleTop = function (item) {
+                    var cate = vm.GetContentCategory(item.Key());
+                    if (cate != null) {
+                        if (cate.TopIndex() >= 0)
+                            cate.TopIndex(-1);
+                        else
+                            cate.TopIndex(0);
+                    }
+                };
+                self.IsHot = function (item) {
+                    var cate = vm.GetContentCategory(item.Key());
+                    if (cate != null) {
+                        return cate.HotIndex && cate.HotIndex() >= 0;
+                    }
+                    return false;
+                };
+                self.ToggleHot = function (item) {
+                    var cate = vm.GetContentCategory(item.Key());
+                    if (cate != null) {
+                        if (cate.HotIndex() >= 0)
+                            cate.HotIndex(-1);
+                        else
+                            cate.HotIndex(0);
+                    }
+                };
+                self.GetRelatedContents = function (ctype) {
+                    var obj = vm.Data();
+                    if (obj) {
+                        var rcs = $.grep(obj.RelatedContents(), function (n, i) { return n.RelatedContent.ContentType() == ctype });
+                        return rcs;
+                    }
+                    return null;
+                };
+                self.DeleteRelatedContent = function (item) {
+                    var obj = vm.Data();
+                    if (obj && item) {
+                        var r = $.grep(obj.RelatedContents(), function (n, i) { return n.RelatedContent.ContentId() == item.ContentId() });
+                        if (r.length > 0) {
+                            obj.RelatedContents.remove(r[0]);
+                        }
+                    }
+                };
+                self.RelatedContentExists = function (title, content, rtype, ctype) {
+                    var fs = $.grep(vm.Data().RelatedContents(), function (n, i) { return n.RelationType() == rtype && n.RelatedContent.Title() == title; });
+                    return fs.length > 0;
+                };
+                self.AddRelatedContent = function (title, content, rtype, ctype) {
+                    if (!ctype) {
+                        ctype = parseInt($('div.tab-content>div.active').attr('data-content-type'));
+                    }
+                    if (!rtype) {
+                        rtype = $('div.tab-content>div.active').attr('data-relation-type');
+                    }
+                    var obj = vm.Data();
+                    if (vm.RelatedContentExists(title, content, rtype, ctype)) {
+                        return false;
+                    }
+                    var url = '@(UrlHelper.ClientUrl("Api/Content/RelatedContent"))?siteId=' + obj.SiteId() + '&contentType=' + ctype + '&title=' + title + '&content=' + (content || '').toLowerCase();
+                    GetJson(url, function (data) {
+                        if (vm.RelatedContentExists(title, content, rtype, ctype)) {
+                            return false;
+                        }
+                        var r = {
+                            RelationId: ko.observable(IdGenerator.NewId()),
+                            SiteId: ko.observable(obj.SiteId()),
+                            ContentId: ko.observable(obj.ContentId()),
+                            RelatedContentId: ko.observable(),
+                            RelationType: ko.observable(rtype)
+                        };
+                        if (data) {
+                            r.RelatedContentId = ko.observable(data.ContentId);
+                        }
+                        else {
+                            var rc = {
+                                SiteId: ko.observable(obj.SiteId()),
+                                ContentId: ko.observable(IdGenerator.NewId()),
+                                Title: ko.observable(title),
+                                Published: ko.observable(obj.Published()),
+                                ReadCount: ko.observable(0),
+                                ContentType: ko.observable(ctype)
+                            };
+
+                            switch (ctype) {
+                                case 0:
+                                case 4:
+                                    rc.PlainBody = ko.observable(content);
+                                    break;
+                                case 1:
+                                case 2:
+                                case 3:
+                                case 5:
+                                case 6:
+                                    rc.ContentUrl = ko.observable(content);
+                                    break;
+                                case 10:
+                                case 11:
+                                case 12:
+                                    rc.PlainBody = ko.observable(content);
+                                    break;
+                            }
+
+                            r.RelatedContentId = ko.observable(rc.ContentId());
+                            r.RelatedContent = rc;
+                        }
+                        obj.RelatedContents.push(r);
+                    });
+                };
+            }
+        });
+        ko.applyBindings(vm);
+
+        LoadHtml('#imageuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?fileType=images&owner=attach_image")');
+        LoadHtml('#fileuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=attach_file")');
+        LoadHtml('#audiouploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?fileType=audio&owner=attach_audio")');
+        LoadHtml('#videouploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?fileType=video&owner=attach_video")');
+
+        var url = '@(UrlHelper.ClientUrl("Api/Category/Tree"))?siteId=@(siteId)';
+        GetJson(url, function (data) {
+            ko.mapping.fromJS(data, null, vm.Categories);
+            $('#cates').treeview();
+            $('.tabbable').tab();
+        });
+        vm.GetData();
+
+        OnReceiveMessage('fileselected', function (data) {
+            if (data.owner.indexOf('attach_') >= 0) {
+                $.each(data.files, function (i, n) {
+                    vm.AddRelatedContent(n.name, n.url);
+                });
+            }
+        });
+
+        OnReceiveMessage('fileremoved', function (data) {
+            var file = data.file;
+            if (data.owner.indexOf('attach_') >= 0) {
+                vm.AddRelatedContent(file.name, file.url);
+            }
+        });
+
+        OnReceiveMessage('fileuploaded', function (data) {
+            var file = data.file;
+            if (data.owner.indexOf('attach_') >= 0) {
+                vm.AddRelatedContent(file.name, file.url);
+            }
+        });
+    });
+
+    function MakeShortUrl(ele) {
+        var url = $(ele).val().toLowerCase();
+        url = url.replace("/", "-");
+        $(ele).val(url);
+    }
+</script>
+@RenderSection("bodyEnd", false)

@@ -11,11 +11,8 @@ namespace DAF.Core.Data.EF
 {
     public class DbContextFactory : IServiceFactory<DbContext>
     {
-        protected ICacheProvider cache;
-
-        public DbContextFactory(ICacheManager cacheManager)
+        public DbContextFactory()
         {
-            this.cache = cacheManager.CreateCacheProvider(CacheScope.WorkUnit);
         }
 
         public DbContext Create(Type type, IComponentContext container)
@@ -29,12 +26,7 @@ namespace DAF.Core.Data.EF
 
             var dbType = DbContextConfig.EentityTypeToDbContextType[entityType];
 
-            string key = dbType.FullName;
-            if (cache.Contains(key))
-                return cache.GetData(key) as DbContext;
-
             var db = Activator.CreateInstance(dbType) as DbContext;
-            cache.Add(key, db);
             return db;
         }
     }

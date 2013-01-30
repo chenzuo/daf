@@ -8,13 +8,7 @@ namespace DAF.Core.Caching
 {
     public abstract class DictionaryCacheProviderBase : ICacheProvider
     {
-        protected IDictionary items;
         protected string dependencySpliter = "$depends$";
-
-        public DictionaryCacheProviderBase(IDictionary items)
-        {
-            this.items = items;
-        }
 
         protected string BuildCacheKey(string key, IEnumerable<string> dependentEntitySets)
         {
@@ -39,16 +33,8 @@ namespace DAF.Core.Caching
             return key.IndexOf(dependencySpliter) > 0 && sets.Any(o => key.IndexOf(string.Concat("[", o, "]")) > 0);
         }
 
-        protected IEnumerable<string> GetAllKeys()
-        {
-            List<string> keys = new List<string>();
-            var enumerator = items.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                keys.Add(enumerator.Key.ToString());
-            }
-            return keys;
-        }
+        protected abstract IEnumerable<string> GetAllKeys();
+        protected abstract void Add(string key, object value);
 
         public virtual void Initialize()
         {
@@ -57,57 +43,35 @@ namespace DAF.Core.Caching
         public virtual void Add(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan slidingExpiration, DateTime absoluteExpiration)
         {
             key = BuildCacheKey(key, dependentEntitySets);
-            items[key] = value;
+            Add(key, value);
         }
 
-        public virtual bool Contains(string key)
-        {
-            foreach (var k in items.Keys)
-            {
-                var sk = k.ToString();
-                if (KeyEquals(sk, key))
-                    return true;
-            }
-            return false;
-        }
+        public abstract bool Contains(string key);
 
-        public virtual int Count
-        {
-            get { return items.Count; }
-        }
+        public abstract int Count { get; }
 
-        public virtual void Clear()
-        {
-            items.Clear();
-        }
+        public abstract void Clear();
 
-        public virtual object GetData(string key)
-        {
-            foreach (var k in items.Keys)
-            {
-                var sk = k.ToString();
-                if (KeyEquals(sk, key))
-                    return items[sk];
-            }
-            return null;
-        }
+        public abstract object GetData(string key);
 
-        public virtual void Remove(string key)
-        {
-            GetAllKeys().Where(o => KeyEquals(o, key)).ForEach(o => items.Remove(o));
-        }
+        public abstract void Remove(string key);
 
         public virtual void RemoveDependencySet(IEnumerable<string> sets)
         {
             if (sets == null || sets.Count() <= 0)
                 return;
 
-            GetAllKeys().Where(o => KeyDepends(o, sets)).ForEach(o => items.Remove(o));
+            GetAllKeys().Where(o => KeyDepends(o, sets)).ForEach(o => Remove(o));
         }
 
         public virtual object this[string key]
         {
             get { return GetData(key); }
+        }
+
+        public virtual void Dispose()
+        {
+            Clear();
         }
     }
 }

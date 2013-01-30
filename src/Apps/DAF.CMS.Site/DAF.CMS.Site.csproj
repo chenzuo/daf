@@ -151,19 +151,20 @@
     <Content Include="App_Data\sso_client.js" />
     <Content Include="App_Data\sso_server.js" />
     <Content Include="App_Data\sso_clients.js" />
-    <Content Include="DB\Versions\0.1\install_sql.sql" />
-    <Content Include="DB\Versions\0.1\uninstall_sql.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Localization\DAF_CMS_Site.js" />
     <Content Include="Localization\DAF_Core.js" />
     <Content Include="Localization\DAF_SSO.js" />
     <Content Include="Localization\DAF_Web.js" />
+    <Content Include="Localization\DAF_CMS.js" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner-mask.png" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_1.jpg" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_2.jpg" />
     <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_3.jpg" />
     <Content Include="Themes\Default\Skins\Default\Contents\site.css" />
+    <Content Include="Themes\Default\Skins\Default\Contents\content.css" />
+    <Content Include="Themes\Default\Skins\Default\Scripts\content.js" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -173,35 +174,13 @@
     <Compile Include="Api\CategoryController.cs" />
     <Compile Include="Api\ContentController.cs" />
     <Compile Include="Api\MenuController.cs" />
-    <Compile Include="Api\SiteController.cs" />
     <Compile Include="Api\UserGroupController.cs" />
-    <Compile Include="DB\BT\CMSDB.cs" />
-    <Compile Include="DB\EF\CMSDB.cs" />
+    <Compile Include="Api\WebSiteController.cs" />
+    <Compile Include="Api\PageTemplateController.cs" />
+    <Compile Include="Api\PageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Logics\ContentProvider.cs" />
-    <Compile Include="Logics\IContentProvider.cs" />
-    <Compile Include="Migrations\201212140820116_Init.cs" />
-    <Compile Include="Migrations\201212140820116_Init.Designer.cs">
-      <DependentUpon>201212140820116_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\AppSetting.cs" />
-    <Compile Include="Models\BasicDataItem.cs" />
-    <Compile Include="Models\Category.cs" />
-    <Compile Include="Models\CategoryContent.cs" />
-    <Compile Include="Models\CategoryUserGroup.cs" />
-    <Compile Include="Models\ContactProperty.cs" />
-    <Compile Include="Models\Content.cs" />
-    <Compile Include="Models\ContentError.cs" />
-    <Compile Include="Models\ContentRelation.cs" />
-    <Compile Include="Models\ContentType.cs" />
-    <Compile Include="Models\ImageProperty.cs" />
-    <Compile Include="Models\OrgProperty.cs" />
-    <Compile Include="Models\PersonProperty.cs" />
-    <Compile Include="Models\UserGroup.cs" />
-    <Compile Include="Models\UserGroupUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -234,7 +213,7 @@
     <Content Include="Account\SignOn.cshtml" />
     <Content Include="_PageStart.cshtml" />
     <Content Include="packages.config" />
-    <Content Include="Admin.cshtml" />
+    <Content Include="Admin\Default.cshtml" />
     <Content Include="Account\Captcha.cshtml" />
     <Content Include="Account\_AccountInfo.cshtml" />
     <Content Include="Account\SignOff.cshtml" />
@@ -243,34 +222,44 @@
       </SubType>
     </Content>
     <Content Include="Controls\_Paging.cshtml" />
-    <Content Include="Controls\_SelectLanguages.cshtml">
-      <SubType>
-      </SubType>
-    </Content>
     <Content Include="CrossSite\Get.cshtml" />
     <Content Include="CrossSite\Post.cshtml" />
-    <Content Include="AppSettings\Client.cshtml" />
-    <Content Include="AppSettings\Default.cshtml" />
-    <Content Include="BasicData\Default.cshtml" />
-    <Content Include="Category\Cate.cshtml" />
-    <Content Include="Category\Default.cshtml" />
-    <Content Include="Category\Tree.cshtml" />
-    <Content Include="Content\Edit\Audio.cshtml" />
-    <Content Include="Content\Edit\Contact.cshtml" />
-    <Content Include="Content\Edit\File.cshtml" />
-    <Content Include="Content\Edit\Html.cshtml" />
-    <Content Include="Content\Edit\Image.cshtml" />
-    <Content Include="Content\Edit\Link.cshtml" />
-    <Content Include="Content\Edit\Org.cshtml" />
-    <Content Include="Content\Edit\Person.cshtml" />
-    <Content Include="Content\Edit\Text.cshtml" />
-    <Content Include="Content\Edit\Video.cshtml" />
-    <Content Include="Content\Edit\_EditBase.cshtml" />
-    <Content Include="Content\Default.cshtml" />
-    <Content Include="Menu\Default.cshtml" />
-    <Content Include="UserGroup\Default.cshtml" />
+    <Content Include="Admin\AppSettings\Default.cshtml" />
+    <Content Include="Admin\BasicData\Default.cshtml" />
+    <Content Include="Admin\Category\Default.cshtml" />
+    <Content Include="Admin\Category\Tree.cshtml" />
+    <Content Include="Admin\Content\Edit\Audio.cshtml" />
+    <Content Include="Admin\Content\Edit\Contact.cshtml" />
+    <Content Include="Admin\Content\Edit\File.cshtml" />
+    <Content Include="Admin\Content\Edit\Html.cshtml" />
+    <Content Include="Admin\Content\Edit\Image.cshtml" />
+    <Content Include="Admin\Content\Edit\Link.cshtml" />
+    <Content Include="Admin\Content\Edit\Org.cshtml" />
+    <Content Include="Admin\Content\Edit\Person.cshtml" />
+    <Content Include="Admin\Content\Edit\Text.cshtml" />
+    <Content Include="Admin\Content\Edit\Video.cshtml" />
+    <Content Include="Admin\Content\Edit\_EditBase.cshtml" />
+    <Content Include="Admin\Content\Default.cshtml" />
+    <Content Include="Admin\Menu\Default.cshtml" />
+    <Content Include="Admin\UserGroup\Default.cshtml" />
     <Content Include="Account\ResetPassword.cshtml" />
     <Content Include="Account\ResetPasswordSuccess.cshtml" />
+    <Content Include="Admin\_PageStart.cshtml" />
+    <Content Include="Controls\_ContentDetail.cshtml" />
+    <Content Include="Controls\_ContentBrief.cshtml" />
+    <Content Include="Controls\_ContentList.cshtml" />
+    <Content Include="Controls\_ContentSlide.cshtml" />
+    <Content Include="Controls\_ContentGallary.cshtml" />
+    <Content Include="Controls\_ContentButtonList.cshtml" />
+    <Content Include="Controls\_ContentTopList.cshtml" />
+    <Content Include="Controls\_ContentTabList.cshtml" />
+    <Content Include="Admin\WebSite\Default.cshtml" />
+    <Content Include="Controls\_SelectSites.cshtml" />
+    <Content Include="Admin\PageTemplate\Default.cshtml" />
+    <Content Include="Templates\TopMainBottom.cshtml" />
+    <Content Include="Templates\LeftMainRight.cshtml" />
+    <Content Include="Templates\Full.cshtml" />
+    <Content Include="Admin\Page\Default.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -284,12 +273,18 @@
     <Content Include="_Window.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\Display\" />
+    <Folder Include="Admin\Content\Display\" />
+    <Folder Include="Controls\Category\" />
+    <Folder Include="Controls\Content\" />
+    <Folder Include="Controls\Menu\" />
+    <Folder Include="Pages\" />
+    <Folder Include="Themes\Default\Templates\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201212140820116_Init.resx">
-      <DependentUpon>201212140820116_Init.cs</DependentUpon>
-    </EmbeddedResource>
+    <ProjectReference Include="..\DAF.CMS\DAF.CMS.csproj">
+      <Project>{cbe1d9f8-fdc7-42a4-a76b-5ebccbe11fef}</Project>
+      <Name>DAF.CMS</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -1,0 +1,26 @@
+﻿@using DAF.Core;
+@using DAF.Core.Data;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    Layout = null;
+    string siteId = Request.QueryString["siteId"];
+    string code = Request.QueryString["code"];
+
+    var provider = IOC.Current.GetService<ICategoryProvider>();
+    var query = provider.Query(siteId, null, code);
+
+    var tree = HierarchyHelper.Build(query, o => o.Code, o => o.Name,
+        o => provider.Query(siteId, null, null, o.CategoryId));
+
+}
+<script type="text/javascript">
+    function OnSelectCate(code, name) {
+        $(document).trigger('selectcategory', [{ Code: code, Name: name }]);
+    }
+</script>
+
+@Tree.Render(tree, 
+    @:<a href="javascript:void(0);" onclick="OnSelectCate('@item.Key', '@item.Caption');">@item.Caption</a>
+    )

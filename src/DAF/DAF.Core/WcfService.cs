@@ -28,6 +28,10 @@ namespace DAF.Core
                     channelFactory.Close();
                 }
             }
+            catch (Exception ex)
+            {
+                LogHelper.Logger.Error(ex, ex.Message);
+            }
             finally
             {
                 channelFactory.Abort();

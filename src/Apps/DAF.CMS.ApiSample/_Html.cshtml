@@ -1,0 +1,29 @@
+﻿@using DAF.Web;
+<!DOCTYPE html>
+<!--[if IE 7 ]>	<html class="ie ie7 lte7 lte8 lte9"> <![endif]-->
+<!--[if IE 8 ]>	<html class="ie ie8 lte8 lte9"> <![endif]-->
+<!--[if IE 9 ]>	<html class="ie ie9 lte9>"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html> <!--<![endif]-->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>@(Page.Title) -- </title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    @RenderPage(AssetsHelper.ThemePartial("_HtmlHead.cshtml"))
+    @RenderSection("head", false)
+    <!--[if lt IE 9]>
+    @AssetsHelper.CDNScript("html5.js")
+    <![endif]-->
+</head>
+<body>
+    <div class="page container">
+        @RenderBody()
+    </div>
+    @RenderSection("end", false)
+</body>
+</html>

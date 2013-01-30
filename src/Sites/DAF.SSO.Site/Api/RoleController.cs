@@ -23,7 +23,7 @@ namespace DAF.SSO.Site.Api
         private IRepository<RolePermission> repoRolePermission;
         private IRepository<Permission> repoPermission;
 
-        public RoleController(ITransactionManager trans, 
+        public RoleController(ITransactionManager trans,
             IRepository<Role> repoRole, IRepository<RolePermission> repoRolePermission, IRepository<Permission> repoPermission)
             : base()
         {
@@ -56,27 +56,7 @@ namespace DAF.SSO.Site.Api
         [HttpPost]
         public ServerResponse Post([FromBody]ChangedData<Role> items)
         {
-            ServerResponse response = new ServerResponse();
-            try
-            {
-                if (repoRole.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems))
-                {
-                    response.Status = ResponseStatus.Success;
-                    response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-                }
-                else
-                {
-                    response.Status = ResponseStatus.Failed;
-                    response.Message = LocaleHelper.Localizer.Get("SaveFailure");
-                }
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
-
-            return response;
+            return items.Save(o => repoRole.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems));
         }
 
         [HttpGet]
@@ -99,47 +79,38 @@ namespace DAF.SSO.Site.Api
         }
 
         [HttpPost]
-        public ServerResponse Permissions(string client, string role, [FromBody]PermissionInfo[] rpis)
+        public ServerResponse Permissions(string client, string role, [FromBody]PermissionInfo[] objs)
         {
-            ServerResponse response = new ServerResponse();
-            try
-            {
-                trans.BeginTransaction();
-                repoRolePermission.DeleteBatch(o => o.ClientId == client && o.RoleId == role);
-
-                if (rpis != null && rpis.Length > 0)
+            return objs.Save(rpis =>
                 {
-                    var pts = rpis.Select(o => o.PermissionType).Distinct();
-                    foreach (var pt in pts)
-                    {
-                        var prpis = rpis.Where(o => o.PermissionType == pt);
-                        int maxIdx = prpis.Select(o => o.Position).Max();
-                        char[] ps = new char[maxIdx + 1];
-                        foreach (var rpi in prpis)
-                        {
-                            ps[rpi.Position] = rpi.HasPermitted ? '1' : '0';
-                        }
-                        var rp = new RolePermission()
-                        {
-                            RoleId = role,
-                            PermissionType = pt,
-                            ClientId = client,
-                            Permissions = new string(ps)
-                        };
-                        repoRolePermission.Insert(rp);
-                    }
-                }
-                response.Status = ResponseStatus.Success;
-                response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-                trans.Commit();
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
+                    trans.BeginTransaction();
+                    repoRolePermission.DeleteBatch(o => o.ClientId == client && o.RoleId == role);
 
-            return response;
+                    if (rpis != null && rpis.Length > 0)
+                    {
+                        var pts = rpis.Select(o => o.PermissionType).Distinct();
+                        foreach (var pt in pts)
+                        {
+                            var prpis = rpis.Where(o => o.PermissionType == pt);
+                            int maxIdx = prpis.Select(o => o.Position).Max();
+                            char[] ps = new char[maxIdx + 1];
+                            foreach (var rpi in prpis)
+                            {
+                                ps[rpi.Position] = rpi.HasPermitted ? '1' : '0';
+                            }
+                            var rp = new RolePermission()
+                            {
+                                RoleId = role,
+                                PermissionType = pt,
+                                ClientId = client,
+                                Permissions = new string(ps)
+                            };
+                            repoRolePermission.Insert(rp);
+                        }
+                    }
+                    trans.Commit();
+                    return true;
+                });
         }
     }
 }

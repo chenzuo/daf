@@ -1,0 +1,291 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    var pageModel = this.PageModel<BasicDataItem>();
+}
+
+<script type="text/html" id="item-template">
+    <div class="tr" data-bind="attr:{id:Name, idx:ShowOrder}">
+        <div class="td span2">
+            <button type="button" class="btn btn-mini indent" data-bind="click:ToggleChildren" title="展开/收缩子项">
+                <i class="icon-plus"></i>
+            </button>
+            <button type="button" class="btn btn-mini btn-none">
+                <i class="icon-resize-vertical"></i>
+            </button>
+        </div>
+        <div class="td td-input">
+            <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Name"></span></div>
+            <div data-bind="visible:vm.IsNew($data)">
+                @pageModel.TextBoxFor(o => o.Name, new { data_bind = "value:Name, event: { blur: CheckExists }" })
+            </div>
+        </div>
+        <div class="td td-input">
+            @pageModel.TextBoxFor(o => o.Caption, new { data_bind = "value:Caption" })
+        </div>
+        <div class="td td-input">
+            @pageModel.TextBoxFor(o => o.Value, new { data_bind = "value:Value" })
+        </div>
+        <div class="td td-input">
+            @pageModel.TextBoxFor(o => o.GroupName, new { data_bind = "value:GroupName" })
+        </div>
+        <div class="td text-center">
+            <button type="button" class="btn btn-mini" data-bind="click: vm.ToggleValid, css: { 'btn-success': IsValid() }" title="设置有效/无效">
+                <i data-bind="css: { 'icon-ok-circle': IsValid(), 'icon-ban-circle': !IsValid() }"></i>
+            </button>
+        </div>
+        <div class="td">
+            <button type="button" class="btn btn-primary btn-mini" data-bind="click:vm.AddChildItem" title="添加子项"><i class="icon-plus"></i></button>
+            <button type="button" class="btn btn-danger btn-mini" data-bind="click:vm.DeleteItem" title="删除子项"><i class="icon-remove"></i></button>
+        </div>
+        <!-- ko if:$root.HasChildren($data) -->
+        <div class="tbody indent" data-bind="template:{ name:'item-template', foreach:Children, afterRender: AfterRender}"></div>
+        <!-- /ko -->
+    </div>
+</script>
+
+<div class="row">
+    <div class="span12">
+        @RenderPage("~/Controls/_SelectSites.cshtml")
+    </div>
+    <div class="span3">
+        <div class="well">
+            <h3>
+                <span>基础数据分类</span>
+                <button class="btn btn-primary btn-mini" type="button" onclick="NewCate();" title="新增分类"><i class="icon-plus"></i></button>
+            </h3>
+            <ul class="nav nav-pills nav-stacked" data-bind="foreach:Categories">
+                <li data-bind="css: { selected: $data == vm.SelectedCate() }"><a href="javascript:void(0);" data-bind="click: vm.SelectCate"><span data-bind="text:$data"></span></a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="data-container span9 tgap1 lgap1" data-bind="visible:SelectedCate">
+        <h3>当前分类：<span data-bind="text:SelectedCate"></span></h3>
+        <form method="post">
+            <div class="table table-bordered">
+                <div class="thead">
+                    <div class="tr">
+                        <div class="th span2"></div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Name))</div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Caption))</div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Value))</div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.GroupName))</div>
+                        <div class="th">@(pageModel.CaptionFor(o => o.IsValid))</div>
+                        <div class="th"></div>
+                    </div>
+                </div>
+                <div class="tbody" data-bind="template:{ name:'item-template', foreach:Data, afterRender: AfterRender}"></div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+                    <i class="icon-plus"></i><span>新增</span></button>
+                <button class="btn btn-success" type="button" onclick="vm.Save();">
+                    <i class="icon-ok"></i><span>保存</span></button>
+            </div>
+        </form>
+    </div>
+    <div id="newCate" class="hide">
+        <table class="table table-bordered">
+            <tr>
+                <td class="caption">分类：</td>
+                <td>
+                    <input id="cateName" name="cateName" class="input-medium" required="true" type="text" /></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var url = '@(UrlHelper.ClientUrl("Api/BasicData/Data"))?siteId=' + vm.SelectedSite();
+                var cate = vm.SelectedCate();
+                if (cate) {
+                    url = url + '&cate=' + cate;
+                }
+                return url;
+            },
+            onQuerySuccess: function (data) { EnableItemSortable(); },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/BasicData/Save"))'; },
+            createItem: function () {
+                return {
+                    ItemId: ko.observable(IdGenerator.NewId()),
+                    SiteId: ko.observable(vm.SelectedSite()),
+                    Category: ko.observable(vm.SelectedCate()),
+                    Name: ko.observable(""),
+                    Caption: ko.observable(""),
+                    Value: ko.observable(""),
+                    GroupName: ko.observable(""),
+                    IsValid: ko.observable(true),
+                    ShowOrder: ko.observable(vm.Data().length),
+                    ParentId: ko.observable(null),
+                    Children: ko.observableArray([])
+                };
+            },
+            onInit: function (self) {
+                self.Categories = ko.observableArray([]);
+                self.SelectedSite = ko.observable(null);
+                self.SelectedCate = ko.observable("");
+                self.SelectSite = function (siteId) {
+                    vm.SelectedSite(siteId);
+                    var url = '@(UrlHelper.ClientUrl("Api/BasicData/Categories"))?siteId=' + siteId;
+
+                    GetJson(url,
+                    function (data, status, xhr) {
+                        ko.mapping.fromJS(data, null, vm.Categories);
+                        if (vm.Categories().length > 0) {
+                            vm.SelectCate(vm.Categories()[0]);
+                        }
+                        else {
+                            vm.SelectCate("");
+                        }
+                    });
+                };
+                self.SelectCate = function(cate) {
+                    vm.SelectedCate(cate);
+                    vm.GetData();
+                };
+                self.AddChildItem = function (item) {
+                    var ci = vm.options.createItem();
+                    ci.ShowOrder(item.Children().length);
+                    ci.ParentId(item.ItemId());
+                    ci.DataState = DataState.New;
+
+                    item.Children.push(ci);
+                    self.NewItems.push(ci);
+
+                    var tr = $('.tbody>.tr[id=' + item.Name() + ']');
+                    $('>.td:first>button:first', tr).find('i').prop('class', 'icon-minus');
+                    tr.find('.tbody').show();
+                    $('.tbody>.tr:last input:first').focus()
+                };
+                self.DeleteItem = function (item) {
+                    var tr = $(event.target).closest('.tr');
+                    var tbody = tr.closest('.tbody');
+                    var ptr = tbody.closest('.tr');
+                    var items = ptr.length > 0 ? ko.dataFor(ptr.get(0)).Children : self.Data;
+                    if (item.Children() && item.Children().length > 0) {
+                        ShowConfirm("确认删除", "该记录包含子项，删除该记录会同时删除所有子项，确认要删除？",
+                            function () {
+                                if (item.Children().length > 0) {
+                                    for (var i = 0; i < item.Children().length; i++) {
+                                        vm.DeletedItems.unshift(item.Children()[i]);
+                                    }
+                                }
+                                items.remove(item);
+                                self.DeletedItems.push(item);
+                                self._lastDeletedItem = item;
+                            });
+                    }
+                    else {
+                        items.remove(item);
+                        self.DeletedItems.push(item);
+                        self._lastDeletedItem = item;
+                    }
+                };
+                self.ToggleValid = function (item, e) {
+                    var valid = item.IsValid();
+                    item.IsValid(!valid);
+                };
+                self.HasChildren = function (item) {
+                    return item.Children() && item.Children().length > 0;
+                };
+            },
+            validate: function () {
+                return $('.data-container>form').valid();
+            }
+        });
+        ko.applyBindings(vm);
+        $(document).off('selectsite').on('selectsite', OnSelectSite);
+        SelectFirstSite();
+    });
+
+    function OnSelectSite(event, siteId) {
+        vm.SelectSite(siteId);
+    }
+
+    function NewCate() {
+        ShowDialog('#newCate', '新增应用分类',
+            function () {
+                var cateName = $('#cateName').val();
+                if (cateName.length <= 0) {
+                    alert('必须输入分类名称！');
+                    $('#cateName').focus();
+                    return true;
+                }
+                var it = $.grep(vm.Data(), function (n, i) { return n == cateName; });
+
+                if (it.length > 0) {
+                    ShowMessage("提示信息", "已经存在分类" + cateName);
+                    return true;
+                }
+                else {
+                    vm.Categories.push(cateName);
+                }
+                vm.SelectCate(cateName);
+            });
+    }
+
+
+    function EnableItemSortable() {
+        $('.tbody').sortable({
+            axis: 'y',
+            start: function (event, ui) {
+                var tr = ui.item.closest('.tr');
+                var tbody = tr.closest('.tbody');
+                tr.find('>.td:first>button:first>i').prop('class', 'icon-plus');
+                tr.find('.tbody').hide();
+            },
+            beforeStop: function (event, ui) {
+                var tr = ui.item.closest('.tr');
+                var tbody = tr.closest('.tbody');
+                var idx = 0;
+                $('>.tr:not(.ui-sortable-placeholder)', tbody).each(function () {
+                    var item = ko.dataFor(this);
+                    if (item && item.ShowOrder) {
+                        item.ShowOrder(idx);
+                        idx++;
+                    }
+                });
+            }
+        });
+    }
+
+    function CheckExists(item, event) {
+        var tr = $(event.target).closest('.tr');
+        var tbody = tr.closest('.tbody');
+        var ptr = tbody.closest('.tr');
+        var items = ptr.length > 0 ? ko.dataFor(ptr.get(0)).Children : vm.Data;
+        var it = $.grep(items(), function (n, i) { return n.Name() == item.Name(); });
+        if (it.length > 1) {
+            ShowMessage("提示信息", "已经存在名称为“" + item.Name() + "”的项目。", function () { $(event.target).val('').focus(); });
+            return false;
+        }
+    }
+
+    function ToggleChildren(item, event) {
+        var tr = $(event.target).closest('.tr');
+        if (vm.HasChildren(item)) {
+            tr.find('>.td:first>button:first>i').toggleClass('icon-plus').toggleClass('icon-minus');
+            tr.find('>.tbody').toggle();
+        }
+        else {
+            var url = '@(UrlHelper.ClientUrl("Api/BasicData/Data"))?siteid=' + vm.SelectedSite() + '&cate=' + vm.SelectedCate() + '&parentId=' + item.ItemId();
+            GetJson(url, function (data) {
+                ko.mapping.fromJS(data, null, item.Children);
+                for (var i = 0; i < item.Children().length; i++) {
+                    var obj = item.Children()[i];
+                    vm.trackChange(obj);
+                }
+                EnableItemSortable();
+                tr.find('>.td:first>button:first>i').prop('class', 'icon-minus');
+                tr.find('.tbody').show();
+                ResizeIFrame();
+            });
+        }
+    }
+</script>

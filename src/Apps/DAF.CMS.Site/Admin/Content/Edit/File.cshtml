@@ -1,0 +1,58 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS.Models;
+@{
+    Layout = "_EditBase.cshtml";
+    Page.ContentType = (int)ContentType.File;
+    var pageModel = this.PageModel<Content>();
+    Page.PageModel = pageModel;
+}
+<tr>
+    <td>文件</td>
+    <td>
+        <div class="panel ui-corner-all lgap0 pull-left">
+            <a data-bind="attr:{href:ContentUrl}" target="_blank"><span data-bind="text:Title"></span></a>
+            <button type="button" class="btn btn-mini btn-danger" onclick="vm.Data().ContentUrl('');" title="删除">
+                <i class="icon-remove"></i>
+            </button>
+        </div>
+        <div id="fileContenHolder"></div>
+    </td>
+</tr>
+@section bodyEnd {
+    <script type="text/javascript">
+        $(document).on('bindedData', function (event, bindedData) {
+            LoadHtml('#fileContenHolder', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=link_url")');
+        });
+
+        $(function () {
+            OnReceiveMessage('fileselected', function (data) {
+                if (data.owner == "link_url") {
+                    if (data.files && data.files.length > 0) {
+                        var file = data.files[0];
+                        vm.Data().Title(file.name);
+                        vm.Data().ContentUrl(file.url);
+                    };
+                }
+            });
+
+            OnReceiveMessage('fileuploaded', function (data) {
+                if (data.owner == "link_url") {
+                    $.each(data.files, function () {
+                        var file = $(this);
+                        vm.Data().Title(file.name);
+                        vm.Data().ContentUrl(file.url);
+                    });
+                }
+            });
+
+            OnReceiveMessage('fileremoved', function (data) {
+                var file = data.file;
+                if (data.owner == "link_url") {
+                    vm.Data().Title("");
+                    vm.Data().ContentUrl(null);
+                }
+            });
+        });
+    </script>
+}

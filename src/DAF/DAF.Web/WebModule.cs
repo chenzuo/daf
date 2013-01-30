@@ -14,7 +14,7 @@ namespace DAF.Web
         {
             //builder.RegisterType<Configurations.AreaConfigurationProvider>().As<Core.Configurations.IConfigurationProvider>();
             builder.RegisterType<Core.FileSystem.LocalFileProvider>().As<Core.FileSystem.IFileSystemProvider>().Named<Core.FileSystem.IFileSystemProvider>("LocalFileSystem");
-            builder.RegisterType<Caching.WebCacheManager>().As<Core.Caching.ICacheManager>().SingleInstance();
+            builder.RegisterType<Caching.WebCacheManager>().As<Core.Caching.ICacheManager>();
             builder.RegisterType<Core.Security.HashEncryptionProvider>().As<Core.Security.IPasswordEncryptionProvider>().SingleInstance();
             builder.RegisterType<Core.Generators.RNGRandomTextGenerator>().As<Core.Generators.IRandomTextGenerator>().SingleInstance();
             builder.RegisterType<Core.Generators.TicksIdGenerator>().As<Core.Generators.IIdGenerator>().SingleInstance();

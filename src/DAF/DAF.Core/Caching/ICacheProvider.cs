@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DAF.Core.Caching
 {
-    public interface ICacheProvider
+    public interface ICacheProvider : IDisposable
     {
         /// <summary>
         /// initialize the cache manager with the specified name

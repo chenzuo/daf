@@ -66,8 +66,8 @@
     <Reference Include="DAF.Core.Serialization.JsonNet">
       <HintPath>..\..\outputs\DAF.Core.Serialization.JsonNet.dll</HintPath>
     </Reference>
-    <Reference Include="DAF.Social.Models">
-      <HintPath>..\..\outputs\DAF.Social.Models.dll</HintPath>
+    <Reference Include="DAF.Social">
+      <HintPath>..\..\outputs\DAF.Social.dll</HintPath>
     </Reference>
     <Reference Include="DAF.SSO">
       <HintPath>..\..\outputs\DAF.SSO.dll</HintPath>

@@ -10,7 +10,7 @@
         </li>
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                <span id="@(id)-selected"></span>
+                <span id="@(id)-active"></span>
                 <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
@@ -30,7 +30,7 @@
 </div>
 <script type="text/javascript">
     function SelectClient(client) {
-        $('#@(id)-selected').text(client ? client.ClientName : "@LocaleHelper.Localizer.Get("NoClientSelected", "DAF.SSO")");
+        $('#@(id)-active').text(client ? client.ClientName : "@LocaleHelper.Localizer.Get("NoClientSelected", "DAF.SSO")");
         $(document).trigger('selectclient', [client]);
         return false;
     }

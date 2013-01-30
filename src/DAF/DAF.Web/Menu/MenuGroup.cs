@@ -16,8 +16,10 @@ namespace DAF.Web.Menu
 
         [Required]
         [Key]
+        [StringLength(50)]
         public string Name { get; set; }
         [Required]
+        [StringLength(50)]
         public string Caption { get; set; }
 
         public virtual ICollection<MenuItem> MenuItems { get; set; }

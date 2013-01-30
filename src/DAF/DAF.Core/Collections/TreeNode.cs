@@ -2,11 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace DAF.Core.Collections
 {
+    [Serializable]
+    [DataContract]
     public class TreeNode : IDisposable
     {
+        public TreeNode()
+        {
+            Depth = 0;
+            Selected = false;
+            Parent = null;
+            ChildNodes = new List<TreeNode>();
+        }
+
         public TreeNode(string key, string caption, object data)
         {
             Key = key;
@@ -45,16 +56,25 @@ namespace DAF.Core.Collections
             Clear();
         }
 
+        [IgnoreDataMember]
         public TreeNode Parent { get; internal set; }
+        [DataMember]
         public List<TreeNode> ChildNodes { get; internal set; }
+        [DataMember]
         public int Depth { get; internal set; }
 
+        [DataMember]
         public string Key { get; set; }
+        [DataMember]
         public string Value { get; set; }
+        [DataMember]
         public string Caption { get; set; }
+        [DataMember]
         public object Data { get; set; }
+        [DataMember]
         public bool Selected { get; set; }
 
+        [DataMember]
         public bool IsRoot
         {
             get
@@ -63,6 +83,7 @@ namespace DAF.Core.Collections
             }
         }
 
+        [DataMember]
         public bool IsLeaf
         {
             get
@@ -71,6 +92,7 @@ namespace DAF.Core.Collections
             }
         }
 
+        [DataMember]
         public bool IsFirstChild
         {
             get
@@ -81,6 +103,7 @@ namespace DAF.Core.Collections
             }
         }
 
+        [DataMember]
         public bool IsLastChild
         {
             get
@@ -94,11 +117,17 @@ namespace DAF.Core.Collections
 
     public class TreeNode<T> : TreeNode
     {
+        public TreeNode()
+            : base()
+        {
+        }
+
         public TreeNode(string key, string caption, T data)
             : base(key, caption, data)
         {
         }
 
+        [IgnoreDataMember]
         public T Object { get { return (T)Data; } set { Data = value; } }
     }
 }

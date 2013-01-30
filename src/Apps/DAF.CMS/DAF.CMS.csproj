@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CBE1D9F8-FDC7-42A4-A76B-5EBCCBE11FEF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DAF.CMS</RootNamespace>
+    <AssemblyName>DAF.CMS</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\outputs\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\outputs\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\libs\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core">
+      <HintPath>..\..\outputs\DAF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.Data.BLToolkit">
+      <HintPath>..\..\outputs\DAF.Core.Data.BLToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.SSO">
+      <HintPath>..\..\outputs\DAF.SSO.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Web">
+      <HintPath>..\..\outputs\DAF.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\libs\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppSettingProvider.cs" />
+    <Compile Include="BasicDataProvider.cs" />
+    <Compile Include="CategoryProvider.cs" />
+    <Compile Include="CmsHelper.cs" />
+    <Compile Include="CmsHttpModule.cs" />
+    <Compile Include="CmsModule.cs" />
+    <Compile Include="ContentProvider.cs" />
+    <Compile Include="ControlTypeProvider.cs" />
+    <Compile Include="DB\BT\CMSDB.cs" />
+    <Compile Include="DB\EF\CMSDB.cs" />
+    <Compile Include="IAppSettingProvider.cs" />
+    <Compile Include="IBasicDataProvider.cs" />
+    <Compile Include="ICategoryProvider.cs" />
+    <Compile Include="IContentProvider.cs" />
+    <Compile Include="IControlTypeProvider.cs" />
+    <Compile Include="IMenuProvider.cs" />
+    <Compile Include="IPageProvider.cs" />
+    <Compile Include="IPageTemplateProvider.cs" />
+    <Compile Include="ITemplateTypeProvider.cs" />
+    <Compile Include="IWebControlProvider.cs" />
+    <Compile Include="IWebSiteProvider.cs" />
+    <Compile Include="MenuProvider.cs" />
+    <Compile Include="Migrations\201301291437463_Init.cs" />
+    <Compile Include="Migrations\201301291437463_Init.Designer.cs">
+      <DependentUpon>201301291437463_Init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\AppSetting.cs" />
+    <Compile Include="Models\BasicDataItem.cs" />
+    <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\CategoryContent.cs" />
+    <Compile Include="Models\CategoryType.cs" />
+    <Compile Include="Models\CategoryUserGroup.cs" />
+    <Compile Include="Models\ContentProperties\ContactProperty.cs" />
+    <Compile Include="Models\Content.cs" />
+    <Compile Include="Models\ContentRelation.cs" />
+    <Compile Include="Models\ContentRelationType.cs" />
+    <Compile Include="Models\ContentType.cs" />
+    <Compile Include="Models\ContentProperties\ImageProperty.cs" />
+    <Compile Include="Models\SiteMenuGroup.cs" />
+    <Compile Include="Models\SiteMenuItem.cs" />
+    <Compile Include="Models\SubSite.cs" />
+    <Compile Include="Models\ContentProperties\OrgProperty.cs" />
+    <Compile Include="Models\ContentProperties\PersonProperty.cs" />
+    <Compile Include="Models\UserGroup.cs" />
+    <Compile Include="Models\UserGroupUser.cs" />
+    <Compile Include="Models\WebPage.cs" />
+    <Compile Include="Models\WebSite.cs" />
+    <Compile Include="Models\PageTemplate.cs" />
+    <Compile Include="Models\PageTemplateControl.cs" />
+    <Compile Include="Models\WebPageControl.cs" />
+    <Compile Include="PageProvider.cs" />
+    <Compile Include="PageSection.cs" />
+    <Compile Include="TemplateType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ControlType.cs" />
+    <Compile Include="TemplateTypeProvider.cs" />
+    <Compile Include="WebSiteProvider.cs" />
+    <Compile Include="PageTemplateProvider.cs" />
+    <Compile Include="WebControlProvider.cs" />
+    <Compile Include="IUserGroupProvider.cs" />
+    <Compile Include="UserGroupProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DB\Versions\0.1\install_sql.sql" />
+    <Content Include="DB\Versions\0.1\uninstall_sql.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201301291437463_Init.resx">
+      <DependentUpon>201301291437463_Init.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

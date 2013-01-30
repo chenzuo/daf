@@ -1,0 +1,19 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    IEnumerable<Content> objs = Page.Data as IEnumerable<Content>;
+    if(objs == null) {
+        
+        objs = CmsHelper.GetContents(Page.Category, Page.PageIndex.DefaultIfNull(0), Page.PageSize.DefaultIfNull(20), Page.Language);
+    }
+}
+<div class="content-slide">
+    <ul>
+        @foreach (var obj in objs)
+        {
+        <li><a href="">@obj.Title</a></li>
+        }
+    </ul>
+</div>

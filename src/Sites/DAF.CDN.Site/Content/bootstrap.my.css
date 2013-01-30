@@ -298,7 +298,7 @@ img {
         padding: 2px 6px;
     }
 
-.nav-pills.nav-stacked > li > a {
+.nav-pills > li > a {
     display: inline-block;
 }
 
@@ -649,7 +649,7 @@ table td.caption,
     margin-left: 0;
 }
 
-table .span5 {
+.table .span5 {
     width: 364px;
     margin-left: 0;
 }
@@ -674,7 +674,7 @@ table .span5 {
     margin-left: 0;
 }
 
-table .span10 {
+.table .span10 {
     width: 764px;
     margin-left: 0;
 }
@@ -689,7 +689,7 @@ table .span10 {
     margin-left: 0;
 }
 
-table .span13 {
+.table .span13 {
     width: 1004px;
     margin-left: 0;
 }
@@ -747,6 +747,10 @@ table .span13 {
 .table .span24 {
     width: 1884px;
     margin-left: 0;
+}
+
+.table *[class*="span"] input {
+    width: 96% !important;
 }
 
 .indent .indent:first-child {

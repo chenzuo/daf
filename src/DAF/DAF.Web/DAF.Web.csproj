@@ -81,6 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetProtectionHttpModule.cs" />
+    <Compile Include="Caching\WebCacheManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ContentItem.cs" />
     <Compile Include="Extensions\HtmlStringExtensions.cs" />
     <Compile Include="Extensions\StringExtentension.cs" />
@@ -105,7 +108,6 @@
     <Compile Include="WebGlobal.cs" />
     <Compile Include="WebJsonFileObjectProvider.cs" />
     <Compile Include="Caching\RequestCacheProvider.cs" />
-    <Compile Include="Caching\WebCacheManager.cs" />
     <Compile Include="Caching\WebCacheProvider.cs" />
     <Compile Include="Fakes\FakeHttpContext.cs" />
     <Compile Include="Fakes\FakeHttpRequest.cs" />

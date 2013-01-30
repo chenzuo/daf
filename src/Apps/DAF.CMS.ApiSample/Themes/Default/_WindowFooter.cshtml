@@ -1,0 +1,13 @@
+﻿@using DAF.Web;
+@using DAF.CMS;
+@{
+}
+
+<div id="footer-menu"  class="navbar navbar-primary">
+    <div class="navbar-inner">
+        <div class="container">
+            @Menu.Render(CmsHelper.GetMenu("footer", null))
+        </div>
+    </div>
+</div>
+

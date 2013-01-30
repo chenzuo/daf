@@ -21,8 +21,12 @@ $(function () {
     $.ajaxSetup({
         global: true,
         beforeSend: function (jqXHR, settings) {
-            if (typeof (Progress) == "function")
+            if (typeof (Progress) == "function") {
                 Progress(100);
+            }
+            if (typeof (SetAuthHeader) == "function") {
+                SetAuthHeader(jqXHR);
+            }
         },
         complete: function (jqXhr, status) {
             if (typeof (Progress) == "function")

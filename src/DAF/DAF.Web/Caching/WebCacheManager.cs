@@ -13,21 +13,16 @@ namespace DAF.Web.Caching
         {
         }
 
-        #region ICacheManager Members
-
-        public ICacheProvider CreateCacheProvider(CacheScope cacheScope)
+        public ICacheProvider CreateCacheProvider(CacheScope scope)
         {
-            switch (cacheScope)
+            switch (scope)
             {
-                case CacheScope.Global:
-                    return new WebCacheProvider();
                 case CacheScope.WorkUnit:
                     return new RequestCacheProvider();
+                case CacheScope.Global:
+                default:
+                    return new WebCacheProvider();
             }
-
-            return new WebCacheProvider();
         }
-
-        #endregion
     }
 }

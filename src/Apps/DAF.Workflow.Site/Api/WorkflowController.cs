@@ -30,29 +30,9 @@ namespace DAF.Workflow.Site.Api
         }
 
         [HttpPost]
-        public ServerResponse SaveFlows([FromBody]ChangedData<BizFlow> items)
+        public ServerResponse SaveFlows([FromBody]ChangedData<BizFlow> objs)
         {
-            ServerResponse response = new ServerResponse();
-            try
-            {
-                if (flowManager.SaveFlows(items.NewItems, items.ModifiedItems, items.DeletedItems))
-                {
-                    response.Status = ResponseStatus.Success;
-                    response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-                }
-                else
-                {
-                    response.Status = ResponseStatus.Failed;
-                    response.Message = LocaleHelper.Localizer.Get("SaveFailure");
-                }
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
-
-            return response;
+            return objs.Save(items => flowManager.SaveFlows(items.NewItems, items.ModifiedItems, items.DeletedItems));
         }
 
         [HttpGet]
@@ -63,30 +43,9 @@ namespace DAF.Workflow.Site.Api
         }
 
         [HttpPost]
-        public ServerResponse SaveFlow([FromBody]BizFlow flow)
+        public ServerResponse SaveFlow([FromBody]BizFlow obj)
         {
-            ServerResponse response = new ServerResponse();
-
-            try
-            {
-                if (flowManager.SaveFlow(flow))
-                {
-                    response.Status = ResponseStatus.Success;
-                    response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-                }
-                else
-                {
-                    response.Status = ResponseStatus.Failed;
-                    response.Message = LocaleHelper.Localizer.Get("SaveFailure");
-                }
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
-
-            return response;
+            return obj.Save(flow => flowManager.SaveFlow(flow));
         }
 
         [HttpGet]

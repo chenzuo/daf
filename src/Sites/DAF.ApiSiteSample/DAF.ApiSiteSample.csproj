@@ -62,6 +62,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\outputs\DAF.Core.Serialization.JsonNet.dll</HintPath>
     </Reference>
+    <Reference Include="DAF.Social">
+      <HintPath>..\..\outputs\DAF.Social.dll</HintPath>
+    </Reference>
     <Reference Include="DAF.SSO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\outputs\DAF.SSO.dll</HintPath>

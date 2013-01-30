@@ -1,0 +1,28 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    string id = PageData["id"] ?? "sites-div";
+    var sites = CmsHelper.WebSiteProvider.GetSubSites(CmsHelper.CurrentSite.SiteName);
+}
+<div id="@id">
+    <ul class="nav nav-pills">
+        @foreach (var site in sites)
+        {
+            <li data-key="@site.SiteId"><a href="javascript:void(0);" onclick="SelectSite('@site.SiteId');">@site.SubSiteName</a></li>
+        }
+    </ul>
+</div>
+<script type="text/javascript">
+    function SelectSite(siteId) {
+        var sitesDiv = $('#@id');
+        sitesDiv.find('ul>li').removeClass('active');
+        sitesDiv.find('ul>li[data-key="' + siteId + '"]').addClass('active');
+        $(document).trigger('selectsite', [siteId]);
+        return false;
+    }
+    function SelectFirstSite() {
+        $('#@(id) ul>li[data-key]:first>a').trigger('click');
+    }
+</script>

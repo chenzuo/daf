@@ -1,0 +1,259 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    var pageModel = this.PageModel<UserGroup>();
+}
+@section head {
+    @AssetsHelper.CDNCss("jquery.treeview.css")
+    @AssetsHelper.CDNScript("jquery.treeview.js")
+    <style type="text/css">
+        .nav > li > span {
+            display: inline;
+        }
+    </style>
+}
+
+<script type="text/html" id="group-template">
+    <li data-bind="attr:{id:Name}">
+        <a href="javascript:void(0);" data-bind="click:$root.SelectGroup"><span data-bind="text:Name"></span></a>
+        <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.AddGroup" title="新增下级用户分组"><i class="icon-plus"></i></button>
+        <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditItem" title="编辑用户分组"><i class="icon-pencil"></i></button>
+        <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveGroup.bind($data, $parent)" title="删除用户分组"><i class="icon-remove"></i></button>
+        <!-- ko if:$root.HasChildren($data) -->
+        <ul data-bind="template:{ name:'group-template', foreach:Children }"></ul>
+        <!-- /ko -->
+    </li>
+</script>
+
+<div class="row">
+    <div class="span12">
+        @RenderPage("~/Controls/_SelectSites.cshtml")
+    </div>
+    <div class="span3">
+        <div class="well">
+            <h3>
+                <span class="title">用户分组</span>
+                <button class="btn btn-primary btn-mini" type="button" onclick="vm.AddGroup(null);" title="新增用户分组"><i class="icon-plus"></i></button>
+            </h3>
+            <div id="groups">
+                <ul data-bind="template:{ name:'group-template', foreach:Data}"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="span9 lgap1" data-bind="visible:SelectedGroup">
+        <h3 data-bind="with:SelectedGroup">当前用户分组：<span class="info" data-bind="text:Name"></span></h3>
+        <div id="group-users" class="ui-corner-all">
+            <form id="items" name="items" onsubmit="return Save();">
+                <div class="well bg-none">
+                    <ul class="nav nav-pills" data-bind="foreach:Users">
+                        <li>
+                            <input type="checkbox" data-bind="checked:CheckUser($data), event: { change:ChangeUser }" />
+                            <span data-bind="text:Account"></span>&nbsp;&nbsp;[<span data-bind="text:NickName"></span>]</li>
+                    </ul>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-ok"></i><span>保存</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="editItem" class="hide" data-bind="with:EditingItem">
+        <form method="post">
+            <table class="table table-bordered">
+                <tr>
+                    <td>@(pageModel.CaptionFor(o => o.Name))</td>
+                    <td>
+                        @pageModel.TextBoxFor(m => m.Name, new { @data_bind = "value:Name, blur:CheckExists" })
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var url = '@(UrlHelper.ClientUrl("Api/UserGroup/Data"))?siteId=' + vm.SelectedSite();
+                var selectedGroup = vm.SelectedGroup();
+                if (selectedGroup) {
+                    return url + '&parentId=' + selectedGroup.UserGroupId();
+                }
+                return url;
+            },
+            bindData: function (data) {
+                var selectedGroup = vm.SelectedGroup();
+                if (selectedGroup) {
+                    ko.mapping.fromJS(data, null, selectedGroup.Children);
+                    return selectedGroup.Children;
+                } else {
+                    ko.mapping.fromJS(data, null, vm.Data);
+                    return vm.Data;
+                }
+            },
+            onQuerySuccess: function (bindedData) {
+                if (!vm.SelectedGroup() && bindedData() && bindedData().length > 0) {
+                    vm.SelectGroup(bindedData()[0]);
+                }
+                $('#groups').treeview();
+            },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/UserGroup/Save"))'; },
+            createItem: function () {
+                return {
+                    UserGroupId: ko.observable(IdGenerator.NewId()),
+                    SiteId: ko.observable(vm.SelectedSite()),
+                    Name: ko.observable(""),
+                    ShowOrder: ko.observable(vm.Data().length),
+                    ParentId: ko.observable(null),
+                    Children: ko.observableArray([])
+                };
+            },
+            onInit: function (self) {
+                self.SelectedGroup = ko.observable(null);
+                self.SelectedSite = ko.observable(null);
+                self.Users = ko.observableArray([]);
+                self.GroupUsers = ko.observableArray([]);
+                self.SelectSite = function (siteId) {
+                    vm.SelectedSite(siteId);
+                    vm.SelectGroup(null);
+                    vm.GetData();
+                };
+                self.SelectGroup = function (item) {
+                    self.SelectedGroup(item);
+                    if (item) {
+                        var groupId = item.UserGroupId();
+                        GetJson('@(UrlHelper.ClientUrl("Api/UserGroup/Users"))?group=' + groupId,
+                            function (data) {
+                                ko.mapping.fromJS(data, null, vm.GroupUsers);
+                            });
+                        if (!self.HasChildren(item)) {
+                            vm.GetData();
+                        }
+                    }
+                };
+                self.AddGroup = function (parent) {
+                    var item = vm.options.createItem();
+                    if (parent) {
+                        item.ShowOrder(parent.Children().length);
+                        item.ParentId(parent.UserGroupId());
+                    }
+                    item.DataState = DataState.New;
+                    self.EditingItem(item);
+                    ShowDialog('#editItem', "新增用户分组",
+                        function () {
+                            if ($('#editItem>form').valid()) {
+                                vm.NewItems.push(item);
+                                vm.Save(null, function (info) {
+                                    if (parent) {
+                                        parent.Children.push(item);
+                                    } else {
+                                        vm.Data.push(item);
+                                    }
+                                });
+                                vm.SelectGroup(item);
+                                return false;
+                            }
+                            return true;
+                        });
+                    EnableFormValidation($('#editItem>form'));
+                };
+                self.RemoveGroup = function (parent, item) {
+                    if (vm.HasChildren(item)) {
+                        ShowMessage('提示信息', '分组' + item.Name() + '下包含子分组，不允许删除！');
+                        return false;
+                    }
+                    ShowConfirm("提示信息", "确认删除？", function () {
+                        vm.DeletedItems.push(item);
+                        vm.Save(null, function (info) {
+                            if (parent && parent.Children) {
+                                parent.Children.remove(item);
+                                if (parent.Children().length > 0) {
+                                    vm.SelectGroup(parent.Children()[0]);
+                                } else {
+                                    vm.SelectGroup(parent);
+                                }
+                            } else {
+                                vm.Data.remove(item);
+                                if (vm.Data().length > 0) {
+                                    vm.SelectGroup(vm.Data()[0]);
+                                }
+                            }
+                        });
+                    });
+                };
+                self.HasChildren = function (item) {
+                    return item.Children() && item.Children().length > 0;
+                };
+            },
+            onEdit: function (item) {
+                ShowDialog('#editItem', "编辑分组",
+                    function () {
+                        if ($('#editItem>form').valid()) {
+                            vm.Save();
+                            return false;
+                        }
+                        return true;
+                    }, function () {
+                        vm.UndoEditItem();
+                    });
+                EnableFormValidation($('#editItem>form'));
+            }
+        });
+
+        ko.applyBindings(vm);
+        $(document).off('selectsite').on('selectsite', OnSelectSite);
+
+        GetJson('@(UrlHelper.SSOUrl("Api/User"))', function (data) {
+            ko.mapping.fromJS(data, null, vm.Users);
+            SelectFirstSite();
+        });
+    });
+
+    function OnSelectSite(event, siteId) {
+        vm.SelectSite(siteId);
+    }
+
+    function ChangeUser(item, event) {
+        var it = $.grep(vm.GroupUsers(), function (n, i) { return n.UserId() == item.UserId(); });
+        if (event.target.checked) {
+            if (it.length <= 0) {
+                vm.GroupUsers.push({
+                    UserGroupId: ko.observable(vm.SelectedGroup().UserGroupId()),
+                    UserId: ko.observable(item.UserId())
+                });
+            }
+        } else {
+            if (it.length > 0) {
+                vm.GroupUsers.remove(it[0]);
+            }
+        }
+    };
+    function CheckUser(item) {
+        var it = $.grep(vm.GroupUsers(), function (n, i) { return n.UserId() == item.UserId(); });
+        return it && it.length > 0;
+    };
+
+    function CheckExists(item, event) {
+        var name = $(event.target).val();
+        var items = $('#items tr[key="' + name + '"]');
+        if (items.length > 1) {
+            ShowMessage("提示信息", "已经存在名称为“" + name + "”的角色。", function () { $(event.target).val('').focus(); });
+            return false;
+        }
+    }
+
+    function Save() {
+        var groupId = vm.SelectedGroup().UserGroupId();
+        var url = '@(UrlHelper.ClientUrl("Api/UserGroup/SaveUsers"))?group=' + groupId;
+        PostJson(url, ko.toJS(vm.GroupUsers()),
+            function (data) {
+                ShowMessage(data.Title, data.Message);
+            });
+        return false;
+    }
+</script>

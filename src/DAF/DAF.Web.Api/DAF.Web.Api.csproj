@@ -72,6 +72,7 @@
     <Compile Include="Extensions\WebPageExtensions.cs" />
     <Compile Include="Filters\ExceptionHandlingAttribute.cs" />
     <Compile Include="Filters\OAuthorizeAttribute.cs" />
+    <Compile Include="Filters\ShareActionContextFilter.cs" />
     <Compile Include="MessageHandlers\BasicAuthenticationHandler.cs" />
     <Compile Include="MessageHandlers\EncodingHandler.cs" />
     <Compile Include="MessageHandlers\ETagHandler.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Metadata\PageModel.Controls.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filters\TransactionFilterAttribute.cs" />
+    <Compile Include="ShareActionContext.cs" />
     <Compile Include="WebApiAppEventHandler.cs" />
     <Compile Include="WebApiGlobal.cs" />
     <Compile Include="WebApiModule.cs" />

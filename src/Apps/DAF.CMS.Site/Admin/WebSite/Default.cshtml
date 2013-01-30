@@ -1,0 +1,222 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    var pageModel = this.PageModel<SubSite>();
+}
+
+<div class="row">
+    <div class="data-container span12">
+        <h3 class="pull-left" data-bind="with:SelectedWebSite">当前网站：<span data-bind="text:SiteName"></span></h3>
+        <div class="pull-left tgap1"><button class="btn btn-primary btn-mini" type="button" onclick="vm.AddWebSite();" title="新增网站"><i class="icon-plus"></i></button></div>
+        <ul class="nav nav-pills pull-right bgap1" data-bind="foreach:WebSites">
+            <li data-bind="css: { active: vm.IsSelectedWebSite }">
+                <a href="javascript:void(0);" data-bind="click: vm.SelectWebSite"><span data-bind="text:SiteName"></span></a>
+                <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditWebSite" title="编辑网站"><i class="icon-pencil"></i></button>
+                <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveWebSite" title="删除网站"><i class="icon-remove"></i></button>
+            </li>
+        </ul>
+        <form method="post">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>@(pageModel.CaptionFor(o => o.SubSiteName))</th>
+                        <th>@(pageModel.CaptionFor(o => o.Language))</th>
+                        <th>@(pageModel.CaptionFor(o => o.DateTimeFormat))</th>
+                        <th>@(pageModel.CaptionFor(o => o.DateFormat))</th>
+                        <th>@(pageModel.CaptionFor(o => o.TimeFormat))</th>
+                        <th>@(pageModel.CaptionFor(o => o.CurrencyFormat))</th>
+                        <th>@(pageModel.CaptionFor(o => o.NumberFormat))</th>
+                        <th>@(pageModel.CaptionFor(o => o.TimeZone))</th>
+                        <th>@(pageModel.CaptionFor(o => o.DefaultPageTitle))</th>
+                        <th>@(pageModel.CaptionFor(o => o.DefaultMetaKeywords))</th>
+                        <th>@(pageModel.CaptionFor(o => o.DefaultMetaDescription))</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach:Data">
+                    <tr>
+                        <td><input class="span1" type="text" required="required" data-bind="value:SubSiteName" /></td>
+                        <td><input class="span1" type="text" required="required" data-bind="value:Language" /></td>
+                        <td><input type="text" data-bind="value:DateTimeFormat" /></td>
+                        <td><input class="span1" type="text" data-bind="value:DateFormat" /></td>
+                        <td><input class="span1" type="text" data-bind="value:TimeFormat" /></td>
+                        <td><input class="span1" type="text" data-bind="value:CurrencyFormat" /></td>
+                        <td><input class="span1" type="text" data-bind="value:NumberFormat" /></td>
+                        <td><input class="span1" type="text" data-bind="value:TimeZone" /></td>
+                        <td><input type="text" data-bind="value:DefaultPageTitle" /></td>
+                        <td><input class="span2" type="text" data-bind="value:DefaultMetaKeywords" /></td>
+                        <td><input class="span2" type="text" data-bind="value:DefaultMetaDescription" /></td>
+                        <td>
+                           <a href="javascript:;" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+                    <i class="icon-plus"></i><span>新增</span></button>
+                <button class="btn btn-success" type="button" onclick="vm.Save();">
+                    <i class="icon-ok"></i><span>保存</span></button>
+            </div>
+        </form>
+    </div>
+    <div id="newWebSite" class="hide" data-bind="with:EditingWebSite">
+        <table class="table table-bordered">
+            <tr>
+                <td class="caption">网站名称：</td>
+                <td>
+                    <input class="input-medium" required="true" type="text" data-bind="value:SiteName, visible:vm.IsNewWebSite($data)" />
+                    <span data-bind="text:SiteName, visible:!vm.IsNewWebSite($data)"></span>
+                </td>
+            </tr>
+             <tr>
+                <td class="caption">网址：</td>
+                <td>
+                    <input id="urlStartWith" name="urlStartWith" class="input-medium" required="true" type="text" data-bind="value:UrlStartWith" />
+
+                </td>
+            </tr>
+       </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () {
+                var url = '@(UrlHelper.ClientUrl("Api/WebSite/GetSubSites"))';
+                var site = vm.SelectedWebSite();
+                if (site) {
+                    url = url + '?site=' + site.SiteName();
+                }
+                return url;
+            },
+            getSaveUrl: function () {
+                var url = '@(UrlHelper.ClientUrl("Api/WebSite/SaveSubSites"))';
+                return url;
+            },
+            createItem: function () {
+                return {
+                    SiteId: ko.observable(IdGenerator.NewId()),
+                    SiteName: ko.observable(vm.SelectedWebSite().SiteName()),
+                    SubSiteName: ko.observable(null),
+                    Language: ko.observable(null),
+                    DateTimeFormat: ko.observable(null),
+                    DateFormat: ko.observable(null),
+                    TimeFormat: ko.observable(null),
+                    CurrencyFormat: ko.observable(true),
+                    NumberFormat: ko.observable(null),
+                    ParentName: ko.observable(null),
+                    TimeZone: ko.observable(0),
+                    DefaultPageTitle: ko.observable(null),
+                    DefaultMetaKeywords: ko.observable(null),
+                    DefaultMetaDescription: ko.observable(null)
+                };
+            },
+            onInit: function (self) {
+                self.WebSites = ko.observableArray([]);
+                self.SelectedWebSite = ko.observable(null);
+                self.EditingWebSite = ko.observable(null);
+
+                self.SelectWebSite = function (item) {
+                    self.SelectedWebSite(item);
+                    self.GetData();
+                };
+                self.AddWebSite = function () {
+                    var site = {
+                        SiteName: ko.observable(null),
+                        UrlStartWith: ko.observable(null)
+                    };
+                    site.DataState = DataState.New;
+                    vm.EditingWebSite(site);
+                    ShowDialog('#newWebSite', '新增网站', vm.SaveWebSite);
+                };
+                self.EditWebSite = function (item) {
+                    vm.EditingWebSite(item);
+                    ShowDialog('#newWebSite', '修改网站', vm.SaveWebSite);
+                };
+                self.RemoveWebSite = function (item) {
+                    ShowConfirm('确认删除', '确认要删除网站' + item.SiteName() + '？', function () {
+                        GetJson('/Api/WebSite/Delete?site=' + item.SiteName(), function () {
+                            vm.WebSites.remove(item);
+                            vm.SelectWebSite(vm.WebSites()[0]);
+                        });
+                    });
+                };
+                self.IsNewWebSite = function (item) {
+                    return item && item.DataState == DataState.New;
+                };
+                self.SaveWebSite = function () {
+                    var site = vm.EditingWebSite();
+                    if (site.SiteName().length <= 0) {
+                        alert('必须输入网站名称！');
+                        $('#siteName').focus();
+                        return true;
+                    }
+                    if (site.UrlStartWith().length <= 0) {
+                        alert('必须输入网址！');
+                        $('#urlStartWith').focus();
+                        return true;
+                    }
+                    var it = $.grep(vm.WebSites(), function (n, i) { return n.SiteName() == site.SiteName(); });
+
+                    if (it.length > 1) {
+                        ShowMessage("提示信息", "已经存在网站" + site.SiteName());
+                        return true;
+                    }
+                    else {
+                        var data = ko.mapping.toJS(site);
+                        PostJson('/Api/WebSite/Save', data, function () {
+                            if (site.DataState == DataState.New) {
+                                site.DataState = DataState.None;
+                                vm.WebSites.push(site);
+                            }
+                            vm.SelectWebSite(site);
+                        });
+                        return false;
+                    }
+                };
+                self.IsSelectedWebSite = function (item) {
+                    if (item && vm.SelectedWebSite()) {
+                        return item.SiteName() == vm.SelectedWebSite().SiteName();
+                    }
+                    return false;
+                };
+            },
+            validate: function () {
+                return $('.data-container>form').valid();
+            }
+        });
+        ko.applyBindings(vm);
+        GetWebSites();
+    });
+
+    function GetWebSites() {
+        var url = '@(UrlHelper.ClientUrl("Api/WebSite/Data"))';
+
+        GetJson(url,
+        function (data, status, xhr) {
+            ko.mapping.fromJS(data, null, vm.WebSites);
+            if (vm.WebSites().length > 0) {
+                vm.SelectWebSite(vm.WebSites()[0]);
+            }
+            else {
+                vm.SelectWebSite(null);
+            }
+        });
+    }
+
+    function CheckExists(item, event) {
+        var tr = $(event.target).closest('.tr');
+        var tbody = tr.closest('.tbody');
+        var ptr = tbody.closest('.tr');
+        var it = $.grep(vm.Data(), function (n, i) { return n.SubSiteName() == item.SubSiteName(); });
+        if (it.length > 1) {
+            ShowMessage("提示信息", "已经存在名称为“" + item.SubSiteName() + "”的子网站。", function () { $(event.target).val('').focus(); });
+            return false;
+        }
+    }
+</script>

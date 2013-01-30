@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web.Http;
 using System.Web.Http.Metadata;
 using Autofac;
 using Autofac.Core;
+using Autofac.Integration.WebApi;
 using DAF.Core;
 using DAF.SSO;
+using DAF.Core.Caching;
 using DAF.Web.Api.Metadata.Providers;
 
 namespace DAF.Web.Api

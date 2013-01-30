@@ -76,15 +76,10 @@ namespace DAF.Web
 
         protected virtual void Application_BeginRequest(object sender, EventArgs e)
         {
-            ILifetimeScope workUnitScope = container.BeginWorkUnitScope();
-            this.Context.Items["workUnitScope"] = workUnitScope;
         }
 
         protected virtual void Application_EndRequest(object sender, EventArgs e)
         {
-            ILifetimeScope workUnitScope = this.Context.Items["workUnitScope"] as ILifetimeScope;
-            if (workUnitScope != null)
-                workUnitScope.Dispose();
         }
 
         protected virtual void Session_Start(object sender, EventArgs e)

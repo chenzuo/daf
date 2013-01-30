@@ -1,0 +1,334 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS.Models;
+@{
+    var pageModel = this.PageModel<SiteMenuItem>();
+}
+
+<script type="text/html" id="item-template">
+    <div class="tr" data-bind="attr:{id:Name, idx:ShowOrder}">
+        <div class="td span2">
+            <button type="button" class="btn btn-mini indent" data-bind="click:ToggleChildren" title="展开/收缩子项">
+                <i class="icon-plus"></i>
+            </button>
+            <button type="button" class="btn btn-mini btn-none">
+                <i class="icon-resize-vertical"></i>
+            </button>
+        </div>
+        <div class="td td-input">
+            <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Name"></span></div>
+            <div data-bind="visible:vm.IsNew($data)">
+                @pageModel.TextBoxFor(o => o.Name, new { data_bind = "value:Name, event: { blur: CheckExists }" })
+            </div>
+        </div>
+        <div class="td td-input">
+            @pageModel.TextBoxFor(o => o.Caption, new { data_bind = "value:Caption" })
+        </div>
+        <div class="td td-input">
+            @pageModel.TextBoxFor(o => o.LinkUrl, new { data_bind = "value:LinkUrl" })
+        </div>
+        <div class="td td-input">
+            @pageModel.TextBoxFor(o => o.ProtectedUri, new { data_bind = "value:ProtectedUri" })
+        </div>
+        <div class="td td-input">
+            @pageModel.TextBoxFor(o => o.Target, new { data_bind = "value:Target" })
+        </div>
+        <div class="td">
+            <button type="button" class="btn btn-primary btn-mini" data-bind="click:vm.AddChildItem" title="添加子项"><i class="icon-plus"></i></button>
+            <button type="button" class="btn btn-danger btn-mini" data-bind="click:vm.DeleteItem" title="删除子项"><i class="icon-remove"></i></button>
+        </div>
+        <!-- ko if:$root.HasChildren($data) -->
+        <div class="tbody indent" data-bind="template:{ name:'item-template', foreach:Children, afterRender: AfterRender }"></div>
+        <!-- /ko -->
+    </div>
+</script>
+
+<div class="row">
+    <div class="span12">
+        @RenderPage("~/Controls/_SelectSites.cshtml")
+    </div>
+    <div class="span3">
+        <div class="well">
+            <h3>
+                <span class="title">菜单组</span>
+                <button class="btn btn-primary btn-mini" type="button" onclick="vm.NewGroup();" title="新增菜单"><i class="icon-plus"></i></button>
+            </h3>
+            <ul id="groups" class="nav nav-pills nav-stacked" data-bind="foreach:Groups">
+                <li data-bind="attr:{id:Name}">
+                    <a href="javascript:void(0);" data-bind="click:$root.SelectGroup"><span data-bind="text:Caption"></span></a>
+                    <button class="btn btn-primary btn-mini" type="button" data-bind="click:$root.EditGroup" title="编辑菜单"><i class="icon-pencil"></i></button>
+                    <button class="btn btn-danger btn-mini" type="button" data-bind="click:$root.RemoveGroup" title="删除菜单"><i class="icon-remove"></i></button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="data-container span9 lgap1" data-bind="visible:SelectedGroup">
+        <h3 data-bind="with:SelectedGroup">当前菜单组：<span data-bind="text:Caption"></span></h3>
+        <form method="post">
+            <div class="table table-bordered">
+                <div class="thead">
+                    <div class="tr">
+                        <div class="th span2"></div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Name))</div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Caption))</div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.LinkUrl))</div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.ProtectedUri))</div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Target))</div>
+                        <div class="th"></div>
+                    </div>
+                </div>
+                <div class="tbody" data-bind="template:{ name:'item-template', foreach:Data, afterRender: AfterRender }"></div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+                    <i class="icon-plus"></i><span>新增</span></button>
+                <button class="btn btn-success" type="button" onclick="vm.Save();">
+                    <i class="icon-ok"></i><span>保存</span></button>
+            </div>
+        </form>
+    </div>
+    <div id="editGroup" data-bind="with:EditingGroup" class="hide">
+        <table class="table table-bordered">
+            <tr>
+                <td class="caption">名称：</td>
+                <td><span data-bind="text:Name, visible:!$root.IsNew($data)"></span>
+                    <input id="Name" type="text" class="input-medium" required="true" data-bind="value:Name, visible:$root.IsNew($data)" /></td>
+            </tr>
+            <tr>
+                <td class="caption">标题：</td>
+                <td>
+                    <input id="Caption" type="text" class="input-medium" data-bind="value:Caption" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () { return '@(UrlHelper.ClientUrl("Api/Menu/Data"))?siteId=' + vm.SelectedSite() + '&group=' + vm.SelectedGroup().Name(); },
+            onQuerySuccess: function (data) { EnableItemSortable(); },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Menu/Save"))'; },
+            createItem: function () {
+                return {
+                    SiteId: ko.observable(vm.SelectedSite()),
+                    MenuGroupName: ko.observable(vm.SelectedGroup().Name()),
+                    Name: ko.observable(""),
+                    Caption: ko.observable(""),
+                    Icon: ko.observable(""),
+                    Shortcut: ko.observable(""),
+                    Tooltip: ko.observable(""),
+                    LinkUrl: ko.observable(""),
+                    ProtectedUri: ko.observable(""),
+                    Target: ko.observable(""),
+                    ItemType: ko.observable(1),
+                    ParentName: ko.observable(null),
+                    ShowOrder: ko.observable(vm.Data().length),
+                    Children: ko.observableArray([])
+                };
+            },
+            onInit: function (self) {
+                self.Groups = ko.observableArray([]);
+                self.SelectedSite = ko.observable(null);
+                self.SelectedGroup = ko.observable(null);
+                self.EditingGroup = ko.observable(null);
+                self.SelectSite = function (siteId) {
+                    vm.SelectedSite(siteId);
+                    GetJson('@(UrlHelper.ClientUrl("Api/Menu/Groups"))?siteId=' + vm.SelectedSite(), function (data) {
+                        ko.mapping.fromJS(data, null, vm.Groups);
+                        if (vm.Groups().length > 0) {
+                            vm.SelectGroup(vm.Groups()[0]);
+                        }
+                        else {
+                            vm.SelectGroup(null);
+                        }
+                    });
+                };
+                self.AddChildItem = function (item) {
+                    var ci = {
+                        SiteId: ko.observable(vm.SelectedSite()),
+                        MenuGroupName: ko.observable(vm.SelectedGroup().Name()),
+                        Name: ko.observable(""),
+                        Caption: ko.observable(""),
+                        Icon: ko.observable(""),
+                        Shortcut: ko.observable(""),
+                        Tooltip: ko.observable(""),
+                        LinkUrl: ko.observable(""),
+                        ProtectedUri: ko.observable(""),
+                        Target: ko.observable(""),
+                        ItemType: ko.observable(1),
+                        ParentName: ko.observable(item.Name()),
+                        ShowOrder: ko.observable(item.Children().length),
+                        Children: ko.observableArray([])
+                    };
+                    ci.DataState = DataState.New;
+
+                    item.Children.push(ci);
+                    self.NewItems.push(ci);
+
+                    var tr = $('.tbody>.tr[id=' + item.Name() + ']');
+                    $('.tbody', tr).show();
+                    $('>.td:first>button:first>i', tr).prop('class', 'icon-minus');
+                    $('.tbody>.tr:last input:first').focus()
+                };
+                self.DeleteItem = function (item, event) {
+                    var tr = $(event.target).closest('.tr');
+                    var tbody = tr.closest('.tbody');
+                    var ptr = tbody.closest('.tr');
+                    var items = ptr.length > 0 ? ko.dataFor(ptr.get(0)).Children : self.Data;
+                    if (item.Children() && item.Children().length > 0) {
+                        ShowConfirm("确认删除", "该记录包含子项，删除该记录会同时删除所有子项，确认要删除？",
+                            function () {
+                                if (item.Children().length > 0) {
+                                    for (var i = 0; i < item.Children().length; i++) {
+                                        vm.DeletedItems.unshift(item.Children()[i]);
+                                    }
+                                }
+                                items.remove(item);
+                                self.DeletedItems.push(item);
+                                self._lastDeletedItem = item;
+                            });
+                    }
+                    else {
+                        items.remove(item);
+                        self.DeletedItems.push(item);
+                        self._lastDeletedItem = item;
+                    }
+                };
+                self.NewGroup = function () {
+                    var group = {
+                        SiteId: ko.observable(vm.SelectedSite()),
+                        Name: ko.observable(""),
+                        Caption: ko.observable("")
+                    };
+                    group.DataState = DataState.New;
+                    self.EditingGroup(group);
+                    SaveGroup(true);
+                };
+                self.EditGroup = function (item) {
+                    self.EditingGroup(item);
+                    SaveGroup(false);
+                };
+                self.RemoveGroup = function (item) {
+                    if (self.Data() && self.Data().length > 0) {
+                        ShowMessage('提示信息', '菜单组' + item.Name() + '下包含菜单项，不允许删除！');
+                        return false;
+                    }
+                    ShowConfirm("提示信息", "确认删除菜单组" + item.Name() + "？",
+                    function () {
+                        GetJson('@(UrlHelper.ClientUrl("Api/Menu/DeleteGroup"))?siteId=' + vm.SelectedSite() + '&group=' + item.Name(),
+                            function (data) {
+                                self.Groups.remove(item);
+                                if (self.Groups().length > 0) {
+                                    self.SelectGroup(self.Groups()[0]);
+                                }
+                                ShowMessage(data.Title, data.Message);
+                            });
+                    });
+                };
+                self.SelectGroup = function (group) {
+                    self.SelectedGroup(group);
+                    if (group) {
+                        self.GetData();
+                    }
+                };
+                self.HasChildren = function (item) {
+                    return item.Children() && item.Children().length > 0;
+                };
+            },
+            validate: function () {
+                return $('.data-container>form').valid();
+            }
+        });
+        ko.applyBindings(vm);
+        $(document).off('selectsite').on('selectsite', OnSelectSite);
+        SelectFirstSite();
+    });
+
+    function OnSelectSite(event, siteId) {
+        vm.SelectSite(siteId);
+    }
+
+    function SaveGroup(isNew) {
+        ShowDialog('#editGroup', isNew ? '新增菜单组' : '编辑菜单组',
+            function () {
+                var exists = $('#groups li[id=' + vm.EditingGroup().Name() + ']').length;
+                if (isNew && exists > 0 || exists > 1) {
+                    ShowMessage("提示信息", "已经存在菜单组" + groupName);
+                    return true;
+                }
+
+                var url = isNew ? '@(UrlHelper.ClientUrl("Api/Menu/AddGroup"))' : '@(UrlHelper.ClientUrl("Api/Menu/EditGroup"))';
+                PostJson(url, ko.mapping.toJS(vm.EditingGroup),
+                    function (data) {
+                        if (isNew) {
+                            vm.EditingGroup().DataState = DataState.None;
+                            vm.Groups.push(vm.EditingGroup());
+                            vm.SelectGroup(vm.EditingGroup());
+                        }
+                        vm.EditingGroup(null);
+                        ShowMessage(data.Title, data.Message);
+                    });
+            });
+        }
+
+        function EnableItemSortable() {
+            $('.tbody').sortable({
+                axis: 'y',
+                start: function (event, ui) {
+                    var tr = ui.item.closest('.tr');
+                    var tbody = tr.closest('.tbody');
+                    $('.tr:first>.td:first>button:first>i', tbody).prop('class', 'icon-plus');
+                    $('.tr>.tbody', tbody).hide();
+                },
+                beforeStop: function (event, ui) {
+                    var tr = ui.item.closest('.tr');
+                    var tbody = tr.closest('.tbody');
+                    var idx = 0;
+                    $('>.tr:not(.ui-sortable-placeholder)', tbody).each(function () {
+                        var item = ko.dataFor(this);
+                        if (item && item.ShowOrder) {
+                            item.ShowOrder(idx);
+                            idx++;
+                        }
+                    });
+                }
+            });
+        }
+
+        function CheckExists(item, event) {
+            var tr = $(event.target).closest('.tr');
+            var tbody = tr.closest('.tbody');
+            var ptr = tbody.closest('.tr');
+            var items = ptr.length > 0 ? ko.dataFor(ptr.get(0)).Children : vm.Data;
+            var it = $.grep(items(), function (n, i) { return n.Name() == item.Name(); });
+            if (it.length > 1) {
+                ShowMessage("提示信息", "已经存在名称为“" + item.Name() + "”的项目。", function () { $(event.target).val('').focus(); });
+                return false;
+            }
+        }
+
+        function ToggleChildren(item, event) {
+            var tr = $(event.target).closest('.tr');
+            if (vm.HasChildren(item)) {
+                tr.find('.td:first>button:first>i').toggleClass('icon-plus').toggleClass('icon-minus');
+                tr.find('>.tbody').toggle();
+            }
+            else {
+                var url = '@(UrlHelper.ClientUrl("Api/Menu/Data"))?group=' + vm.SelectedGroup().Name() + '&parentName=' + item.Name();
+                GetJson(url, function (data) {
+                    ko.mapping.fromJS(data, null, item.Children);
+                    for (var i = 0; i < item.Children().length; i++) {
+                        var obj = item.Children()[i];
+                        vm.trackChange(obj);
+                    }
+                    EnableItemSortable();
+                    tr.find('>.td:first>button:first>i').prop('class', 'icon-minus');
+                    tr.find('.tbody').show();
+                    ResizeIFrame();
+                });
+            }
+        }
+</script>

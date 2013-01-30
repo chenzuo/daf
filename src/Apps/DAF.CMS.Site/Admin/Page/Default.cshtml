@@ -1,0 +1,302 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS.Models;
+@{
+    var pageModel = this.PageModel<WebPageControl>();
+}
+@section head {
+    @AssetsHelper.CDNCss("jquery.treeview.css")
+    @AssetsHelper.CDNScript("jquery.treeview.js")
+}
+
+<script type="text/html" id="page-template">
+    <li data-bind="attr:{id:PageId}">
+        <a href="javascript:void(0);" data-bind="click:$root.SelectPage"><span data-bind="text:Name"></span></a>
+        <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.AddPage" title="新增下级页面"><i class="icon-plus"></i></button>
+        <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditPage" title="编辑页面"><i class="icon-pencil"></i></button>
+        <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemovePage.bind($data, $parent)" title="删除页面"><i class="icon-remove"></i></button>
+        <!-- ko if:$root.HasChildren($data) -->
+        <ul data-bind="template:{ name:'page-template', foreach:Children }"></ul>
+        <!-- /ko -->
+    </li>
+</script>
+
+<div class="row">
+    <div class="span12">
+        @RenderPage("~/Controls/_SelectSites.cshtml")
+    </div>
+    <div class="span3">
+        <div class="well">
+            <h3>
+                <span class="title">页面</span>
+                <button class="btn btn-primary btn-mini" type="button" onclick="vm.AddPage();" title="新增页面"><i class="icon-plus"></i></button>
+            </h3>
+            <div id="pages">
+                <ul data-bind="template:{ name:'page-template', foreach:Pages}"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="data-container span9 lgap1" data-bind="visible:SelectedPage">
+        <h3 data-bind="with:SelectedPage">当前页面：<span data-bind="text:Name"></span></h3>
+        <form method="post">
+            <div class="table table-bordered">
+                <div class="thead">
+                    <div class="tr">
+                        <div class="th span1"></div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Section))</div>
+                        <div class="th th-input span3">@(pageModel.CaptionFor(o => o.ControlPath))</div>
+                        <div class="th th-input span3">@(pageModel.CaptionFor(o => o.ControlParas))</div>
+                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Container))</div>
+                        <div class="th"></div>
+                    </div>
+                </div>
+                <div class="tbody" data-bind="foreach:Data">
+                    <div class="tr" data-bind="attr:{id:ControlId, idx:ShowOrder}">
+                        <div class="td span1">
+                            <button type="button" class="btn btn-mini btn-none">
+                                <i class="icon-resize-vertical"></i>
+                            </button>
+                        </div>
+                        <div class="td td-input">
+                            <select data-bind="options: $root.Sections, optionsText: 'Name', optionsValue: 'Name', value: Section"></select>
+                        </div>
+                        <div class="td td-input span3">
+                            <select data-bind="options: $root.ControlTypes, optionsText: 'Name', optionsValue: 'Path', value: ControlPath"></select>
+                        </div>
+                        <div class="td td-input span3">
+                            @pageModel.TextBoxFor(o => o.ControlParas, new { data_bind = "value:ControlParas" })
+                        </div>
+                        <div class="td td-input">
+                            @pageModel.TextBoxFor(o => o.Container, new { data_bind = "value:Container" })
+                        </div>
+                        <div class="td">
+                            <button type="button" class="btn btn-danger btn-mini" data-bind="click:vm.DeleteItem" title="删除"><i class="icon-remove"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+                    <i class="icon-plus"></i><span>新增</span></button>
+                <button class="btn btn-success" type="button" onclick="vm.Save();">
+                    <i class="icon-ok"></i><span>保存</span></button>
+            </div>
+        </form>
+    </div>
+    <div id="editPage" data-bind="with:EditingPage" class="hide">
+        <table class="table table-bordered">
+            <tr>
+                <td class="caption">名称：</td>
+                <td><span data-bind="text:Name, visible:!$root.IsNew($data)"></span>
+                    <input id="Name" type="text" class="input-medium" required="true" data-bind="value:Name, visible:$root.IsNew($data)" /></td>
+            </tr>
+            <tr>
+                <td class="caption">路径：</td>
+                <td>
+                    <select data-bind="options: vm.Templates, optionsText: 'Name', optionsValue: 'Name', value: TemplateName"></select>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vm;
+    $(function () {
+        vm = new KVM({
+            getQueryUrl: function () { return '@(UrlHelper.ClientUrl("Api/Page/Data"))?pageId=' + vm.SelectedPage().PageId(); },
+            onQuerySuccess: function (data) { EnableItemSortable(); },
+            getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Page/Save"))'; },
+            createItem: function () {
+                return {
+                    ControlId: ko.observable(IdGenerator.NewId()),
+                    PageId: ko.observable(vm.SelectedPage().PageId()),
+                    Section: ko.observable(""),
+                    ControlPath: ko.observable(""),
+                    ControlParas: ko.observable(""),
+                    Container: ko.observable(""),
+                    Cached: ko.observable(false),
+                    CacheMunites: ko.observable(0),
+                    ShowOrder: ko.observable(vm.Data().length)
+                };
+            },
+            onInit: function (self) {
+                self.Templates = ko.observableArray([]);
+                self.ControlTypes = ko.observableArray([]);
+                self.Pages = ko.observableArray([]);
+                self.SelectedSite = ko.observable(null);
+                self.SelectedPage = ko.observable(null);
+                self.EditingPage = ko.observable(null);
+                self.Sections = ko.computed(function () {
+                    var st = self.SelectedPage();
+                    if (st) {
+                        var tn = st.TemplateName();
+                        var ts = $.grep(self.Templates(), function (n, i) { return n.Name().toLowerCase() == tn.toLowerCase(); });
+                        if (ts && ts.length > 0) {
+                            return ts[0].Sections();
+                        }
+                    }
+                    return null;
+                });
+                self.SelectSite = function (siteId) {
+                    vm.SelectedSite(siteId);
+                    GetJson('@(UrlHelper.ClientUrl("Api/Page/Templates"))?siteId=' + vm.SelectedSite(), function (data) {
+                        ko.mapping.fromJS(data, null, vm.Templates);
+                        vm.GetPages(null);
+                    });
+                };
+                self.GetPages = function (parent) {
+                    var url = '@(UrlHelper.ClientUrl("Api/Page/Pages"))?siteId=' + vm.SelectedSite();
+                    if (parent) {
+                        url = url + '&parentId=' + parent.PageId();
+                    }
+                    GetJson(url, function (data) {
+                        if (parent) {
+                            ko.mapping.fromJS(data, null, parent.Children);
+                        } else {
+                            ko.mapping.fromJS(data, null, vm.Pages);
+                            if (vm.Pages().length > 0) {
+                                vm.SelectPage(vm.Pages()[0]);
+                            }
+                            else {
+                                vm.SelectPage(null);
+                            }
+                        }
+                        $('#pages').treeview();
+                    });
+                };
+                self.AddPage = function (parent) {
+                    var obj = {
+                        PageId: ko.observable(IdGenerator.NewId()),
+                        SiteId: ko.observable(vm.SelectedSite()),
+                        Name: ko.observable(""),
+                        TemplateName: ko.observable(""),
+                        CategoryId: ko.observable(null),
+                        ShortUrl: ko.observable(""),
+                        HtmlUrl: ko.observable(""),
+                        MetaKeywords: ko.observable(""),
+                        MetaDescription: ko.observable(""),
+                        PageTitle: ko.observable(""),
+                        HeaderTitle: ko.observable(""),
+                        Status: ko.observable(1),
+                        ParentPageId: ko.observable(parent == null ? null : parent.PageId()),
+                        Children: ko.observableArray([])
+                    };
+                    obj.DataState = DataState.New;
+                    self.EditingPage(obj);
+                    SavePage(true, parent);
+                };
+                self.EditPage = function (item) {
+                    self.EditingPage(item);
+                    SavePage(false, item);
+                };
+                self.RemovePage = function (parent, item) {
+                    if (vm.HasChildren(item)) {
+                        ShowMessage('提示信息', '分组' + item.Name() + '下包含子分组，不允许删除！');
+                        return false;
+                    }
+                    if (vm.Data() && vm.Data().length > 0) {
+                        ShowMessage('提示信息', '该页面' + item.Name() + '下包含控件，不允许删除！');
+                        return false;
+                    }
+                    ShowConfirm("提示信息", "确认删除页面" + item.Name() + "？",
+                    function () {
+                        GetJson('@(UrlHelper.ClientUrl("Api/Page/DeletePage"))?pageId=' + vm.SelectedPage().PageId(),
+                            function (data) {
+                                if (parent && parent.Children) {
+                                    parent.Children.remove(item);
+                                    if (parent.Children().length > 0) {
+                                        vm.SelectPage(parent.Children()[0]);
+                                    } else {
+                                        vm.SelectPage(parent);
+                                    }
+                                } else {
+                                    self.Pages.remove(item);
+                                    if (self.Pages().length > 0) {
+                                        self.SelectPage(self.Pages()[0]);
+                                    }
+                                }
+                                ShowMessage(data.Title, data.Message);
+                            });
+                    });
+                };
+                self.SelectPage = function (obj) {
+                    self.SelectedPage(obj);
+                    if (obj) {
+                        if (!self.HasChildren(obj)) {
+                            vm.GetPages(obj);
+                        }
+                        self.GetData();
+                    }
+                };
+                self.HasChildren = function (item) {
+                    return item.Children() && item.Children().length > 0;
+                };
+            },
+            validate: function () {
+                return $('.data-container>form').valid();
+            }
+        });
+        ko.applyBindings(vm);
+        $(document).off('selectsite').on('selectsite', OnSelectSite);
+        GetJson('@(UrlHelper.ClientUrl("Api/Page/ControlTypes"))', function (data) {
+            ko.mapping.fromJS(data, null, vm.ControlTypes);
+            SelectFirstSite();
+        });
+    });
+
+    function OnSelectSite(event, siteId) {
+        vm.SelectSite(siteId);
+    }
+
+    function SavePage(isNew, parent) {
+        ShowDialog('#editPage', isNew ? '新增页面' : '编辑页面',
+            function () {
+                var exists = $('#pages li[id=' + vm.EditingPage().Name() + ']').length;
+                if (isNew && exists > 0 || exists > 1) {
+                    ShowMessage("提示信息", "已经存在页面" + groupName);
+                    return true;
+                }
+
+                var url = isNew ? '@(UrlHelper.ClientUrl("Api/Page/AddPage"))' : '@(UrlHelper.ClientUrl("Api/Page/EditPage"))';
+                PostJson(url, ko.mapping.toJS(vm.EditingPage),
+                    function (data) {
+                        if (isNew) {
+                            vm.EditingPage().DataState = DataState.None;
+                            if (parent) {
+                                parent.Children.push(vm.EditingPage());
+                            } else {
+                                vm.Pages.push(vm.EditingPage());
+                            }
+                            vm.SelectPage(vm.EditingPage());
+                        }
+                        vm.EditingPage(null);
+                        ShowMessage(data.Title, data.Message);
+                    });
+            });
+        }
+
+        function EnableItemSortable() {
+            $('.tbody').sortable({
+                axis: 'y',
+                start: function (event, ui) {
+                    var tr = ui.item.closest('.tr');
+                    var tbody = tr.closest('.tbody');
+                    $('.tr:first>.td:first>button:first>i', tbody).prop('class', 'icon-plus');
+                    $('.tr>.tbody', tbody).hide();
+                },
+                beforeStop: function (event, ui) {
+                    var tr = ui.item.closest('.tr');
+                    var tbody = tr.closest('.tbody');
+                    var idx = 0;
+                    $('>.tr:not(.ui-sortable-placeholder)', tbody).each(function () {
+                        var item = ko.dataFor(this);
+                        if (item && item.ShowOrder) {
+                            item.ShowOrder(idx);
+                            idx++;
+                        }
+                    });
+                }
+            });
+        }
+</script>

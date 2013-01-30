@@ -10,6 +10,7 @@ using DAF.Core.Security;
 using DAF.Core.Localization;
 using DAF.Web;
 using DAF.Web.Security;
+using DAF.Web.Api.Filters;
 using DAF.SSO;
 using DAF.SSO.Server;
 using DAF.SSO.Site.ViewModels;
@@ -33,7 +34,7 @@ namespace DAF.SSO.Site.Api
         }
 
         [HttpGet]
-        //[DAF.Web.Api.Filters.OAuthorize]
+        //[OAuthorize]
         public IEnumerable<User> Get(string startWith = null, int pi = 1, int ps = 50)
         {
             var query = repoUser.Query(null);
@@ -58,43 +59,27 @@ namespace DAF.SSO.Site.Api
         }
 
         [HttpPost]
-        public ServerResponse Post([FromBody]ChangedData<User> items)
+        public ServerResponse Post([FromBody]ChangedData<User> objs)
         {
-            ServerResponse response = new ServerResponse();
-            try
-            {
-                if (repoUser.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems,
-                    null, delegate(EntityEventArgs<User> args) {
-                        if(args.Entity.UserRoles != null && args.Entity.UserRoles.Count > 0)
+            return objs.Save(items => repoUser.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems,
+                    null, delegate(EntityEventArgs<User> args)
                         {
-                            args.Entity.UserRoles.ForEach(ur => repoUr.Insert(ur));
-                        }
-                    }, null, delegate(EntityEventArgs<User> args) {
-                        repoUr.DeleteBatch(ur => ur.UserId == args.Entity.UserId);
-                        if(args.Entity.UserRoles != null && args.Entity.UserRoles.Count > 0)
+                            if (args.Entity.UserRoles != null && args.Entity.UserRoles.Count > 0)
+                            {
+                                args.Entity.UserRoles.ForEach(ur => repoUr.Insert(ur));
+                            }
+                        }, null, delegate(EntityEventArgs<User> args)
                         {
-                            args.Entity.UserRoles.ForEach(ur => repoUr.Insert(ur));
-                        }
-                    }, delegate(EntityEventArgs<User> args) {
-                        repoUr.DeleteBatch(ur => ur.UserId == args.Entity.UserId);
-                    }, null))
-                {
-                    response.Status = ResponseStatus.Success;
-                    response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-                }
-                else
-                {
-                    response.Status = ResponseStatus.Failed;
-                    response.Message = LocaleHelper.Localizer.Get("SaveFailure");
-                }
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
-
-            return response;
+                            repoUr.DeleteBatch(ur => ur.UserId == args.Entity.UserId);
+                            if (args.Entity.UserRoles != null && args.Entity.UserRoles.Count > 0)
+                            {
+                                args.Entity.UserRoles.ForEach(ur => repoUr.Insert(ur));
+                            }
+                        }, delegate(EntityEventArgs<User> args)
+                        {
+                            repoUr.DeleteBatch(ur => ur.UserId == args.Entity.UserId);
+                        }, null)
+                );
         }
 
         [HttpGet]
@@ -114,30 +99,21 @@ namespace DAF.SSO.Site.Api
         [HttpPost]
         public ServerResponse Roles(string id, [FromBody]UserRoleInfo[] roles)
         {
-            ServerResponse response = new ServerResponse();
-            try
-            {
-                trans.BeginTransaction();
-                repoUr.DeleteBatch(o => o.UserId == id);
-                if (roles != null)
+            return roles.Save(rs =>
                 {
-                    foreach (var ur in roles)
+                    trans.BeginTransaction();
+                    repoUr.DeleteBatch(o => o.UserId == id);
+                    if (rs != null)
                     {
-                        if (ur.IsSelected)
-                            repoUr.Insert(new UserRole() { UserId = id, RoleId = ur.RoleId });
+                        foreach (var ur in rs)
+                        {
+                            if (ur.IsSelected)
+                                repoUr.Insert(new UserRole() { UserId = id, RoleId = ur.RoleId });
+                        }
                     }
-                }
-                trans.Commit();
-                response.Status = ResponseStatus.Success;
-                response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
-
-            return response;
+                    trans.Commit();
+                    return true;
+                });
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DAF.Core.Caching
 {
-    public class StaticShareCacheProvider : DictionaryCacheProviderBase
+    public class StaticShareCacheProvider : DictionaryCacheProvider
     {
         public StaticShareCacheProvider()
             : base(new Dictionary<string, object>())

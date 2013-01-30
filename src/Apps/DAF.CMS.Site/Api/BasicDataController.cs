@@ -8,71 +8,35 @@ using System.Web.Http;
 using DAF.Core;
 using DAF.Web;
 using DAF.Core.Data;
-using DAF.CMS.Site.Models;
+using DAF.CMS.Models;
 
 namespace DAF.CMS.Site.Controllers
 {
     public class BasicDataController : ApiController
     {
-        private ITransactionManager trans;
-        protected IRepository<BasicDataItem> repoBd;
+        private IBasicDataProvider provider;
 
-        public BasicDataController(ITransactionManager trans, IRepository<BasicDataItem> repoBd)
+        public BasicDataController(IBasicDataProvider provider)
         {
-            this.trans = trans;
-            this.repoBd = repoBd;
+            this.provider = provider;
         }
 
         [HttpGet]
-        public IEnumerable<string> Categories(string client)
+        public IEnumerable<string> Categories(string siteId)
         {
-            var cates = repoBd.Query(a => a.SiteName == AuthHelper.CurrentClient.ClientId && a.ClientId == client).Select(a => a.Category).Distinct().ToArray();
-            return cates;
+            return provider.GetCategoryNames(siteId);
         }
 
         [HttpGet]
-        public IEnumerable<BasicDataItem> Data(string client, string cate = null, string parentName = null)
+        public IEnumerable<BasicDataItem> Data(string siteId, string cate = null, string parentId = null)
         {
-            var query = repoBd.Query(o => o.SiteName == AuthHelper.CurrentClient.ClientId && o.ClientId == client && o.Category == cate);
-
-            if (string.IsNullOrEmpty(parentName))
-            {
-                query = query.Where(o => o.ParentName == null);
-            }
-            else
-            {
-                query = query.Where(o => o.ParentName == parentName);
-            }
-
-            query = query.OrderBy(o => o.ShowOrder);
-
-            return query.ToArray();
+            return provider.Query(siteId, cate, null, null, parentId);
         }
 
         [HttpPost]
         public ServerResponse Save([FromBody]ChangedData<BasicDataItem> items)
         {
-            ServerResponse response = new ServerResponse();
-            try
-            {
-                if (repoBd.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems))
-                {
-                    response.Status = ResponseStatus.Success;
-                    response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-                }
-                else
-                {
-                    response.Status = ResponseStatus.Failed;
-                    response.Message = LocaleHelper.Localizer.Get("SaveFailure");
-                }
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
-
-            return response;
+            return items.Save(o => provider.Save(o));
         }
     }
 }

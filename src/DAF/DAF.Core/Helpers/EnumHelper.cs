@@ -55,9 +55,9 @@ namespace DAF.Core
                         if (bb.Browsable == false)
                             continue;
                     }
-                    arr = field.GetCustomAttributes(typeDescription, true);
                     if (localizer == null)
                     {
+                        arr = field.GetCustomAttributes(typeDescription, true);
                         if (arr.Length > 0)
                         {
                             DescriptionAttribute aa = (DescriptionAttribute)arr[0];
@@ -72,8 +72,8 @@ namespace DAF.Core
                     {
                         name = localizer.Get(string.Format("{0}_{1}", enumType.Name, field.Name), enumType.AssemblyName());
                     }
-                    string enumName = enumType.InvokeMember(field.Name, BindingFlags.GetField, null, null, null).ToString();
-                    value = Enum.Parse(enumType, enumName);
+                    //string enumName = enumType.InvokeMember(field.Name, BindingFlags.GetField, null, null, null).ToString();
+                    value = Enum.Parse(enumType, field.Name);
 
                     objs.Add(new Tuple<string, object>(name, value));
                 }

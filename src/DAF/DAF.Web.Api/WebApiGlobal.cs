@@ -34,8 +34,10 @@ namespace DAF.Web.Api
             base.Application_Start(sender, e);
 
             GlobalConfiguration.Configuration.Services.RemoveAll(typeof(ModelValidatorProvider), v => v is InvalidModelValidatorProvider);
+            //GlobalConfiguration.Configuration.Filters.Add(new ShareActionContextFilter());
+            //GlobalConfiguration.Configuration.Filters.Add(new OAuthorizeAttribute());
             GlobalConfiguration.Configuration.Filters.Add(new ModelValidationFilterAttribute());
-            //GlobalConfiguration.Configuration.Filters.Add(new DAF.Web.Api.TransactionFilter());
+            //GlobalConfiguration.Configuration.Filters.Add(new TransactionFilterAttribute());
             GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Clear();
         }
     }

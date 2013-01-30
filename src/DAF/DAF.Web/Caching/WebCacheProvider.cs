@@ -141,5 +141,10 @@ namespace DAF.Web.Caching
                 }
             }
         }
+
+        public void Dispose()
+        {
+            Clear();
+        }
     }
 }

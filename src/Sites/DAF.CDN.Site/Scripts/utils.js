@@ -24,6 +24,26 @@ $(function () {
     ShowLocalMessage();
 });
 
+function SetAuthHeader(xhr) {
+    var sid = GetCookieValue('sid');
+    if (sid) {
+        xhr.setRequestHeader('Authorization', "Basic " + sid);
+    }
+}
+
+function GetCookieValue(name) {
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                return decodeURIComponent(cookie.substring(name.length + 1));
+            }
+        }
+    }
+    return null;
+}
+
 function OpenSelf(url) {
     if (window.top !== window.self && typeof window.top.OpenSelf == "function") {
         return window.top.OpenSelf(url);

@@ -8,4 +8,5 @@
    ,{ ClientId: "DAF.Timeline.Site", ClientName: "DAF.Timeline.Site", BaseUrl: "http://www.timeline.com", EncryptKey: "DAF.Timeline.Site", EncryptScrect: "DAF.Timeline.Site" }
    ,{ ClientId: "BXX.Site", ClientName: "BXX.Site", BaseUrl: "http://www.bxx.com", EncryptKey: "BXX.Site", EncryptScrect: "BXX.Site" }
    ,{ ClientId: "BXX.Book.Site", ClientName: "BXX.Book.Site", BaseUrl: "http://www.book.com", EncryptKey: "BXX.Book.Site", EncryptScrect: "BXX.Book.Site" }
+   ,{ ClientId: "DAF.CMS.ApiSample", ClientName: "DAF.CMS.ApiSample", BaseUrl: "http://www.cmsapi.com", EncryptKey: "DAF.CMS.ApiSample", EncryptScrect: "DAF.CMS.ApiSample" }
 ]

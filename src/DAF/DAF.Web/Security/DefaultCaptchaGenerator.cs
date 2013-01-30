@@ -14,11 +14,11 @@ namespace DAF.Web.Security
 {
 	public class DefaultCaptchaGenerator : ICaptchaGenerator
 	{
-		private ICacheProvider cache;
+        private ICacheProvider cache;
 
-		public DefaultCaptchaGenerator(ICacheManager cacheManager)
+        public DefaultCaptchaGenerator(ICacheManager cacheMgr)
 		{
-			this.cache = cacheManager.CreateCacheProvider(CacheScope.Global);
+            this.cache = cacheMgr.CreateCacheProvider(CacheScope.Global);
 		}
 
 		public bool Verify(string sessionId, string userInput)

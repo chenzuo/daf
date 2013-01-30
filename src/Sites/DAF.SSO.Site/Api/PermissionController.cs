@@ -50,27 +50,7 @@ namespace DAF.SSO.Site.Api
         [HttpPost]
         public ServerResponse Post([FromBody]ChangedData<Permission> items)
         {
-            ServerResponse response = new ServerResponse();
-            try
-            {
-                if (repoPermission.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems))
-                {
-                    response.Status = ResponseStatus.Success;
-                    response.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
-                }
-                else
-                {
-                    response.Status = ResponseStatus.Failed;
-                    response.Message = LocaleHelper.Localizer.Get("SaveFailure");
-                }
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Exception;
-                response.Message = ex.Message;
-            }
-
-            return response;
+            return items.Save(o => repoPermission.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems));
         }
     }
 }

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using Autofac;
 using Autofac.Core;
+using Autofac.Integration.Mvc;
 using DAF.Core;
 using DAF.SSO;
+using DAF.Core.Caching;
 
 namespace DAF.Web.Mvc
 {

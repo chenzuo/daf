@@ -60,13 +60,19 @@
     <Compile Include="Assert.cs" />
     <Compile Include="AutoRegisterStartup.cs" />
     <Compile Include="AutoWireModule.cs" />
-    <Compile Include="Caching\CacheScope.cs" />
-    <Compile Include="Caching\DictionaryCacheProviderBase.cs" />
-    <Compile Include="Caching\ICacheManager.cs" />
+    <Compile Include="Caching\CacheScope.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Caching\DictionaryCacheProvider.cs" />
+    <Compile Include="Caching\ICacheManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Caching\ICacheProvider.cs" />
     <Compile Include="Caching\ICacheProviderExtensions.cs" />
-    <Compile Include="Caching\StaticShareCacheManager.cs" />
     <Compile Include="Caching\StaticShareCacheProvider.cs" />
+    <Compile Include="Caching\DictionaryCacheProviderBase.cs" />
+    <Compile Include="Caching\SimpleDictionaryCacheProvider.cs" />
+    <Compile Include="Caching\ThreadSlotCacheProvider.cs" />
     <Compile Include="ChangedData.cs" />
     <Compile Include="ConstItem.cs" />
     <Compile Include="Data\PagingInfo.cs" />
@@ -75,7 +81,6 @@
     <Compile Include="Config.cs" />
     <Compile Include="Configurations\ConfigurationSystem.cs" />
     <Compile Include="Configurations\IConfigurationProvider.cs" />
-    <Compile Include="ContainerBuilderExtensions.cs" />
     <Compile Include="DataExchange\ExportConfig.cs" />
     <Compile Include="DataExchange\ExportMark.cs" />
     <Compile Include="DataExchange\IDataExporter.cs" />
