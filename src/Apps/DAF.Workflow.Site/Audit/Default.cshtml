@@ -9,7 +9,8 @@
             <legend>显示工作流</legend>
             <div id="clients-container" class="pull-left"></div>
             <div class="pull-left" style="padding: 8px;">
-                <span class="caption">工作流编码或业务对象：</span><input type="text" class="span2" id="flowCodeOrTargetType" />
+                <span class="caption">工作流编码或业务对象：</span>
+                <select id="flowCodeOrTargetType" data-bind="options: Flows, optionsText: 'Name', optionsValue: 'Code'"></select>
                 <span class="caption">显示方式：</span><input type="radio" name="showType" value="Lines" checked="checked" onclick="vm.ShowType('Lines');" /><span>线状</span>
                 <input type="radio" name="showType" value="Tables" onclick="vm.ShowType('Tables');" /><span>表格</span>
             </div>
@@ -33,10 +34,12 @@
         LoadHtml('#clients-container', '@UrlHelper.SSOUrl("Controls/SelectClients.cshtml")', function () {
             SelectFirstClient();
         }, null, false);
+        ko.applyBindings(vm);
     });
 
     function WFM() {
         var self = this;
+        self.Flows = ko.observableArray([]);
         self.SelectedClient = ko.observable(null);
         self.FlowCodeOrTargetType = ko.observable('');
         self.ShowType = ko.observable('Lines');
@@ -59,6 +62,9 @@
 
     function OnSelectClient(event, obj) {
         vm.SelectedClient(obj);
+        GetJson('@(UrlHelper.ClientUrl("Api/Workflow/Flows"))?client=' + obj.ClientId, function (data) {
+            ko.mapping.fromJS(data, null, vm.Flows);
+        });
     }
 
     function NewFlow() {

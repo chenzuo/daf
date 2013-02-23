@@ -17,60 +17,77 @@ namespace DAF.Workflow.WcfProviders
             return WcfService.CreateChannel<IWcfStateFlowService>("IWcfStateFlowService");
         }
 
-        public IEnumerable<TargetFlow> LoadFlows(string appName, string flowCodeOrTargetType, DateTime? beginTime, DateTime? endTime, bool? started, bool? completed, FlowResult? result, bool loadAllInfo = true)
+        public BizFlowInfo GetBizFlow(string clientId, string flowCodeOrTargetType)
         {
-            Assert.IsStringNotNullOrEmpty(appName);
+            Assert.IsStringNotNullOrEmpty(clientId);
+            Assert.IsStringNotNullOrEmpty(flowCodeOrTargetType);
 
-            IEnumerable<TargetFlow> tflows = null;
+            BizFlowInfo result = null;
             var chanel = CreateChannel();
             chanel.Call(p =>
             {
-                tflows = p.LoadFlows(appName, flowCodeOrTargetType, beginTime, endTime, started, completed, result, loadAllInfo);
-            });
-
-            return tflows;
-        }
-
-        public TargetFlow LoadFlow(string appName, string flowCodeOrTargetType, string targetId, bool loadAllInfo = true)
-        {
-            Assert.IsStringNotNullOrEmpty(appName);
-            
-            TargetFlow result = null;
-            var chanel = CreateChannel();
-            chanel.Call(p =>
-            {
-                result = p.LoadFlow(appName, flowCodeOrTargetType, targetId, loadAllInfo);
+                result = p.GetBizFlow(clientId, flowCodeOrTargetType);
             });
 
             return result;
         }
 
-        public TargetState LoadState(string targetStateId, bool loadAllInfo = true)
+        public BizFlowInfo GetBizFlow(string flowId)
         {
-            Assert.IsStringNotNullOrEmpty(targetStateId);
+            Assert.IsStringNotNullOrEmpty(flowId);
 
-            TargetState result = null;
+            BizFlowInfo result = null;
             var chanel = CreateChannel();
             chanel.Call(p =>
             {
-                result = p.LoadState(targetStateId, loadAllInfo);
+                result = p.GetBizFlow(flowId);
             });
 
             return result;
         }
 
-        public TargetState GetCurrentState(string appName, string targetFlowId, bool loadAllInfo = true)
+        public TargetFlowInfo GetTargetFlow(string clientId, string flowCodeOrTargetType, string targetId)
         {
-            Assert.IsStringNotNullOrEmpty(appName);
+            Assert.IsStringNotNullOrEmpty(clientId);
+            Assert.IsStringNotNullOrEmpty(flowCodeOrTargetType);
 
-            TargetState result = null;
+            TargetFlowInfo result = null;
             var chanel = CreateChannel();
             chanel.Call(p =>
             {
-                result = p.GetCurrentState(appName, targetFlowId, loadAllInfo);
+                result = p.GetTargetFlow(clientId, flowCodeOrTargetType, targetId);
             });
 
             return result;
+        }
+
+        public TargetFlowInfo GetTargetFlow(string targetFlowId)
+        {
+            Assert.IsStringNotNullOrEmpty(targetFlowId);
+
+            TargetFlowInfo result = null;
+            var chanel = CreateChannel();
+            chanel.Call(p =>
+            {
+                result = p.GetTargetFlow(targetFlowId);
+            });
+
+            return result;
+        }
+
+        public IEnumerable<TargetFlowInfo> GetTargetFlows(string client, string flowCodeOrTargetType, DateTime? beginTime = null, DateTime? endTime = null, bool? started = null, bool? completed = null, FlowResult? result = null)
+        {
+            Assert.IsStringNotNullOrEmpty(client);
+            Assert.IsStringNotNullOrEmpty(flowCodeOrTargetType);
+
+            IEnumerable<TargetFlowInfo> r = null;
+            var chanel = CreateChannel();
+            chanel.Call(p =>
+            {
+                r = p.GetTargetFlows(client, flowCodeOrTargetType, beginTime, endTime, started, completed, result);
+            });
+
+            return r;
         }
 
         public TargetState StartFlow(StartFlowInfo info)
@@ -129,11 +146,11 @@ namespace DAF.Workflow.WcfProviders
             return result;
         }
 
-        public TargetState Cancel(DoOperationInfo info)
+        public bool Cancel(DoOperationInfo info)
         {
             Assert.IsNotNull(info);
 
-            TargetState result = null;
+            bool result = false;
             var chanel = CreateChannel();
             chanel.Call(p =>
             {

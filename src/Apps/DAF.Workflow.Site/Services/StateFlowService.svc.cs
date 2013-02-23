@@ -21,24 +21,29 @@ namespace DAF.App.Workflow.Services
             svr = IOC.Current.GetService<IStateFlowService>();
         }
 
-        public IEnumerable<TargetFlow> LoadFlows(string appName, string flowCodeOrTargetType, DateTime? beginTime, DateTime? endTime, bool? started, bool? completed, FlowResult? result, bool loadAllInfo)
+        public BizFlowInfo GetBizFlow(string clientId, string flowCodeOrTargetType)
         {
-            return svr.LoadFlows(appName, flowCodeOrTargetType, beginTime, endTime, started, completed, result, loadAllInfo);
+            return svr.GetBizFlow(clientId, flowCodeOrTargetType);
         }
 
-        public TargetFlow LoadFlow(string appName, string flowCodeOrTargetType, string targetId, bool loadAllInfo)
+        public BizFlowInfo GetBizFlow(string flowId)
         {
-            return svr.LoadFlow(appName, flowCodeOrTargetType, targetId, loadAllInfo);
+            return svr.GetBizFlow(flowId);
         }
 
-        public TargetState LoadState(string targetStateId, bool loadAllInfo)
+        public TargetFlowInfo GetTargetFlow(string clientId, string flowCodeOrTargetType, string targetId)
         {
-            return svr.LoadState(targetStateId, loadAllInfo);
+            return svr.GetTargetFlow(clientId, flowCodeOrTargetType, targetId);
         }
 
-        public TargetState GetCurrentState(string appName, string targetFlowId, bool loadAllInfo)
+        public TargetFlowInfo GetTargetFlow(string targetFlowId)
         {
-            return svr.GetCurrentState(appName, targetFlowId, loadAllInfo);
+            return svr.GetTargetFlow(targetFlowId);
+        }
+
+        public IEnumerable<TargetFlowInfo> GetTargetFlows(string client, string flowCodeOrTargetType, DateTime? beginTime = null, DateTime? endTime = null, bool? started = null, bool? completed = null, FlowResult? result = null)
+        {
+            return svr.GetTargetFlows(client, flowCodeOrTargetType, beginTime, endTime, started, completed, result);
         }
 
         public TargetState StartFlow(StartFlowInfo info)
@@ -61,7 +66,7 @@ namespace DAF.App.Workflow.Services
             return svr.Do(info);
         }
 
-        public TargetState Cancel(DoOperationInfo info)
+        public bool Cancel(DoOperationInfo info)
         {
             return svr.Cancel(info);
         }

@@ -10,7 +10,7 @@ namespace DAF.Workflow.Messages
 {
     public class TargetStateChangedMessage
     {
-        public TargetState OldTargetState { get; set; }
+        public IEnumerable<TargetState> OldTargetStates { get; set; }
         public TargetState NewTargetState { get; set; }
         public DataOperation DataOperation { get; set; }
 

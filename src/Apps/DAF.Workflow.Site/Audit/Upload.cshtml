@@ -37,19 +37,18 @@
             }
 
             ServerResponse result = new ServerResponse();
-            var flowSvr = IOC.Current.GetService<IStateFlowService>();
             bool r = false;
             if (info.Removed)
             {
-                r = flowSvr.RemoveIncome(info);
+                r = WorkflowHelper.StateFlowService.RemoveIncome(info);
             }
             else if (info.Verified.HasValue)
             {
-                r = flowSvr.VerifyIncome(info);
+                r = WorkflowHelper.StateFlowService.VerifyIncome(info);
             }
             else
             {
-                r = flowSvr.UploadIncome(info);
+                r = WorkflowHelper.StateFlowService.UploadIncome(info);
             }
             if (r)
             {

@@ -35,6 +35,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
@@ -75,6 +76,7 @@
     <Compile Include="Caching\ThreadSlotCacheProvider.cs" />
     <Compile Include="ChangedData.cs" />
     <Compile Include="ConstItem.cs" />
+    <Compile Include="Data\IRepositoryEventHandler.cs" />
     <Compile Include="Data\PagingInfo.cs" />
     <Compile Include="Collections\SerializableDictionary.cs" />
     <Compile Include="Collections\TreeNode.cs" />
@@ -191,6 +193,30 @@
     <Compile Include="Scheduling\ScheduleAppEventHandler.cs" />
     <Compile Include="Scheduling\ISheduleTaskExecuteLog.cs" />
     <Compile Include="Scheduling\TimingTrigger.cs" />
+    <Compile Include="Search\AttributeDocumentBuilder.cs" />
+    <Compile Include="Search\AttributedTypes.cs" />
+    <Compile Include="Search\AutoRegisterAttributeDocumentType.cs" />
+    <Compile Include="Search\ClauseOccur.cs" />
+    <Compile Include="Search\DocumentAttribute.cs" />
+    <Compile Include="Search\FacetGroup.cs" />
+    <Compile Include="Search\FacetItem.cs" />
+    <Compile Include="Search\FieldAttribute.cs" />
+    <Compile Include="Search\FieldIndexMode.cs" />
+    <Compile Include="Search\FieldStoreMode.cs" />
+    <Compile Include="Search\Field.cs" />
+    <Compile Include="Search\FieldType.cs" />
+    <Compile Include="Search\IDocumentBuilder.cs" />
+    <Compile Include="Search\IFacetFieldNameProvider.cs" />
+    <Compile Include="Search\IHit.cs" />
+    <Compile Include="Search\IIndex.cs" />
+    <Compile Include="Search\IIndexPathBuilder.cs" />
+    <Compile Include="Search\ISearch.cs" />
+    <Compile Include="Search\ISearchProvider.cs" />
+    <Compile Include="Search\LocaleDateTimeIndexPathBuilder.cs" />
+    <Compile Include="Search\LocaleFacetFieldNameProvider.cs" />
+    <Compile Include="Search\RepositorySearchModule.cs" />
+    <Compile Include="Search\SearchAppEventHandler.cs" />
+    <Compile Include="Search\SearchRepositoryEventHandler.cs" />
     <Compile Include="Security\AESEncryptionProvider.cs" />
     <Compile Include="Security\DESEncryptionProvider.cs" />
     <Compile Include="Security\HashEncryptionProvider.cs" />
@@ -219,6 +245,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

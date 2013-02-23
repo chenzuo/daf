@@ -2,9 +2,13 @@
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Web;
 using System.ComponentModel;
+using System.Reflection;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAF.Core
 {
@@ -71,13 +75,13 @@ namespace DAF.Core
             }
         }
 
-        public static T Copy<T>(this T obj, NameValueCollection values) where T : class, new()
+        public static T FromNameValueCollection<T>(this T obj, NameValueCollection values) where T : class, new()
         {
             SetPropertyValues(obj, values);
             return obj;
         }
 
-        public static T Copy<T>(this T obj, Dictionary<string, object> values) where T : class, new()
+        public static T FromDictionary<T>(this T obj, Dictionary<string, object> values) where T : class, new()
         {
             SetPropertyValues(obj, values);
             return obj;
@@ -179,6 +183,13 @@ namespace DAF.Core
                 return obj2;
         }
 
+        public static P PropertyValue<T, P>(this T obj, Expression<Func<T, P>> propExpression, P defaultValue)
+        {
+            if (obj == null)
+                return defaultValue;
+            return propExpression.Compile().Invoke(obj);
+        }
+
         public static object DefaultIfNull(this object obj, object obj2)
         {
             return DefaultIf(obj, obj2, (o) => o != null);
@@ -190,6 +201,60 @@ namespace DAF.Core
                 return obj;
             else
                 return obj2;
+        }
+
+        public static IDictionary<string, object> ToDictionary(this object obj)
+        {
+            if (obj == null)
+                return null;
+
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            var props = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var prop in props)
+            {
+                var val = prop.GetValue(obj);
+                dic.Add(prop.Name, val);
+            }
+
+            return dic;
+        }
+
+        public static NameValueCollection ToNameValueCollection(this object obj)
+        {
+            if (obj == null)
+                return null;
+
+            NameValueCollection dic = new NameValueCollection();
+            var props = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var prop in props)
+            {
+                var val = prop.GetValue(obj);
+                dic.Add(prop.Name, val == null ? string.Empty : val.ToString());
+            }
+
+            return dic;
+        }
+
+        public static IDictionary<string, object> GetObjectKey(this object obj)
+        {
+            if (obj == null)
+                return null;
+
+            Dictionary<string, object> keys = new Dictionary<string, object>();
+            var keyProps = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(o => o.GetCustomAttribute<KeyAttribute>(true) != null)
+                .Select(o => new 
+                {
+                    Name = o.Name,
+                    PropertyInfo = o,
+                    Order = o.GetCustomAttribute<ColumnAttribute>(true).PropertyValue(p => p.Order, 0)
+                })
+                .OrderBy(o => o.Order);
+            if (keyProps != null && keyProps.Count() > 0)
+            {
+                keyProps.ForEach(p => keys.Add(p.Name, p.PropertyInfo.GetValue(obj)));
+            }
+            return keys;
         }
     }
 }

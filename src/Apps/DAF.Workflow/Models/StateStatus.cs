@@ -14,14 +14,18 @@ namespace DAF.Workflow.Models
         [EnumMember]
         None = 0,
         [EnumMember]
-        Planned = 1,
+        Started = 1,
         [EnumMember]
-        Responsed = 2,
+        Planned = 2,
         [EnumMember]
-        TreatedNormal = 3,
+        Responsed = 3,
         [EnumMember]
-        TreatedWarn = 4,
+        TreatedError = 10,
         [EnumMember]
-        TreatedError = 5
+        TreatedWarn = 11,
+        [EnumMember]
+        TreatedNormal = 19,
+        [EnumMember]
+        Finished = 99
     }
 }

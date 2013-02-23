@@ -35,8 +35,7 @@
             }
 
             ServerResponse result = new ServerResponse();
-            var flowSvr = IOC.Current.GetService<IStateFlowService>();
-            var state = flowSvr.StartFlow(info);
+            var state = WorkflowHelper.StateFlowService.StartFlow(info);
             if (state == null)
             {
                 result.Status = ResponseStatus.Failed;

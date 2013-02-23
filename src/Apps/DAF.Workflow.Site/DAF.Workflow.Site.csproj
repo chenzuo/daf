@@ -153,8 +153,6 @@
     <Content Include="Content\images\close.gif" />
     <Content Include="Content\images\time-line.png" />
     <Content Include="Content\workflow.css" />
-    <Content Include="DB\Versions\0.1\install_sql.sql" />
-    <Content Include="DB\Versions\0.1\uninstall_sql.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Localization\DAF_Core.js" />
@@ -173,18 +171,10 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\SiteController.cs" />
     <Compile Include="Api\WorkflowController.cs" />
-    <Compile Include="DB\BT\WorkflowDB.cs" />
-    <Compile Include="DB\EF\WorkflowDB.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201212131513464_Init.cs" />
-    <Compile Include="Migrations\201212131513464_Init.Designer.cs">
-      <DependentUpon>201212131513464_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\StateFlowService.svc.cs">
       <DependentUpon>StateFlowService.svc</DependentUpon>
@@ -252,6 +242,7 @@
     <Content Include="Workflow\Lines.cshtml" />
     <Content Include="Workflow\Table.cshtml" />
     <Content Include="Workflow\Tables.cshtml" />
+    <Content Include="Workflow\TableNode.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAF.Workflow.WcfProviders\DAF.Workflow.WcfProviders.csproj">
@@ -262,11 +253,6 @@
       <Project>{d4964ea0-4b09-4780-aeb1-505dcdf5f869}</Project>
       <Name>DAF.Workflow</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201212131513464_Init.resx">
-      <DependentUpon>201212131513464_Init.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -82,6 +82,7 @@
   <ItemGroup>
     <Content Include="DB\Versions\0.1\install_sql.sql" />
     <Content Include="DB\Versions\0.1\uninstall_sql.sql" />
+    <Content Include="DB\Versions\0.1\install_mongo.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201211150736224_Init.resx">

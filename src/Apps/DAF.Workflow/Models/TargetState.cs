@@ -75,9 +75,6 @@ namespace DAF.Workflow.Models
         public DateTime? OperateTime { get; set; }
 
         [DataMember]
-        [StringLength(50)]
-        public string PrevTargetStateId { get; set; }
-        [DataMember]
         public StateStatus StateStatus { get; set; }
 
         [ForeignKey("TargetFlowId")]
@@ -86,11 +83,12 @@ namespace DAF.Workflow.Models
         public virtual ICollection<TargetIncome> TargetIncomes { get; set; }
         [DataMember]
         public virtual ICollection<TargetOutcome> TargetOutcomes { get; set; }
+
+        public virtual ICollection<NextTargetState> FromTargetStates { get; set; }
+        public virtual ICollection<NextTargetState> ToTargetStates { get; set; }
         [ForeignKey("OperationId")]
         public virtual FlowOperation Operation { get; set; }
         [ForeignKey("StateId")]
         public virtual FlowState State { get; set; }
-        [ForeignKey("PrevTargetStateId")]
-        public virtual TargetState PrevTargetState { get; set; }
     }
 }

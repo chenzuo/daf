@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -14,12 +15,10 @@ namespace DAF.Workflow.Site.Api
     public class WorkflowController : ApiController
     {
         private IStateFlowManager flowManager;
-        private IStateFlowService flowSevr;
 
-        public WorkflowController(IStateFlowManager flowManager, IStateFlowService flowSevr)
+        public WorkflowController(IStateFlowManager flowManager)
         {
             this.flowManager = flowManager;
-            this.flowSevr = flowSevr;
         }
 
         [HttpGet]
@@ -49,23 +48,53 @@ namespace DAF.Workflow.Site.Api
         }
 
         [HttpGet]
-        public IEnumerable<TargetFlow> TargetFlows(string client, string flowCodeOrTargetType, DateTime? beginTime = null, DateTime? endTime = null, bool? started = null, FlowResult? result = null, bool? completed = null, bool loadAllInfo = true)
+        public IEnumerable<TargetFlow> TargetFlows(string client, string flowCodeOrTargetType, DateTime? beginTime = null, DateTime? endTime = null, bool? started = null, bool? completed = null, FlowResult? result = null, bool loadAllInfo = true)
         {
-            var flows = flowSevr.LoadFlows(client, flowCodeOrTargetType, beginTime, endTime, started, completed, result, loadAllInfo);
-            return flows;
+            var query = flowManager.LoadFlows();
+            query = query.Where(o => o.Flow.ClientId == client && (o.Flow.Code == flowCodeOrTargetType || o.Flow.TargetType == flowCodeOrTargetType));
+
+            if(beginTime.HasValue)
+                query = query.Where(o => o.CreateTime >= beginTime.Value);
+            if(endTime.HasValue)
+                query = query.Where(o => o.CreateTime <= endTime.Value);
+
+            if(started.HasValue)
+                query = query.Where(o => o.HasStarted == started.Value);
+            if(completed.HasValue)
+                query = query.Where(o => o.HasCompleted == completed.Value);
+            if(result.HasValue)
+                query = query.Where(o => o.Result == result.Value);
+
+            var ids = query.Select(o => o.TargetFlowId).ToArray();
+            List<TargetFlow> tflows = new List<TargetFlow>();
+            foreach(var id in ids)
+            {
+                var tflow = flowManager.LoadFlow(id, loadAllInfo);
+                tflows.Add(tflow);
+            }
+
+            return tflows;
         }
 
         [HttpGet]
         public TargetFlow TargetFlow(string client, string flowCodeOrTargetType, string targetId, bool loadAllInfo = true)
         {
-            var flow = flowSevr.LoadFlow(client, flowCodeOrTargetType, targetId, loadAllInfo);
-            return flow;
+            var query = flowManager.LoadFlows();
+            var id = query.Where(o => o.Flow.ClientId == client && (o.Flow.Code == flowCodeOrTargetType || o.Flow.TargetType == flowCodeOrTargetType) && o.TargetId == targetId)
+                .Select(o => o.TargetFlowId).FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                var flow = flowManager.LoadFlow(id, loadAllInfo);
+                return flow;
+            }
+            return null;
         }
 
         [HttpGet]
         public TargetFlow TargetFlow(string id, bool loadAllInfo = true)
         {
-            var flow = flowSevr.LoadFlow(id, loadAllInfo);
+            var flow = flowManager.LoadFlow(id, loadAllInfo);
             return flow;
         }
     }

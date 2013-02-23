@@ -10,19 +10,17 @@ namespace DAF.Workflow
 {
     public interface IStateFlowService
     {
-        BizFlow GetFlow(string clientId, string flowCodeOrTargetType, bool loadAllInfo = true);
-        BizFlow GetFlow(string flowId, bool loadAllInfo = true);
-        IEnumerable<TargetFlow> LoadFlows(string clientId, string flowCodeOrTargetType, DateTime? beginTime, DateTime? endTime, bool? started, bool? completed, FlowResult? result, bool loadAllInfo = true);
-        TargetFlow LoadFlow(string clientId, string flowCodeOrTargetType, string targetId, bool loadAllInfo = true);
-        TargetFlow LoadFlow(string targetFlowId, bool loadAllInfo = true);
-        TargetState LoadState(string targetStateId, bool loadAllInfo = true);
-        TargetState GetCurrentState(string clientId, string targetFlowId, bool loadAllInfo = true);
+        BizFlowInfo GetBizFlow(string clientId, string flowCodeOrTargetType);
+        BizFlowInfo GetBizFlow(string flowId);
+        TargetFlowInfo GetTargetFlow(string clientId, string flowCodeOrTargetType, string targetId);
+        TargetFlowInfo GetTargetFlow(string targetFlowId);
+        IEnumerable<TargetFlowInfo> GetTargetFlows(string client, string flowCodeOrTargetType, DateTime? beginTime = null, DateTime? endTime = null, bool? started = null, bool? completed = null, FlowResult? result = null);
 
         TargetState StartFlow(StartFlowInfo info);
         TargetState Plan(DoOperationInfo info);
         TargetState Response(ResponseInfo info);
         TargetState Do(DoOperationInfo info);
-        TargetState Cancel(DoOperationInfo info);
+        bool Cancel(DoOperationInfo info);
 
         bool UploadIncome(UploadInfo info);
         bool VerifyIncome(UploadInfo info);

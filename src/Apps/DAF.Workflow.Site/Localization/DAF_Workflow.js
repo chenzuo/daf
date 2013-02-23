@@ -1,10 +1,12 @@
 ﻿{
     StateStatus_None: "未处理",
+    StateStatus_Started: "已启动",
     StateStatus_Planned: "计划中",
     StateStatus_Responsed: "已响应",
     StateStatus_TreatedNormal: "已处理",
     StateStatus_TreatedWarn: "处理警告",
     StateStatus_TreatedError: "处理出错",
+    StateStatus_Finished: "已结束",
 
     FileStatus_Draft: "草稿",
     FileStatus_Submitted: "已提交",

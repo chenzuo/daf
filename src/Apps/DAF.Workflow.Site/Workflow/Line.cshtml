@@ -11,22 +11,24 @@
         addStyleAndScripts = false;
     }
 
-    TargetFlow targetFlow = Page.TargetFlow;
-    string clientId = Request.QueryString["client"].DefaultIfNull(AuthHelper.CurrentClient.ClientId);
-    if(targetFlow == null)
+    TargetFlowWrapper tflow = Page.TargetFlowWrapper;
+    if (tflow == null)
     {
-        var flowSvr = IOC.Current.GetService<IStateFlowService>();
+        TargetFlowInfo tfi = null;
         if(!string.IsNullOrEmpty(Request.QueryString["id"]))
         {
-            targetFlow = flowSvr.LoadFlow(Request.QueryString["id"], true);
+            tfi = WorkflowHelper.StateFlowService.GetTargetFlow(Request.QueryString["id"]);
         }
         else
         {
+            string clientId = Request.QueryString["client"].DefaultIfNull(AuthHelper.CurrentClient.ClientId);
             var targetId = Request.QueryString["targetId"];
             var flowCodeOrTargetType = Request.QueryString["flowCode"].DefaultIfNull(Request.QueryString["targetType"]);
-            targetFlow = flowSvr.LoadFlow(clientId, flowCodeOrTargetType, targetId, true);
+            tfi = WorkflowHelper.StateFlowService.GetTargetFlow(clientId, flowCodeOrTargetType, targetId);
         }
+        tflow = new TargetFlowWrapper(tfi);
     }
+    tflow.Build();
 }
 @if (addStyleAndScripts)
 {
@@ -34,25 +36,21 @@
     @AssetsHelper.Script("/Scripts/workflow.js")
 }
 <div class="workflow-target">
-    @if (targetFlow == null)
+    @if (tflow == null)
     {
         <h3>无相关工作流数据。</h3>
     }
     else
     {
-        var linked = LinkedListHelper.Build(targetFlow.TreatedStates,
-            list => list.FirstOrDefault(o => string.IsNullOrEmpty(o.PrevTargetStateId)),
-            (list, last) => list.FirstOrDefault(o => o.PrevTargetStateId == last.TargetStateId));
-
-        var node = linked.First;
+        var node = tflow.BeginState;
         var detailUrl = "#";
-        if (!string.IsNullOrEmpty(targetFlow.Flow.DetailUrl))
+        if (!string.IsNullOrEmpty(tflow.FlowInfo.BizFlow.BizFlow.DetailUrl))
         {
-            detailUrl = string.Format("{0}?targetId={1}&targetFlowId={2}", targetFlow.Flow.DetailUrl, targetFlow.TargetId, targetFlow.TargetFlowId);
+            detailUrl = string.Format("{0}?targetId={1}&targetFlowId={2}", tflow.FlowInfo.BizFlow.BizFlow.DetailUrl, tflow.FlowInfo.TargetFlow.TargetId, tflow.FlowInfo.TargetFlow.TargetFlowId);
         }
         <div class="spanfull">
-            <h3><a href="@detailUrl" class="dialog">@(targetFlow.Title)&nbsp;[@targetFlow.FlowCode]</a></h3>
-            <p>@targetFlow.Message</p>
+            <h3><a href="@detailUrl" class="dialog">@(tflow.FlowInfo.TargetFlow.Title)&nbsp;[@tflow.FlowInfo.TargetFlow.FlowCode]</a></h3>
+            <p>@tflow.FlowInfo.TargetFlow.Message</p>
         </div>
         <div class="day-lines">
             @while (node != null)

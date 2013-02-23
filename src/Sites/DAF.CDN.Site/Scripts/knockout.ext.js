@@ -258,6 +258,26 @@ ko.bindingHandlers.checkChange = {
     }
 };
 
+ko.bindingHandlers.bool = {
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        var observable = valueAccessor(),
+            interceptor = ko.computed({
+                read: function () {
+                    var val = observable();
+                    if (val) {
+                        return val.toString();
+                    }
+                    return "";
+                },
+                write: function (newValue) {
+                    observable(newValue === "true");
+                }
+            });
+
+        ko.applyBindingsToNode(element, { value: interceptor });
+    }
+};
+
 ko.mapping.fromJO = function (obj, ops, target) {
     var temp = [obj];
     var td = ko.observableArray([]);

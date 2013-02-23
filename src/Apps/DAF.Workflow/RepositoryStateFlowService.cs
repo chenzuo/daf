@@ -32,6 +32,7 @@ namespace DAF.Workflow
         private IRepository<TargetIncome> repoTargetIncome;
         private IRepository<TargetOutcome> repoTargetOutcome;
         private IRepository<NextBizFlow> repoNextFlow;
+        private IRepository<NextTargetState> repoNextTargetState;
 
         public RepositoryStateFlowService(
             IIdGenerator idGenerator,
@@ -48,7 +49,8 @@ namespace DAF.Workflow
             IRepository<TargetState> repoTargetState,
             IRepository<TargetIncome> repoTargetIncome,
             IRepository<TargetOutcome> repoTargetOutcome,
-            IRepository<NextBizFlow> repoNextFlow)
+            IRepository<NextBizFlow> repoNextFlow,
+            IRepository<NextTargetState> repoNextTargetState)
         {
             this.idGenerator = idGenerator;
             this.trans = trans;
@@ -65,18 +67,99 @@ namespace DAF.Workflow
             this.repoTargetIncome = repoTargetIncome;
             this.repoTargetOutcome = repoTargetOutcome;
             this.repoNextFlow = repoNextFlow;
+            this.repoNextTargetState = repoNextTargetState;
 
             Logger = NullLogger.Instance;
         }
 
-        public BizFlow GetFlow(string clientId, string flowCodeOrTargetType, bool loadAllInfo = true)
+        public BizFlowInfo GetBizFlow(string clientId, string flowCodeOrTargetType)
         {
-            var flowId = repoBizFlow.Query(o => o.ClientId == clientId && (o.Code == flowCodeOrTargetType || o.TargetType == flowCodeOrTargetType)).Select(o => o.FlowId).FirstOrDefault();
-            if (string.IsNullOrEmpty(flowId))
-                throw new NullReferenceException(string.Format("Flow code {0} in {1} not found!", flowCodeOrTargetType, clientId));
-            return GetFlow(flowId, loadAllInfo);
+            var flow = repoBizFlow.Query(o => o.ClientId == clientId && (o.Code == flowCodeOrTargetType || o.TargetType == flowCodeOrTargetType)).FirstOrDefault();
+            return GetBizFlow(flow);
         }
 
+        public BizFlowInfo GetBizFlow(string flowId)
+        {
+            var flow = repoBizFlow.Query(o => o.FlowId == flowId).FirstOrDefault();
+            return GetBizFlow(flow);
+        }
+
+        private BizFlowInfo GetBizFlow(BizFlow flow)
+        {
+            if (flow != null)
+            {
+                BizFlowInfo bfi = new BizFlowInfo();
+                bfi.BizFlow = flow;
+                bfi.FlowStates = repoFlowState.Query(o => o.FlowId == flow.FlowId).ToArray();
+                bfi.FlowOperations = repoFlowOp.Query(o => o.FlowId == flow.FlowId).ToArray();
+                bfi.FlowIncomes = repoFlowIncome.Query(o => o.FlowId == flow.FlowId).ToArray();
+                bfi.FlowOutcomes = repoFlowOutcome.Query(o => o.FlowId == flow.FlowId).ToArray();
+                bfi.StateOperations = repoStateOp.Query(o => o.State.FlowId == flow.FlowId).ToArray();
+                bfi.StateIncomes = repoStateIncome.Query(o => o.State.FlowId == flow.FlowId).ToArray();
+                bfi.StateOutcomes = repoStateOutcome.Query(o => o.State.FlowId == flow.FlowId).ToArray();
+                bfi.NextBizFlows = repoNextFlow.Query(o => o.FlowId == flow.FlowId).ToArray();
+                bfi.NextBizFlows.ForEach(n =>
+                {
+                    n.FromBizFlow = bfi.BizFlow;
+                    n.ToBizFlow = repoBizFlow.Query(o => o.FlowId == n.NextFlowId).FirstOrDefault();
+                });
+                return bfi;
+            }
+            return null;
+        }
+
+        public TargetFlowInfo GetTargetFlow(string clientId, string flowCodeOrTargetType, string targetId)
+        {
+            var tflow = repoTargetFlow.Query(o => o.Flow.ClientId == clientId && (o.Flow.Code == flowCodeOrTargetType || o.Flow.TargetType == flowCodeOrTargetType) && o.TargetId == targetId).FirstOrDefault();
+            return GetTargetFlow(tflow);
+        }
+
+        public TargetFlowInfo GetTargetFlow(string targetFlowId)
+        {
+            var tflow = repoTargetFlow.Query(o => o.TargetFlowId == targetFlowId).FirstOrDefault();
+            return GetTargetFlow(tflow);
+        }
+
+        private TargetFlowInfo GetTargetFlow(TargetFlow tflow)
+        {
+            if (tflow != null)
+            {
+                if (!string.IsNullOrEmpty(tflow.LastTargetFlowId))
+                    tflow.LastTargetFlow = repoTargetFlow.Query(o => o.TargetFlowId == tflow.LastTargetFlowId).FirstOrDefault();
+                TargetFlowInfo tfi = new TargetFlowInfo();
+                tfi.TargetFlow = tflow;
+                tfi.BizFlow = GetBizFlow(tfi.TargetFlow.FlowId);
+                tfi.TargetStates = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId).ToArray();
+                tfi.TargetIncomes = repoTargetIncome.Query(o => o.TargetState.TargetFlowId == tflow.TargetFlowId).ToArray();
+                tfi.TargetOutcomes = repoTargetOutcome.Query(o => o.TargetState.TargetFlowId == tflow.TargetFlowId).ToArray();
+                tfi.NextTargetStates = repoNextTargetState.Query(o => o.FromTargetState.TargetFlowId == tflow.TargetFlowId).ToArray();
+                return tfi;
+            }
+            return null;
+        }
+
+        public IEnumerable<TargetFlowInfo> GetTargetFlows(string client, string flowCodeOrTargetType, DateTime? beginTime = null, DateTime? endTime = null, bool? started = null, bool? completed = null, FlowResult? result = null)
+        {
+            var query = repoTargetFlow.Query(o => o.Flow.ClientId == client && (o.Flow.Code == flowCodeOrTargetType || o.Flow.TargetType == flowCodeOrTargetType));
+
+            if (beginTime.HasValue)
+                query = query.Where(o => o.CreateTime >= beginTime.Value);
+            if (endTime.HasValue)
+                query = query.Where(o => o.CreateTime <= endTime.Value);
+
+            if (started.HasValue)
+                query = query.Where(o => o.HasStarted == started.Value);
+            if (completed.HasValue)
+                query = query.Where(o => o.HasCompleted == completed.Value);
+            if (result.HasValue)
+                query = query.Where(o => o.Result == result.Value);
+
+            query = query.OrderByDescending(o => o.CreateTime);
+            var tflows = query.ToArray();
+            return tflows.Select(o => GetTargetFlow(o));
+        }
+
+        /*
         public BizFlow GetFlow(string flowId, bool loadAllInfo = true)
         {
             BizFlow flow = repoBizFlow.Query(o => o.FlowId == flowId).FirstOrDefault();
@@ -85,42 +168,47 @@ namespace DAF.Workflow
 
             if (loadAllInfo)
             {
-                flow.States = repoFlowState.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
-                flow.Operations = repoFlowOp.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
-                flow.Incomes = repoFlowIncome.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
-                flow.Outcomes = repoFlowOutcome.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
-                flow.NextBizFlows = repoNextFlow.Query(o => o.FlowId == flow.FlowId).ToArray();
-
-                flow.States.ForEach(it =>
-                {
-                    it.Operations = repoStateOp.Query(op => op.StateId == it.StateId).ToArray();
-                    it.Incomes = repoStateIncome.Query(op => op.StateId == it.StateId).ToArray();
-                    it.Outcomes = repoStateOutcome.Query(op => op.StateId == it.StateId).ToArray();
-
-                    it.Operations.ForEach(o =>
-                    {
-                        o.Operation = flow.Operations.FirstOrDefault(op => op.OperationId == o.OperationId);
-                    });
-
-                    it.Incomes.ForEach(o =>
-                    {
-                        o.Income = flow.Incomes.FirstOrDefault(d => d.IncomeId == o.IncomeId);
-                    });
-
-                    it.Outcomes.ForEach(o =>
-                    {
-                        o.Outcome = flow.Outcomes.FirstOrDefault(d => d.OutcomeId == o.OutcomeId);
-                    });
-                });
-
-                flow.NextBizFlows.ForEach(it =>
-                {
-                    it.FromBizFlow = flow;
-                    it.ToBizFlow = repoBizFlow.Query(o => o.FlowId == it.NextFlowId).FirstOrDefault();
-                });
+                LoadBizFlowAllInfo(flow);
             }
 
             return flow;
+        }
+
+        private void LoadBizFlowAllInfo(BizFlow flow)
+        {
+            flow.States = repoFlowState.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
+            flow.Operations = repoFlowOp.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
+            flow.Incomes = repoFlowIncome.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
+            flow.Outcomes = repoFlowOutcome.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
+            flow.NextBizFlows = repoNextFlow.Query(o => o.FlowId == flow.FlowId).ToArray();
+
+            flow.States.ForEach(it =>
+            {
+                it.Operations = repoStateOp.Query(op => op.StateId == it.StateId).ToArray();
+                it.Incomes = repoStateIncome.Query(op => op.StateId == it.StateId).ToArray();
+                it.Outcomes = repoStateOutcome.Query(op => op.StateId == it.StateId).ToArray();
+
+                it.Operations.ForEach(o =>
+                {
+                    o.Operation = flow.Operations.FirstOrDefault(op => op.OperationId == o.OperationId);
+                });
+
+                it.Incomes.ForEach(o =>
+                {
+                    o.Income = flow.Incomes.FirstOrDefault(d => d.IncomeId == o.IncomeId);
+                });
+
+                it.Outcomes.ForEach(o =>
+                {
+                    o.Outcome = flow.Outcomes.FirstOrDefault(d => d.OutcomeId == o.OutcomeId);
+                });
+            });
+
+            flow.NextBizFlows.ForEach(it =>
+            {
+                it.FromBizFlow = flow;
+                it.ToBizFlow = repoBizFlow.Query(o => o.FlowId == it.NextFlowId).FirstOrDefault();
+            });
         }
 
         public IEnumerable<TargetFlow> LoadFlows(string clientId, string flowCodeOrTargetType, DateTime? beginTime, DateTime? endTime, bool? started, bool? completed, FlowResult? result, bool loadAllInfo = true)
@@ -146,22 +234,12 @@ namespace DAF.Workflow
             {
                 query = query.Where(o => o.Result.Value == result.Value);
             }
+            var tflows = query.ToArray();
             if (loadAllInfo)
             {
-                var tids = query.Select(o => o.TargetFlowId).ToArray();
-                List<TargetFlow> flows = new List<TargetFlow>();
-                foreach (var id in tids)
-                {
-                    var flow = LoadFlow(id, true);
-                    flows.Add(flow);
-                }
-                return flows;
+                tflows.ForEach(o => LoadTargetFlowAllInfo(o));
             }
-            else
-            {
-
-                return query.ToArray();
-            }
+            return tflows;
         }
 
         public TargetFlow LoadFlow(string clientId, string flowCodeOrTargetType, string targetId, bool loadAllInfo = true)
@@ -181,30 +259,35 @@ namespace DAF.Workflow
 
             if (tflow != null && loadAllInfo)
             {
-                tflow.Flow = GetFlow(tflow.FlowId, loadAllInfo);
-                tflow.TreatedStates = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId).ToArray();
-                tflow.TreatedStates.ForEach(o =>
-                {
-                    o.TargetIncomes = repoTargetIncome.Query(d => d.TargetStateId == o.TargetStateId).ToArray();
-                    o.TargetOutcomes = repoTargetOutcome.Query(d => d.TargetStateId == o.TargetStateId).ToArray();
-                    o.State = tflow.Flow.States.FirstOrDefault(s => s.StateId == o.StateId);
-                    o.Operation = tflow.Flow.Operations.FirstOrDefault(p => p.OperationId == o.OperationId);
-                    o.TargetIncomes.ForEach(obj =>
-                    {
-                        obj.Income = tflow.Flow.Incomes.FirstOrDefault(d => d.IncomeId == obj.IncomeId);
-                    });
-                    o.TargetOutcomes.ForEach(obj =>
-                    {
-                        obj.Outcome = tflow.Flow.Outcomes.FirstOrDefault(d => d.OutcomeId == obj.OutcomeId);
-                    });
-                });
-                if (!string.IsNullOrEmpty(tflow.LastTargetFlowId))
-                {
-                    tflow.LastTargetFlow = repoTargetFlow.Query(o => o.TargetFlowId == tflow.LastTargetFlowId).FirstOrDefault();
-                }
+                LoadTargetFlowAllInfo(tflow);
             }
 
             return tflow;
+        }
+
+        private void LoadTargetFlowAllInfo(TargetFlow tflow)
+        {
+            tflow.Flow = GetFlow(tflow.FlowId, true);
+            tflow.TreatedStates = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId).ToArray();
+            tflow.TreatedStates.ForEach(o =>
+            {
+                o.TargetIncomes = repoTargetIncome.Query(d => d.TargetStateId == o.TargetStateId).ToArray();
+                o.TargetOutcomes = repoTargetOutcome.Query(d => d.TargetStateId == o.TargetStateId).ToArray();
+                o.State = tflow.Flow.States.FirstOrDefault(s => s.StateId == o.StateId);
+                o.Operation = tflow.Flow.Operations.FirstOrDefault(p => p.OperationId == o.OperationId);
+                o.TargetIncomes.ForEach(obj =>
+                {
+                    obj.Income = tflow.Flow.Incomes.FirstOrDefault(d => d.IncomeId == obj.IncomeId);
+                });
+                o.TargetOutcomes.ForEach(obj =>
+                {
+                    obj.Outcome = tflow.Flow.Outcomes.FirstOrDefault(d => d.OutcomeId == obj.OutcomeId);
+                });
+            });
+            if (!string.IsNullOrEmpty(tflow.LastTargetFlowId))
+            {
+                tflow.LastTargetFlow = repoTargetFlow.Query(o => o.TargetFlowId == tflow.LastTargetFlowId).FirstOrDefault();
+            }
         }
 
         public TargetState LoadState(string targetStateId, bool loadAllInfo = true)
@@ -215,68 +298,134 @@ namespace DAF.Workflow
 
             if (loadAllInfo)
             {
-                tstate.TargetFlow = repoTargetFlow.Query(o => o.TargetFlowId == tstate.TargetFlowId).FirstOrDefault();
-                tstate.State = repoFlowState.Query(o => o.StateId == tstate.StateId).FirstOrDefault();
-                if (tstate.State != null)
-                {
-                    tstate.State.Operations = repoStateOp.Query(o => o.StateId == tstate.StateId).ToArray();
-                    tstate.State.Operations.ForEach(op =>
-                    {
-                        op.State = tstate.State;
-                        op.Operation = repoFlowOp.Query(o => o.OperationId == op.OperationId).FirstOrDefault();
-                    });
-
-                    tstate.State.Incomes = repoStateIncome.Query(o => o.StateId == tstate.StateId).ToArray();
-                    tstate.State.Incomes.ForEach(obj =>
-                    {
-                        obj.State = tstate.State;
-                        obj.Income = repoFlowIncome.Query(o => o.IncomeId == obj.IncomeId).FirstOrDefault();
-                    });
-
-                    tstate.State.Outcomes = repoStateOutcome.Query(o => o.StateId == tstate.StateId).ToArray();
-                    tstate.State.Outcomes.ForEach(obj =>
-                    {
-                        obj.State = tstate.State;
-                        obj.Outcome = repoFlowOutcome.Query(o => o.OutcomeId == obj.OutcomeId).FirstOrDefault();
-                    });
-                }
-                if (!string.IsNullOrEmpty(tstate.PrevTargetStateId))
-                    tstate.PrevTargetState = repoTargetState.Query(o => o.TargetStateId == tstate.PrevTargetStateId).FirstOrDefault();
-                tstate.TargetIncomes = repoTargetIncome.Query(o => o.TargetStateId == tstate.TargetStateId).ToList();
-                tstate.TargetOutcomes = repoTargetOutcome.Query(o => o.TargetStateId == tstate.TargetStateId).ToList();
-                if (!string.IsNullOrEmpty(tstate.OperationId))
-                    tstate.Operation = repoFlowOp.Query(o => o.OperationId == tstate.OperationId).FirstOrDefault();
+                LoadTargetStateAllInfo(tstate);
             }
 
             return tstate;
         }
 
-        public TargetState GetCurrentState(string clientId, string targetFlowId, bool loadAllInfo = true)
+        private void LoadTargetStateAllInfo(TargetState tstate)
+        {
+            tstate.TargetFlow = repoTargetFlow.Query(o => o.TargetFlowId == tstate.TargetFlowId).FirstOrDefault();
+            tstate.State = repoFlowState.Query(o => o.StateId == tstate.StateId).FirstOrDefault();
+            if (tstate.State != null)
+            {
+                tstate.State.Operations = repoStateOp.Query(o => o.StateId == tstate.StateId).ToArray();
+                tstate.State.Operations.ForEach(op =>
+                {
+                    op.State = tstate.State;
+                    op.Operation = repoFlowOp.Query(o => o.OperationId == op.OperationId).FirstOrDefault();
+                });
+
+                tstate.State.Incomes = repoStateIncome.Query(o => o.StateId == tstate.StateId).ToArray();
+                tstate.State.Incomes.ForEach(obj =>
+                {
+                    obj.State = tstate.State;
+                    obj.Income = repoFlowIncome.Query(o => o.IncomeId == obj.IncomeId).FirstOrDefault();
+                });
+
+                tstate.State.Outcomes = repoStateOutcome.Query(o => o.StateId == tstate.StateId).ToArray();
+                tstate.State.Outcomes.ForEach(obj =>
+                {
+                    obj.State = tstate.State;
+                    obj.Outcome = repoFlowOutcome.Query(o => o.OutcomeId == obj.OutcomeId).FirstOrDefault();
+                });
+            }
+            tstate.FromTargetStates = repoNextTargetState.Query(o => o.NextTargetStateId == tstate.TargetStateId).ToList();
+            tstate.FromTargetStates.ForEach(obj =>
+            {
+                obj.ToTargetState = tstate;
+                obj.FromTargetState = repoTargetState.Query(o => o.TargetStateId == obj.TargetStateId).FirstOrDefault();
+            });
+            tstate.ToTargetStates = repoNextTargetState.Query(o => o.TargetStateId == tstate.TargetStateId).ToList();
+            tstate.ToTargetStates.ForEach(obj =>
+            {
+                obj.FromTargetState = tstate;
+                obj.ToTargetState = repoTargetState.Query(o => o.TargetStateId == obj.NextTargetStateId).FirstOrDefault();
+            });
+            tstate.TargetIncomes = repoTargetIncome.Query(o => o.TargetStateId == tstate.TargetStateId).ToList();
+            tstate.TargetOutcomes = repoTargetOutcome.Query(o => o.TargetStateId == tstate.TargetStateId).ToList();
+            if (!string.IsNullOrEmpty(tstate.OperationId))
+                tstate.Operation = repoFlowOp.Query(o => o.OperationId == tstate.OperationId).FirstOrDefault();
+        }
+        */
+
+        /*
+        public IEnumerable<TargetState> GetCurrentStates(string targetFlowId, bool loadAllInfo = true)
         {
             var tflow = LoadFlow(targetFlowId, loadAllInfo);
             if (tflow == null)
                 throw new NullReferenceException(string.Format("Target Flow {0} not found!", targetFlowId));
 
-            var tstate = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId && o.StateStatus == StateStatus.None).OrderByDescending(o => o.OperateTime).FirstOrDefault();
-            if (tstate == null)
-                tstate = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId && o.State.StateType == StateType.End).FirstOrDefault();
-            if (tstate == null)
-                tstate = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId && o.State.StateType == StateType.Begin).FirstOrDefault();
-
-            if (tstate == null)
-                throw new NullReferenceException(string.Format("Cannot find current state of Target Flow {0} not found!", targetFlowId));
+            var tstates = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId && o.StateStatus == StateStatus.None).OrderByDescending(o => o.OperateTime).ToArray();
+            if (tstates == null || tstates.Count() <= 0)
+                tstates = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId && o.State.StateType == StateType.End).ToArray();
+            if (tstates == null || tstates.Count() <= 0)
+                tstates = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId && o.State.StateType == StateType.Begin).ToArray();
 
             if (loadAllInfo)
             {
-                tstate = LoadState(tstate.TargetStateId, loadAllInfo);
+                tstates.ForEach(o => LoadTargetStateAllInfo(o));
             }
 
-            return tstate;
+            return tstates;
         }
+
+        public IEnumerable<FlowOperation> GetNextOperations(string targetFlowId)
+        {
+            var tStates = GetCurrentStates(targetFlowId, false);
+            List<FlowOperation> operations = new List<FlowOperation>();
+            TargetState paralleTargetState = null;
+            foreach(var tstate in tStates)
+            {
+                switch(tstate.StateStatus)
+                {
+                    case StateStatus.Started:
+                        var ops = GetStateOperations(tstate.StateId);
+                        operations.AddRange(ops);
+                        break;
+                    case StateStatus.Finished:
+                        break;
+                    case StateStatus.None:
+                        var state = repoFlowState.Query(o => o.StateId == tstate.StateId).FirstOrDefault();
+                        if(state.StateType == StateType.ParallelStop)
+                        {
+                            paralleTargetState = tstate;
+                            if (!state.AllParallelStateShouldBeEnd.HasValue || !state.AllParallelStateShouldBeEnd.Value)
+                            {
+                                var currOps = GetStateOperations(tstate.StateId);
+                                operations.AddRange(currOps);
+                            }
+                        }
+                        break;
+                }
+            }
+            // 添加未开始执行的并行操作
+            if (paralleTargetState != null)
+            {
+                var nts = repoNextTargetState.Query(o => o.NextTargetStateId == paralleTargetState.TargetStateId).FirstOrDefault();
+                var beginParallelTState = repoTargetState.Query(o => o.TargetStateId == nts.ParallelTargetStateId).FirstOrDefault();
+                var beginParallelOpids = repoStateOp.Query(o => o.StateId == beginParallelTState.StateId).Select(o => o.OperationId);
+                var startedOpids = repoTargetState.Query(o => o.TargetFlowId == paralleTargetState.TargetFlowId && beginParallelOpids.Contains(o.OperationId)).Select(o => o.OperationId);
+                var notStartedOpids = beginParallelOpids.Except(startedOpids);
+                var notStartedOps = repoFlowOp.Query(o => notStartedOpids.Contains(o.OperationId)).ToArray();
+                operations.AddRange(notStartedOps);
+            }
+
+            return operations;
+        }
+
+        private IEnumerable<FlowOperation> GetStateOperations(string stateId)
+        {
+            var opids = repoStateOp.Query(o => o.StateId == stateId).Select(o => o.OperationId);
+            var ops = repoFlowOp.Query(o => opids.Contains(o.OperationId)).ToArray();
+            return ops;
+        }
+        */
 
         public TargetState StartFlow(StartFlowInfo info)
         {
-            BizFlow flow = GetFlow(info.ClientId, info.FlowCodeOrTargetType, false);
+            BizFlow flow = repoBizFlow.Query(o => o.ClientId == info.ClientId && (o.Code == info.FlowCodeOrTargetType || o.TargetType == info.FlowCodeOrTargetType)).FirstOrDefault();
             if (flow == null)
                 throw new NullReferenceException(string.Format("Flow {0} not found!", info.FlowCodeOrTargetType));
 
@@ -304,7 +453,7 @@ namespace DAF.Workflow
 
                     NextTargetFlowCreatedMessage msg = new NextTargetFlowCreatedMessage()
                     {
-                        FinishedTargetFlow = LoadFlow(info.LastTargetFlowId, false),
+                        FinishedTargetFlow = repoTargetFlow.Query(o => o.TargetFlowId == info.LastTargetFlowId).FirstOrDefault(),
                         CreatedTargetFlow = tflow,
                         OperateTime = info.OperationTime,
                         OperatorId = info.UserId,
@@ -334,7 +483,7 @@ namespace DAF.Workflow
                 StateId = startState.StateId,
                 Title = info.StartTitle,
                 Message = info.StartMessage,
-                StateStatus = StateStatus.TreatedNormal,
+                StateStatus = StateStatus.Started,
                 OperateTime = info.OperationTime,
                 OperatorId = info.UserId,
                 OperatorName = info.UserName
@@ -366,7 +515,7 @@ namespace DAF.Workflow
 
             TargetStateChangedMessage tscMsg = new TargetStateChangedMessage()
             {
-                OldTargetState = null,
+                OldTargetStates = null,
                 NewTargetState = tstate,
                 OperationId = null,
                 DataOperation = DataOperation.Insert,
@@ -391,7 +540,7 @@ namespace DAF.Workflow
 
         public TargetState Plan(DoOperationInfo info)
         {
-            var tflow = LoadFlow(info.TargetFlowId, false);
+            var tflow = repoTargetFlow.Query(o => o.TargetFlowId == info.TargetFlowId).FirstOrDefault();
             var operation = repoFlowOp.Query(o => o.FlowId == tflow.FlowId && o.OperationId == info.OperationId).FirstOrDefault();
             if (operation == null)
                 throw new NullReferenceException(string.Format("Flow operation {0} not found.", info.OperationId));
@@ -407,16 +556,22 @@ namespace DAF.Workflow
                 Title = info.Title,
                 Message = info.Message,
                 StateStatus = StateStatus.Planned,
-                PrevTargetStateId = info.TargetStateId,
                 PlanTreatTime = info.OperationTime,
                 PlannerId = info.UserId,
                 PlannerName = info.UserName,
+            };
+
+            NextTargetState nts = new NextTargetState()
+            {
+                TargetStateId = info.TargetStateId,
+                NextTargetStateId = tstate.TargetStateId
             };
 
             try
             {
                 trans.BeginTransaction();
                 repoTargetState.Insert(tstate);
+                repoNextTargetState.Insert(nts);
                 trans.Commit();
 
             }
@@ -428,7 +583,7 @@ namespace DAF.Workflow
 
             TargetStateChangedMessage msg = new TargetStateChangedMessage()
             {
-                OldTargetState = null,
+                OldTargetStates = null,
                 NewTargetState = tstate,
                 OperationId = null,
                 DataOperation = DataOperation.Insert,
@@ -461,7 +616,7 @@ namespace DAF.Workflow
             repoTargetState.Update(tstate);
             TargetStateChangedMessage msg = new TargetStateChangedMessage()
             {
-                OldTargetState = tstate,
+                OldTargetStates = new TargetState[] { tstate },
                 NewTargetState = null,
                 OperationId = null,
                 DataOperation = DataOperation.Update,
@@ -483,66 +638,18 @@ namespace DAF.Workflow
 
         public TargetState Do(DoOperationInfo info)
         {
-            var tstate = repoTargetState.Query(o => o.TargetStateId == info.TargetStateId).FirstOrDefault();
-            if (tstate == null)
-                throw new NullReferenceException(string.Format("Target state {0} not found.", info.TargetStateId));
-            var tflow = repoTargetFlow.Query(o => o.TargetFlowId == tstate.TargetFlowId).FirstOrDefault();
+            var tflow = repoTargetFlow.Query(o => o.TargetFlowId == info.TargetFlowId).FirstOrDefault();
             if (tflow == null)
-                throw new NullReferenceException(string.Format("Target flow {0} not found.", tstate.TargetFlowId));
+                throw new NullReferenceException(string.Format("Target flow {0} not found.", info.TargetFlowId));
             var flow = repoBizFlow.Query(o => o.FlowId == tflow.FlowId).FirstOrDefault();
             if (flow == null)
                 throw new NullReferenceException(string.Format("Flow {0} not found.", tflow.FlowId));
 
-            var sop = repoStateOp.Query(o => o.StateId == tstate.StateId);
-            var fop = repoFlowOp.Query(o => o.OperationId == info.OperationId && sop.Any(p => p.OperationId == o.OperationId)).FirstOrDefault();
+            var fop = repoFlowOp.Query(o => o.OperationId == info.OperationId).FirstOrDefault();
             if (fop == null)
-                throw new ArgumentNullException(string.Format("Flow operation {0} is not found in state {1}.", info.OperationId, info.TargetStateId));
+                throw new ArgumentNullException(string.Format("Flow operation {0} is not found.", info.OperationId));
 
-            StateStatus stateStatus = StateStatus.TreatedNormal;
-            var sincomes = repoStateIncome.Query(o => o.StateId == tstate.StateId && o.IsRequired == true);
-            if (sincomes.Any())
-            {
-                var cincomes = repoTargetIncome.Query(o => o.TargetStateId == info.TargetStateId && sincomes.Any(d => d.IncomeId == o.IncomeId) && o.FileStatus != FileStatus.InValid);
-                if (sincomes.Count() > cincomes.Count())
-                {
-                    if (flow.StopWhenIncomeRequired)
-                    {
-                        throw new ApplicationException("Some required incomes are not offered.");
-                    }
-                    else
-                    {
-                        stateStatus = StateStatus.TreatedError;
-                    }
-                }
-                else
-                {
-                    if (cincomes.Any(o => o.FileStatus == FileStatus.Draft))
-                        stateStatus = StateStatus.TreatedWarn;
-                }
-            }
-            var soutcomes = repoStateOutcome.Query(o => o.StateId == tstate.StateId && o.IsRequired == true);
-            if (soutcomes.Any())
-            {
-                var coutcomes = repoTargetOutcome.Query(o => o.TargetStateId == info.TargetStateId && soutcomes.Any(d => d.OutcomeId == o.OutcomeId) && o.FileStatus != FileStatus.InValid);
-                if (soutcomes.Count() > coutcomes.Count())
-                {
-                    if (flow.StopWhenOutcomeRequired)
-                    {
-                        throw new ApplicationException("Some required outcomes are not offered.");
-                    }
-                    else
-                    {
-                        stateStatus = StateStatus.TreatedError;
-                    }
-                }
-                else
-                {
-                    if (coutcomes.Any(o => o.FileStatus == FileStatus.Draft))
-                        stateStatus = StateStatus.TreatedWarn;
-                }
-            }
-
-            FlowState nextState = null;
+                        FlowState nextState = null;
             if (!string.IsNullOrEmpty(info.NextStateIdOrCode))
                 nextState = repoFlowState.Query(o => o.FlowId == flow.FlowId && (o.StateId == info.NextStateIdOrCode || o.Code == info.NextStateIdOrCode)).FirstOrDefault();
 
@@ -551,24 +658,143 @@ namespace DAF.Workflow
             if (nextState == null)
                 throw new NullReferenceException(string.Format("Operation {0} doesn't define next state.", fop.OperationId));
 
-            var nextTargetState = new TargetState()
+            List<TargetState> needUpdatedTargetStates = new List<TargetState>();
+            if(!string.IsNullOrEmpty(info.TargetStateId))
             {
-                TargetStateId = idGenerator.NewId(),
-                TargetFlowId = tflow.TargetFlowId,
-                StateId = nextState.StateId,
-                OperationId = info.OperationId,
-                Title = info.Title,
-                Message = info.Message,
-                OperateTime = info.OperationTime,
-                StateStatus = StateStatus.None,
-                PrevTargetStateId = tstate.TargetStateId,
-                OperatorId = info.UserId,
-                OperatorName = info.UserName
-            };
-            tstate.TreatTime = info.OperationTime;
-            tstate.StateStatus = stateStatus;
-            tstate.TreaterId = info.UserId;
-            tstate.TreaterName = info.UserName;
+                var tstate = repoTargetState.Query(o => o.TargetStateId == info.TargetStateId).FirstOrDefault();
+                needUpdatedTargetStates.Add(tstate);
+            }
+
+            // 当前状态为并行结束结点，需要判断当前并行点的所有操作是否都已经完成。
+            if (nextState.StateType == StateType.ParallelEnd)
+            {
+                bool allShouldDone = nextState.AllParallelStateShouldBeEnd.HasValue && nextState.AllParallelStateShouldBeEnd.Value;
+                bool canExecute = true;
+                var ts = repoTargetState.Query(o => o.TargetFlowId == tflow.TargetFlowId && o.State.StateType == StateType.ParallelStop && (int)o.StateStatus < (int)StateStatus.TreatedNormal).ToArray();
+                foreach (var t in ts)
+                {
+                    var prevStateHasThisOperation = repoStateOp.Query(o => o.StateId == t.StateId && o.OperationId == fop.OperationId).Any();
+                    if (allShouldDone)
+                        canExecute = canExecute && prevStateHasThisOperation;
+                    else
+                        canExecute = prevStateHasThisOperation;
+                }
+                    
+                // 必须所有并行的操作都达到下一状态（并行结束ParallelEnd结点），才可以进行后续的操作。
+                if (canExecute)
+                {
+                    // 其他操作中，所有其他操作都已执行且执行后的状态都允许进行后续的操作。即本次操作是并行操作中的最后一个操作。
+                    needUpdatedTargetStates.AddRange(ts);
+                }
+                else
+                {
+                    throw new InvalidOperationException(string.Format("Target flow {0} is waiting for finishing parallel operations.", info.TargetFlowId));
+                }
+            }
+
+            List<NextTargetState> nextTargetStates = new List<NextTargetState>();
+            string nextTargetStateId = idGenerator.NewId();
+
+            foreach (var tstate in needUpdatedTargetStates)
+            {
+                var state = repoFlowState.Query(o => o.StateId == tstate.StateId).FirstOrDefault();
+                if (state == null)
+                    throw new NullReferenceException(string.Format("State {0} not found.", tstate.StateId));
+
+                StateStatus stateStatus = StateStatus.TreatedNormal;
+                var sincomes = repoStateIncome.Query(o => o.StateId == tstate.StateId && o.IsRequired == true);
+                if (sincomes.Any())
+                {
+                    var cincomes = repoTargetIncome.Query(o => o.TargetStateId == info.TargetStateId && sincomes.Any(d => d.IncomeId == o.IncomeId) && o.FileStatus != FileStatus.InValid);
+                    if (sincomes.Count() > cincomes.Count())
+                    {
+                        if (flow.StopWhenIncomeRequired)
+                        {
+                            throw new ApplicationException("Some required incomes are not offered.");
+                        }
+                        else
+                        {
+                            stateStatus = StateStatus.TreatedError;
+                        }
+                    }
+                    else
+                    {
+                        if (cincomes.Any(o => o.FileStatus == FileStatus.Draft))
+                            stateStatus = StateStatus.TreatedWarn;
+                    }
+                }
+                var soutcomes = repoStateOutcome.Query(o => o.StateId == tstate.StateId && o.IsRequired == true);
+                if (soutcomes.Any())
+                {
+                    var coutcomes = repoTargetOutcome.Query(o => o.TargetStateId == tstate.TargetStateId && soutcomes.Any(d => d.OutcomeId == o.OutcomeId) && o.FileStatus != FileStatus.InValid);
+                    if (soutcomes.Count() > coutcomes.Count())
+                    {
+                        if (flow.StopWhenIncomeRequired)
+                        {
+                            throw new ApplicationException("Some required outcomes are not offered.");
+                        }
+                        else
+                        {
+                            stateStatus = StateStatus.TreatedError;
+                        }
+                    }
+                    else
+                    {
+                        if (coutcomes.Any(o => o.FileStatus == FileStatus.Draft))
+                            stateStatus = StateStatus.TreatedWarn;
+                    }
+                }
+
+
+                tstate.TreatTime = info.OperationTime;
+                tstate.StateStatus = stateStatus;
+                tstate.TreaterId = info.UserId;
+                tstate.TreaterName = info.UserName;
+
+                var nts = repoNextTargetState.Query(o => o.TargetStateId == tstate.TargetStateId && o.ToTargetState.StateId == nextState.StateId).FirstOrDefault();
+                if (nts == null)
+                {
+                    nts = new NextTargetState()
+                    {
+                        TargetStateId = tstate.TargetStateId,
+                        NextTargetStateId = nextTargetStateId
+                    };
+                }
+                else
+                {
+                    nextTargetStateId = nts.NextTargetStateId;
+                }
+
+                if (state.StateType == StateType.ParallelBegin)
+                {
+                    nts.ParallelTargetStateId = tstate.TargetStateId;
+                }
+                else if (state.StateType == StateType.ParallelStop || state.StateType == StateType.ParallelEnd)
+                {
+                    var lastnts = repoNextTargetState.Query(o => o.NextTargetStateId == tstate.TargetStateId).FirstOrDefault();
+                    nts.ParallelTargetStateId = lastnts.ParallelTargetStateId;
+                }
+                nextTargetStates.Add(nts);
+            }
+
+            var nextTargetState = repoTargetState.Query(o => nextTargetStateId == o.TargetStateId && o.StateId == nextState.StateId).FirstOrDefault();
+            if (nextTargetState == null)
+            {
+                nextTargetState = new TargetState()
+                {
+                    TargetStateId = nextTargetStateId,
+                    TargetFlowId = tflow.TargetFlowId,
+                    StateId = nextState.StateId,
+                };
+            }
+
+            nextTargetState.Title = info.Title;
+            nextTargetState.Message = info.Message;
+            nextTargetState.OperateTime = info.OperationTime;
+            nextTargetState.StateStatus = StateStatus.None;
+            nextTargetState.OperationId = info.OperationId;
+            nextTargetState.OperatorId = info.UserId;
+            nextTargetState.OperatorName = info.UserName;
 
             if (nextState.IntervalType.HasValue)
             {
@@ -587,9 +813,9 @@ namespace DAF.Workflow
                     tflow.Result = nextState.Result;
                     repoTargetFlow.Update(tflow);
                 }
-                repoTargetState.Update(tstate);
-                repoTargetState.DeleteBatch(o => o.PrevTargetStateId == tstate.TargetStateId && o.StateStatus == StateStatus.Planned);
+                needUpdatedTargetStates.ForEach(o => repoTargetState.Update(o));
                 repoTargetState.Insert(nextTargetState);
+                nextTargetStates.ForEach(o => repoNextTargetState.Save(t => t.TargetStateId == o.TargetStateId && t.NextTargetStateId == o.NextTargetStateId,o));
                 trans.Commit();
             }
             catch (Exception ex)
@@ -599,7 +825,7 @@ namespace DAF.Workflow
             }
             TargetStateChangedMessage msg = new TargetStateChangedMessage()
             {
-                OldTargetState = tstate,
+                OldTargetStates = needUpdatedTargetStates,
                 NewTargetState = nextTargetState,
                 OperationId = fop.OperationId,
                 DataOperation = DataOperation.Update,
@@ -619,7 +845,7 @@ namespace DAF.Workflow
             return nextTargetState;
         }
 
-        public TargetState Cancel(DoOperationInfo info)
+        public bool Cancel(DoOperationInfo info)
         {
             var tstate = repoTargetState.Query(o => o.TargetStateId == info.TargetStateId).FirstOrDefault();
             if (tstate == null)
@@ -641,9 +867,8 @@ namespace DAF.Workflow
                 throw new Exception(string.Format("The state {0} can only be cancelled by the operator {1}.", state.Name, tstate.TreaterName));
 
             var tflow = repoTargetFlow.Query(o => o.TargetFlowId == tstate.TargetFlowId).First();
-            TargetState lastTState = null;
 
-            if (string.IsNullOrEmpty(tstate.PrevTargetStateId))
+            if (tstate.StateStatus == StateStatus.Started)
             {
                 try
                 {
@@ -663,7 +888,8 @@ namespace DAF.Workflow
             }
             else
             {
-                lastTState = repoTargetState.Query(o => o.TargetStateId == tstate.PrevTargetStateId).First();
+                var lnts = repoNextTargetState.Query(o => o.NextTargetStateId == tstate.TargetStateId).Select(o => o.TargetStateId);
+                var lastTStates = repoTargetState.Query(o => lnts.Contains(o.TargetStateId)).Select(o => o.TargetStateId);
                 try
                 {
                     trans.BeginTransaction();
@@ -672,14 +898,18 @@ namespace DAF.Workflow
                     repoTargetFlow.Update(tflow);
                     repoTargetIncome.DeleteBatch(o => o.TargetStateId == tstate.TargetStateId);
                     repoTargetOutcome.DeleteBatch(o => o.TargetStateId == tstate.TargetStateId);
+
+                    repoTargetState.UpdateBatch(o => lastTStates.Contains(o.TargetStateId), o => new TargetState()
+                    {
+                        StateStatus = StateStatus.None,
+                        TreaterId = null,
+                        TreaterName = null,
+                        TreatTime = null
+                    });
+
+                    repoNextTargetState.DeleteBatch(o => o.NextTargetStateId == tstate.TargetStateId);
                     repoTargetState.Delete(tstate);
-                    lastTState.StateStatus = StateStatus.None;
-                    lastTState.TreaterId = null;
-                    lastTState.TreaterName = null;
-                    lastTState.TreatTime = null;
-                    repoTargetState.Update(lastTState);
                     trans.Commit();
-                    return lastTState;
                 }
                 catch (Exception ex)
                 {
@@ -689,7 +919,7 @@ namespace DAF.Workflow
             }
             TargetStateChangedMessage msg = new TargetStateChangedMessage()
             {
-                OldTargetState = tstate,
+                OldTargetStates = new TargetState[] { tstate },
                 NewTargetState = null,
                 OperationId = null,
                 DataOperation = DataOperation.Delete,
@@ -706,8 +936,7 @@ namespace DAF.Workflow
             {
                 //throw ex;
             }
-
-            return lastTState;
+            return true;
         }
 
         public bool UploadIncome(UploadInfo info)
@@ -896,7 +1125,7 @@ namespace DAF.Workflow
 
                 TargetStateChangedMessage msg = new TargetStateChangedMessage()
                 {
-                    OldTargetState = targetState,
+                    OldTargetStates = new TargetState[] { targetState },
                     NewTargetState = null,
                     OperationId = null,
                     DataOperation = DataOperation.Update,

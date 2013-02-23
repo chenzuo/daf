@@ -14,8 +14,9 @@ namespace DAF.Core.Data
         bool Update(T obj, EntityEventHandler<T> updatingHandler = null, EntityEventHandler<T> updatedHandler = null);
         bool Delete(T obj, EntityEventHandler<T> deletingHandler = null, EntityEventHandler<T> deletedHandler = null);
 
-        bool UpdateBatch(Expression<Func<T, bool>> predicate, Expression<Func<T, T>> setter);
-        bool DeleteBatch(Expression<Func<T, bool>> predicate);
+        bool InsertBatch(IEnumerable<T> objs, BatchEntityEventHandler<T> batchInsertingHandler = null, BatchEntityEventHandler<T> batchInsertedHandler = null);
+        bool UpdateBatch(Expression<Func<T, bool>> predicate, Expression<Func<T, T>> setter, BatchEntityEventHandler<T> batchUpdatingHandler = null, BatchEntityEventHandler<T> batchUpdatedHandler = null);
+        bool DeleteBatch(Expression<Func<T, bool>> predicate, BatchEntityEventHandler<T> batchDeletingHandler = null, BatchEntityEventHandler<T> batchDeletedHandler = null);
     }
 
     public static class IRepositoryExtensions
@@ -197,5 +198,65 @@ namespace DAF.Core.Data
                 throw ex;
             }
         }
+
+        #region Handle Events
+
+        public static T HandleEvent<T>(this IRepository<T> repository, EntityEventHandler<T> handler, DataOperation action, T original, T obj)
+            where T : class
+        {
+            if (handler == null)
+                return obj == null ? original : obj;
+            var args = new EntityEventArgs<T>() { Action = action, OriginalEntity = original, Entity = obj, Repository = repository };
+            handler(args);
+            return args.Entity;
+        }
+
+        public static IEnumerable<T> HandleBatchEvent<T>(this IRepository<T> repository, BatchEntityEventHandler<T> handler, DataOperation action, IEnumerable<T> objs)
+            where T : class
+        {
+            if (handler == null)
+                return objs;
+            var args = new EntitiesEventArgs<T>() { Entities = objs, Action = action, Count = objs.Count(), Repository = repository };
+            handler(args);
+            return args.Entities;
+        }
+
+        public static bool CanHandle<T>(this IRepository<T> repository, IEnumerable<IRepositoryEventHandler<T>> events)
+            where T : class
+        {
+            if (events == null || events.Count() <= 0)
+                return false;
+            return events.Any(o => o.CanHandle());
+        }
+
+        public static T HandleEvents<T>(this IRepository<T> repository, IEnumerable<IRepositoryEventHandler<T>> events, Func<IRepositoryEventHandler<T>, EntityEventHandler<T>> func, DataOperation action, T original, T obj)
+            where T : class
+        {
+            if (events == null || events.Count() <= 0)
+                return obj == null ? original : obj;
+            T nobjs = obj;
+            foreach (var eve in events)
+            {
+                var handler = func(eve);
+                nobjs = HandleEvent(repository, handler, action, original, nobjs);
+            }
+            return nobjs;
+        }
+
+        public static IEnumerable<T> HandleBatchEvents<T>(this IRepository<T> repository, IEnumerable<IRepositoryEventHandler<T>> events, Func<IRepositoryEventHandler<T>, BatchEntityEventHandler<T>> func, DataOperation action, IEnumerable<T> objs)
+            where T : class
+        {
+            if (events == null || events.Count() <= 0)
+                return objs;
+            IEnumerable<T> nobjs = objs;
+            foreach (var eve in events)
+            {
+                var handler = func(eve);
+                nobjs = HandleBatchEvent(repository, handler, action, nobjs);
+            }
+            return nobjs;
+        }
+
+        #endregion
     }
 }

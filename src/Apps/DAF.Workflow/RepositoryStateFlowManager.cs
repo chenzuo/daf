@@ -30,6 +30,7 @@ namespace DAF.Workflow
         private IRepository<TargetIncome> repoTargetIncome;
         private IRepository<TargetOutcome> repoTargetOutcome;
         private IRepository<NextBizFlow> repoNextFlow;
+        private IRepository<NextTargetState> repoNextTargetState;
 
         public RepositoryStateFlowManager(
             IIdGenerator idGenerator,
@@ -46,7 +47,8 @@ namespace DAF.Workflow
             IRepository<TargetState> repoTargetState,
             IRepository<TargetIncome> repoTargetIncome,
             IRepository<TargetOutcome> repoTargetOutcome,
-            IRepository<NextBizFlow> repoNextFlow)
+            IRepository<NextBizFlow> repoNextFlow,
+            IRepository<NextTargetState> repoNextTargetState)
         {
             this.idGenerator = idGenerator;
             this.trans = trans;
@@ -63,6 +65,7 @@ namespace DAF.Workflow
             this.repoTargetIncome = repoTargetIncome;
             this.repoTargetOutcome = repoTargetOutcome;
             this.repoNextFlow = repoNextFlow;
+            this.repoNextTargetState = repoNextTargetState;
 
             Logger = NullLogger.Instance;
         }
@@ -86,11 +89,15 @@ namespace DAF.Workflow
                 flow.Outcomes = repoFlowOutcome.Query(o => o.FlowId == flow.FlowId).OrderBy(o => o.Code).ToArray();
                 flow.NextBizFlows = repoNextFlow.Query(o => o.FlowId == flow.FlowId).ToArray();
 
+                var stateOps = repoStateOp.Query(o => o.State.FlowId == flow.FlowId).ToArray();
+                var stateIncomes = repoStateIncome.Query(o => o.State.FlowId == flow.FlowId).ToArray();
+                var stateOutcomes = repoStateOutcome.Query(o => o.State.FlowId == flow.FlowId).ToArray();
+
                 flow.States.ForEach(it =>
                 {
-                    it.Operations = repoStateOp.Query(op => op.StateId == it.StateId).ToArray();
-                    it.Incomes = repoStateIncome.Query(op => op.StateId == it.StateId).ToArray();
-                    it.Outcomes = repoStateOutcome.Query(op => op.StateId == it.StateId).ToArray();
+                    it.Operations = stateOps.Where(op => op.StateId == it.StateId).ToArray();
+                    it.Incomes = stateIncomes.Where(op => op.StateId == it.StateId).ToArray();
+                    it.Outcomes = stateOutcomes.Where(op => op.StateId == it.StateId).ToArray();
 
                     it.Operations.ForEach(o =>
                         {
@@ -365,10 +372,14 @@ namespace DAF.Workflow
             {
                 tflow.Flow = GetFlow(o => o.FlowId == tflow.FlowId, true);
                 tflow.TreatedStates = repoTargetState.Query(o => o.TargetFlowId == targetFlowId).ToArray();
+
+                var tstateIncomes = repoTargetIncome.Query(o => o.TargetState.TargetFlowId == targetFlowId).ToArray();
+                var tstateOutcomes = repoTargetOutcome.Query(o => o.TargetState.TargetFlowId == targetFlowId).ToArray();
+
                 tflow.TreatedStates.ForEach(o =>
                     {
-                        o.TargetIncomes = repoTargetIncome.Query(d => d.TargetStateId == o.TargetStateId).ToArray();
-                        o.TargetOutcomes = repoTargetOutcome.Query(d => d.TargetStateId == o.TargetStateId).ToArray();
+                        o.TargetIncomes = tstateIncomes.Where(d => d.TargetStateId == o.TargetStateId).ToArray();
+                        o.TargetOutcomes = tstateOutcomes.Where(d => d.TargetStateId == o.TargetStateId).ToArray();
                         o.State = tflow.Flow.States.FirstOrDefault(s => s.StateId == o.StateId);
                         o.Operation = tflow.Flow.Operations.FirstOrDefault(p => p.OperationId == o.OperationId);
                         o.TargetIncomes.ForEach(obj =>
@@ -404,29 +415,37 @@ namespace DAF.Workflow
                 tstate.State = repoFlowState.Query(o => o.StateId == tstate.StateId).FirstOrDefault();
                 if (tstate.State != null)
                 {
-                    tstate.State.Operations = repoStateOp.Query(o => o.StateId == tstate.StateId).ToArray();
+                    var flowOps = repoFlowOp.Query(o => o.FlowId == tstate.State.FlowId).ToArray();
+                    var flowIncomes = repoFlowIncome.Query(o => o.FlowId == tstate.State.FlowId).ToArray();
+                    var flowOutcomes = repoFlowOutcome.Query(o => o.FlowId == tstate.State.FlowId).ToArray();
+
+                    tstate.State.Operations = repoStateOp.Query(o => o.StateId == tstate.StateId).ToList();
                     tstate.State.Operations.ForEach(op =>
                     {
                         op.State = tstate.State;
-                        op.Operation = repoFlowOp.Query(o => o.OperationId == op.OperationId).FirstOrDefault();
+                        op.Operation = flowOps.Where(o => o.OperationId == op.OperationId).FirstOrDefault();
                     });
 
-                    tstate.State.Incomes = repoStateIncome.Query(o => o.StateId == tstate.StateId).ToArray();
+                    tstate.State.Incomes = repoStateIncome.Query(o => o.StateId == tstate.StateId).ToList();
                     tstate.State.Incomes.ForEach(obj =>
                     {
                         obj.State = tstate.State;
-                        obj.Income = repoFlowIncome.Query(o => o.IncomeId == obj.IncomeId).FirstOrDefault();
+                        obj.Income = flowIncomes.Where(o => o.IncomeId == obj.IncomeId).FirstOrDefault();
                     });
 
-                    tstate.State.Outcomes = repoStateOutcome.Query(o => o.StateId == tstate.StateId).ToArray();
+                    tstate.State.Outcomes = repoStateOutcome.Query(o => o.StateId == tstate.StateId).ToList();
                     tstate.State.Outcomes.ForEach(obj =>
                     {
                         obj.State = tstate.State;
-                        obj.Outcome = repoFlowOutcome.Query(o => o.OutcomeId == obj.OutcomeId).FirstOrDefault();
+                        obj.Outcome = flowOutcomes.Where(o => o.OutcomeId == obj.OutcomeId).FirstOrDefault();
                     });
                 }
-                if (!string.IsNullOrEmpty(tstate.PrevTargetStateId))
-                    tstate.PrevTargetState = repoTargetState.Query(o => o.TargetStateId == tstate.PrevTargetStateId).FirstOrDefault();
+                tstate.ToTargetStates = repoNextTargetState.Query(o => o.TargetStateId == tstate.TargetStateId).ToList();
+                tstate.ToTargetStates.ForEach(obj =>
+                    {
+                        obj.FromTargetState = tstate;
+                        obj.ToTargetState = repoTargetState.Query(o => o.TargetStateId == obj.NextTargetStateId).FirstOrDefault();
+                    });
                 tstate.TargetIncomes = repoTargetIncome.Query(o => o.TargetStateId == tstate.TargetStateId).ToList();
                 tstate.TargetOutcomes = repoTargetOutcome.Query(o => o.TargetStateId == tstate.TargetStateId).ToList();
                 if (!string.IsNullOrEmpty(tstate.OperationId))

@@ -20,11 +20,13 @@ namespace DAF.Core.Data.BLToolkit
     {
         protected IDataContext db;
         protected IMapProvider mapper;
+        protected IEnumerable<IRepositoryEventHandler<T>> events;
 
-        public DataContextMapRepository(IDataContext db, IMapProvider mapper)
+        public DataContextMapRepository(IDataContext db, IMapProvider mapper, IEnumerable<IRepositoryEventHandler<T>> events)
         {
             this.db = db;
             this.mapper = mapper;
+            this.events = events;
         }
 
         public IQueryable<T> Query(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IQueryable<T>> orderby, int pageIndex, int pageSize, out int totalRecords)
@@ -62,13 +64,16 @@ namespace DAF.Core.Data.BLToolkit
             U entity = new U();
             entity = mapper.Map<T, U>(obj, () => entity);
 
-            if (insertingHandler != null)
-                insertingHandler(new EntityEventArgs<T>() { Action = DataOperation.Insert, OriginalEntity = null, Entity = obj, Repository = this });
+            obj = this.HandleEvents(events, es => es.InsertingHandler, DataOperation.Insert, null, obj);
+            obj = this.HandleEvent(insertingHandler, DataOperation.Insert, null, obj);
 
             int ret = db.Insert<U>(entity);
 
-            if (ret > 0 && insertedHandler != null)
-                insertedHandler(new EntityEventArgs<T>() { Action = DataOperation.Insert, OriginalEntity = null, Entity = obj, Repository = this });
+            if (ret > 0)
+            {
+                this.HandleEvent(insertedHandler, DataOperation.Insert, null, obj);
+                this.HandleEvents(events, es => es.InsertedHandler, DataOperation.Insert, null, obj);
+            }
 
             return ret > 0;
         }
@@ -78,13 +83,16 @@ namespace DAF.Core.Data.BLToolkit
             U entity = new U();
             entity = mapper.Map<T, U>(obj, () => entity);
 
-            if (updatingHandler != null)
-                updatingHandler(new EntityEventArgs<T>() { Action = DataOperation.Update, OriginalEntity = obj, Entity = obj, Repository = this });
+            obj = this.HandleEvents(events, es => es.UpdatingHandler, DataOperation.Update, obj, obj);
+            obj = this.HandleEvent(updatingHandler, DataOperation.Update, obj, obj);
 
             int ret = db.Update<U>(entity);
 
-            if (ret > 0 && updatedHandler != null)
-                updatedHandler(new EntityEventArgs<T>() { Action = DataOperation.Update, OriginalEntity = obj, Entity = obj, Repository = this });
+            if (ret > 0)
+            {
+                this.HandleEvent(updatedHandler, DataOperation.Update, obj, obj);
+                this.HandleEvents(events, es => es.UpdatedHandler, DataOperation.Update, obj, obj);
+            }
             
             return ret > 0;
         }
@@ -94,27 +102,103 @@ namespace DAF.Core.Data.BLToolkit
             U entity = new U();
             entity = mapper.Map<T, U>(obj, () => entity);
 
-            if (deletingHandler != null)
-                deletingHandler(new EntityEventArgs<T>() { Action = DataOperation.Delete, OriginalEntity = obj, Entity = null, Repository = this });
+            obj = this.HandleEvents(events, es => es.DeletingHandler, DataOperation.Delete, obj, null);
+            obj = this.HandleEvent(deletingHandler, DataOperation.Delete, obj, null);
 
             int ret = db.Delete<U>(entity);
 
-            if (ret > 0 && deletedHandler != null)
-                deletedHandler(new EntityEventArgs<T>() { Action = DataOperation.Delete, OriginalEntity = obj, Entity = null, Repository = this });
+            if (ret > 0)
+            {
+                this.HandleEvent(deletedHandler, DataOperation.Delete, obj, null);
+                this.HandleEvents(events, es => es.DeletedHandler, DataOperation.Delete, obj, null);
+            }
 
             return ret > 0;
         }
 
-        public virtual bool UpdateBatch(Expression<Func<T, bool>> predicate, Expression<Func<T, T>> setter)
-        {
-            int ret = db.GetTable<U>().Update(predicate, setter);
-            return ret > 0;
+        public virtual bool InsertBatch(IEnumerable<T> objs, BatchEntityEventHandler<T> batchInsertingHandler = null, BatchEntityEventHandler<T> batchInsertedHandler = null)
+        {            
+            objs = this.HandleBatchEvents(events, es => es.BatchInsertingHandler, DataOperation.Insert, objs);
+            objs = this.HandleBatchEvent(batchInsertingHandler, DataOperation.Insert, objs);
+
+            int totals = 0;
+            foreach (var obj in objs)
+            {
+                U entity = new U();
+                entity = mapper.Map<T, U>(obj, () => entity);
+                totals += db.Insert<U>(entity);
+            }
+
+            if (totals > 0)
+            {
+                this.HandleBatchEvent(batchInsertedHandler, DataOperation.Insert, objs);
+                this.HandleBatchEvents(events, es => es.BatchInsertedHandler, DataOperation.Insert, objs);
+            }
+
+            return totals > 0;
         }
 
-        public virtual bool DeleteBatch(Expression<Func<T, bool>> predicate)
+        public virtual bool UpdateBatch(Expression<Func<T, bool>> predicate, Expression<Func<T, T>> setter, BatchEntityEventHandler<T> batchUpdatingHandler = null, BatchEntityEventHandler<T> batchUpdatedHandler = null)
         {
-            int ret = db.GetTable<U>().Delete(predicate);
-            return ret > 0;
+            bool hasHandle = events != null && events.Any(e => e.CanHandle()) || batchUpdatingHandler != null || batchUpdatedHandler != null;
+            int totals = 0;
+            if (hasHandle)
+            {
+                var objs = db.GetTable<U>().Where(predicate).AsEnumerable();
+                objs = this.HandleBatchEvents(events, es => es.BatchUpdatingHandler, DataOperation.Update, objs);
+                objs = this.HandleBatchEvent(batchUpdatingHandler, DataOperation.Update, objs);
+
+                var func = setter.Compile();
+                foreach (var obj in objs)
+                {
+                    var nobj = func(obj);
+                    U entity = new U();
+                    entity = mapper.Map<T, U>(nobj, () => entity);
+                    totals += db.Update<U>(entity);
+                }
+                if (totals > 0)
+                {
+                    this.HandleBatchEvent(batchUpdatedHandler, DataOperation.Update, objs);
+                    this.HandleBatchEvents(events, es => es.BatchUpdatedHandler, DataOperation.Update, objs);
+                }
+            }
+            else
+            {
+                totals = db.GetTable<U>().Update(predicate, setter);
+            }
+
+            return totals > 0;
+        }
+
+        public virtual bool DeleteBatch(Expression<Func<T, bool>> predicate, BatchEntityEventHandler<T> batchDeletingHandler = null, BatchEntityEventHandler<T> batchDeletedHandler = null)
+        {
+            bool hasHandle = events != null && events.Any(e => e.CanHandle()) || batchDeletingHandler != null || batchDeletedHandler != null;
+            int totals = 0;
+            if (hasHandle)
+            {
+                var objs = db.GetTable<U>().Where(predicate).AsEnumerable();
+                objs = this.HandleBatchEvents(events, es => es.BatchDeletingHandler, DataOperation.Delete, objs);
+                objs = this.HandleBatchEvent(batchDeletingHandler, DataOperation.Delete, objs);
+
+                foreach (var obj in objs)
+                {
+                    U entity = new U();
+                    entity = mapper.Map<T, U>(obj, () => entity);
+                    totals += db.Delete<U>(entity);
+                }
+                if (totals > 0)
+                {
+                    this.HandleBatchEvent(batchDeletedHandler, DataOperation.Delete, objs);
+                    this.HandleBatchEvents(events, es => es.BatchDeletedHandler, DataOperation.Delete, objs);
+                }
+            }
+            else
+            {
+
+                totals = db.GetTable<U>().Delete(predicate);
+            }
+
+            return totals > 0;
         }
 
         public void Dispose()

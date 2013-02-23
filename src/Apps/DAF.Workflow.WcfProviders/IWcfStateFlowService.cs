@@ -13,13 +13,15 @@ namespace DAF.Workflow.WcfProviders
     public interface IWcfStateFlowService
     {
         [OperationContract]
-        IEnumerable<TargetFlow> LoadFlows(string appName, string flowCodeOrTargetType, DateTime? beginTime, DateTime? endTime, bool? started, bool? completed, FlowResult? result, bool loadAllInfo);
+        BizFlowInfo GetBizFlow(string clientId, string flowCodeOrTargetType);
         [OperationContract]
-        TargetFlow LoadFlow(string appName, string flowCodeOrTargetType, string targetId, bool loadAllInfo);
+        BizFlowInfo GetBizFlow(string flowId);
         [OperationContract]
-        TargetState LoadState(string targetStateId, bool loadAllInfo);
+        TargetFlowInfo GetTargetFlow(string clientId, string flowCodeOrTargetType, string targetId);
         [OperationContract]
-        TargetState GetCurrentState(string appName, string targetFlowId, bool loadAllInfo);
+        TargetFlowInfo GetTargetFlow(string targetFlowId);
+        [OperationContract]
+        IEnumerable<TargetFlowInfo> GetTargetFlows(string client, string flowCodeOrTargetType, DateTime? beginTime = null, DateTime? endTime = null, bool? started = null, bool? completed = null, FlowResult? result = null);
 
         [OperationContract]
         TargetState StartFlow(StartFlowInfo info);
@@ -30,7 +32,7 @@ namespace DAF.Workflow.WcfProviders
         [OperationContract]
         TargetState Do(DoOperationInfo info);
         [OperationContract]
-        TargetState Cancel(DoOperationInfo info);
+        bool Cancel(DoOperationInfo info);
 
         [OperationContract]
         bool UploadIncome(UploadInfo info);

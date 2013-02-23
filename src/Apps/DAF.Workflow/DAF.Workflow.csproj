@@ -41,6 +41,14 @@
       <HintPath>..\..\outputs\DAF.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="DAF.Core.Data.BLToolkit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\outputs\DAF.Core.Data.BLToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\libs\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -52,7 +60,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\BT\WorkflowDB.cs" />
+    <Compile Include="DB\EF\WorkflowDB.cs" />
+    <Compile Include="Migrations\201302030217203_Init.cs" />
+    <Compile Include="Migrations\201302030217203_Init.Designer.cs">
+      <DependentUpon>201302030217203_Init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\FlowResult.cs" />
+    <Compile Include="Models\NextTargetState.cs" />
     <Compile Include="Models\TargetStateExtentsions.cs" />
     <Compile Include="RepositoryStateFlowManager.cs" />
     <Compile Include="FlowIncomeNotProvidedException.cs" />
@@ -94,6 +110,24 @@
     <Compile Include="Models\TargetState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryStateFlowService.cs" />
+    <Compile Include="TargetFlowInfo.cs" />
+    <Compile Include="TargetFlowWrapper.cs" />
+    <Compile Include="TargetStateWrapper.cs" />
+    <Compile Include="WorkflowHelper.cs" />
+    <Compile Include="BizFlowInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DB\Versions\0.1\install_sql.sql" />
+    <Content Include="DB\Versions\0.1\uninstall_sql.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201302030217203_Init.resx">
+      <DependentUpon>201302030217203_Init.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -34,31 +34,29 @@
                 info.UserName = AuthHelper.CurrentSession.User.Name();
             }
 
-            TargetState state = null;
-
             ServerResponse result = new ServerResponse();
-            var flowSvr = IOC.Current.GetService<IStateFlowService>();
+            bool executed = false;
             if (info.Planned)
             {
-                state = flowSvr.Plan(info);
+                executed = WorkflowHelper.StateFlowService.Plan(info) != null;
             }
             else if (info.Cancelled)
             {
-                state = flowSvr.Cancel(info);
+                executed = WorkflowHelper.StateFlowService.Cancel(info);
             }
             else
             {
-                state = flowSvr.Do(info);
+                executed = WorkflowHelper.StateFlowService.Do(info) != null;
             }
-            if (state == null)
-            {
-                result.Status = ResponseStatus.Failed;
-                result.Message = LocaleHelper.Localizer.Get("SaveFailure");
-            }
-            else
+            if (executed)
             {
                 result.Status = ResponseStatus.Success;
                 result.Message = LocaleHelper.Localizer.Get("SaveSuccessfully");
+            }
+            else
+            {
+                result.Status = ResponseStatus.Failed;
+                result.Message = LocaleHelper.Localizer.Get("SaveFailure");
             }
 
             this.Refresh(result);

@@ -38,6 +38,13 @@ namespace DAF.Core
             return props.Select(p => p.PropertyInfo);
         }
 
+        public static IEnumerable<PropertyInfo> GetPropertiesWithAttribute(this Type type, Type attrType)
+        {
+            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(o => o.GetCustomAttribute(attrType) != null);
+            return props;
+        }
+
         public static PropertyInfo GetPropertyInfo(this Type type, string propertyName, bool ignoreCase)
         {
             Func<PropertyInfo, bool> predicate = null;

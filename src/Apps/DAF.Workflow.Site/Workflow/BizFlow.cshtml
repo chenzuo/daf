@@ -52,16 +52,24 @@
                                         <option value=""></option>
                                         <option value="0">开始</option>
                                         <option value="1">节点</option>
-                                        <option value="5">过程开始</option>
-                                        <option value="6">过程节点</option>
-                                        <option value="7">过程结束</option>
-                                        <option value="9">结束</option>
+                                        <option value="3">过程开始</option>
+                                        <option value="4">过程节点</option>
+                                        <option value="5">过程结束</option>
+                                        <option value="6">并行开始</option>
+                                        <option value="7">并行节点</option>
+                                        <option value="8">并行结束</option>
+                                        <option value="99">结束</option>
                                     </select>
                                     <select id="stateResult" data-bind="value:Result" class="hide">
                                         <option value=""></option>
                                         <option value="0">无</option>
                                         <option value="1">是</option>
                                         <option value="2">否</option>
+                                    </select>
+                                    <select id="allParallelStateShouldBeEnd" data-bind="bool:AllParallelStateShouldBeEnd" class="hide">
+                                        <option value=""></option>
+                                        <option value="true">所有并行必须完成</option>
+                                        <option value="false">任一并行完成即可</option>
                                     </select>
                                 </td>
                             </tr>
@@ -391,6 +399,7 @@
                         IntervalType: ko.observable(null),
                         ResponseIntervalValue: ko.observable(null),
                         TreatIntervalValue: ko.observable(null),
+                        AllParallelStateShouldBeEnd: ko.observable(false),
                         Incomes: ko.observableArray([]),
                         Outcomes: ko.observableArray([]),
                         Operations: ko.observableArray([])
@@ -550,7 +559,12 @@
 
     function ChangeStateType() {
         var val = $('#stateType').val();
-        if (val == "9") {
+        if (val == "6" || val == "7" || val == "8") {
+            $('#allParallelStateShouldBeEnd').show();
+        } else {
+            $('#allParallelStateShouldBeEnd').hide();
+        }
+        if (val == "99") {
             $('#stateResult').show();
         } else {
             $('#stateResult').hide();

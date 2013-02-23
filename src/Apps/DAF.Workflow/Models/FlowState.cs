@@ -46,6 +46,8 @@ namespace DAF.Workflow.Models
         public StateType StateType { get; set; }
         [DataMember]
         public FlowResult? Result { get; set; }
+        [DataMember]
+        public bool? AllParallelStateShouldBeEnd { get; set; }
 
         [ForeignKey("FlowId")]
         public virtual BizFlow Flow { get; set; }

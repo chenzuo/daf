@@ -14,12 +14,18 @@ namespace DAF.Workflow.Models
         [EnumMember]
         Stop = 1,
         [EnumMember]
-        PeriodBegin = 5,
+        PeriodBegin = 3,
         [EnumMember]
-        PeriodStop = 6,
+        PeriodStop = 4,
         [EnumMember]
-        PeriodEnd = 7,
+        PeriodEnd = 5,
         [EnumMember]
-        End = 9
+        ParallelBegin = 6,
+        [EnumMember]
+        ParallelStop = 7,
+        [EnumMember]
+        ParallelEnd = 8,
+        [EnumMember]
+        End = 99
     }
 }
