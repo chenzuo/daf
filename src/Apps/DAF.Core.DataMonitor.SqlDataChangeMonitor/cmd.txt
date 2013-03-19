@@ -1,0 +1,1 @@
+﻿sc create test_monitor binPath= "\"E:\ccs\daf\src\Apps\DAF.Core.DataMonitor.SqlDataChangeMonitor\bin\Debug\SqlDataChangeMonitor.exe\" -monitor -service"

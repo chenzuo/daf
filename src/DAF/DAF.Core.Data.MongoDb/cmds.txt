@@ -1,0 +1,21 @@
+﻿设置环境变量
+path   C:\mongodb\bin
+
+创建数据库目录：
+md "d:\test\mongo db data"
+创建数据库日志目录：
+"d:\test\log"
+
+命令：
+设置数据库路径：
+mongod.exe --dbpath "d:\test\mongo db data"
+创建cfg
+echo logpath=d:\test\log\mongo.log > C:\mongodb\mongod.cfg
+配置成windows服务
+mongod.exe --config C:\mongodb\mongod.cfg --install
+启动服务
+net start MongoDB
+停止服务
+net stop MongoDB
+移除windows服务
+mongod.exe --remove

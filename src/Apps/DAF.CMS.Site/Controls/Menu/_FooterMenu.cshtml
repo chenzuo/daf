@@ -1,0 +1,19 @@
+﻿<!--<Parameters>
+[{ Name: 'menu', DefaultValue: '', Description: '请输入菜单名称，该菜单数据取自“菜单管理”中的菜单名称。' }]
+/Parameters>-->
+@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@{
+    Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
+    var menu = paras["menu"];
+    var menuItems = CmsHelper.GetMenuItems(menu);
+}
+<nav>
+    <ul>
+        @foreach (var mi in menuItems)
+        {
+            <li><a href="@mi.LinkUrl" target="@mi.Target">@mi.Caption</a></li>
+        }
+    </ul>
+</nav>

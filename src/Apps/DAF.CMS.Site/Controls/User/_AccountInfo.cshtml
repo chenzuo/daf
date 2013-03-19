@@ -1,0 +1,18 @@
+﻿<!--<Parameters>
+/Parameters>-->
+@using DAF.Core;
+@using DAF.Web;
+@using DAF.SSO;
+<ul class="nav nav-pills">
+@if (AuthHelper.IsAuthenticated)
+{
+    <li><a>@(DAF.SSO.Resources.Locale(o => o.WelcomeUser, AuthHelper.CurrentSession.User.Name()))</a></li>
+    <li><a href="/Account/ChangePassword">@(DAF.SSO.Resources.Locale(o => o.ChangePassword))</a></li>
+    <li><a href="/Account/SignOff">@(DAF.SSO.Resources.Locale(o => o.SignOff))</a></li>
+}
+else
+{
+    <li><a href="/Account/Register">@(DAF.SSO.Resources.Locale(o => o.Register))</a></li>
+    <li><a href="/Account/SignOn">@(DAF.SSO.Resources.Locale(o => o.SignOn))</a></li>
+}
+</ul>

@@ -1,0 +1,32 @@
+﻿<!--<Parameters>
+[ 
+    { Name:'cate', DefaultValue:'', Description:'栏目编码，一般取自query string，可输入：cmd(qs name:cate)。' }
+    ,{ Name:'pi', DefaultValue:'0', Description:'当前页码，一般取自query string，可输入：cmd(qs name:pi)。' }
+    ,{ Name:'ps', DefaultValue:'20', Description:'每页页数，一般取自query string，可输入：cmd(qs name:ps)。' }
+]
+/Parameters>-->
+@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
+    IEnumerable<Content> objs  = CmsHelper.GetContents(paras["cate"], Convert.ToInt32(paras["pi"]), Convert.ToInt32(paras["ps"]));
+}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in objs)
+        {
+            <tr>
+                <td>@obj.Title</td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>

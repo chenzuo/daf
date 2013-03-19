@@ -1,0 +1,13 @@
+﻿<!--<Parameters>
+[ { Name:'parent', DefaultValue:'', Description:'栏目编码，一般取自query string，可输入：cmd(qs name:parent)。如果为空，则表示取第一层' }
+    , { Name:'depth', DefaultValue:'1', Description:'获取栏目的层数' }
+]
+/Parameters>-->
+@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@{
+    Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
+    var cates = CmsHelper.GetSubCategories(paras["parent"], Convert.ToInt32(paras["depth"]));
+}
+@Tree.Render(cates, o => o.Children, @<a href="/@item.Code">@item.Name</a>, 2);

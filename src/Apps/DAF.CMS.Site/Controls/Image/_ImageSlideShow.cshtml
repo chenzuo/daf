@@ -1,0 +1,77 @@
+﻿<!--<Parameters>
+[ { Name:'animation', DefaultValue:'random', Description:'' }
+    , { Name:'numbers', DefaultValue:'true', Description:'' }
+    , { Name:'dots', DefaultValue:'true', Description:'' }
+    , { Name:'controls', DefaultValue:'true', Description:'' }
+    , { Name:'enableNavigationKeys', DefaultValue:'true', Description:'' }
+    , { Name:'navigation', DefaultValue:'true', Description:'' }
+    , { Name:'images', DefaultValue:'', Description:'滚动图片来源，取自“内容管理”，请配置对应的“栏目设置”中的栏目编码。' }
+]
+/Parameters>-->
+@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@{
+    string options = string.Empty;
+    Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
+    if (paras.ContainsKey("animation"))
+    {
+        options += string.Format("options.animation = '{0}';", paras["animation"]);
+    }
+    else
+    {
+        options += "options.animation = 'random';";
+    }
+    if (paras.ContainsKey("numbers"))
+    {
+        options += string.Format("options.numbers = {0};", paras["numbers"]);
+    }
+    if (paras.ContainsKey("dots"))
+    {
+        options += string.Format("options.dots = {0};", paras["dots"]);
+    }
+    if (paras.ContainsKey("controls"))
+    {
+        options += string.Format("options.controls = {0};", paras["controls"]);
+    }
+    if (paras.ContainsKey("enableNavigationKeys"))
+    {
+        options += string.Format("options.enable_navigation_keys = {0};", paras["enableNavigationKeys"]);
+    }
+    if (paras.ContainsKey("navigation"))
+    {
+        options += string.Format("options.navigation = {0};", paras["navigation"]);
+    }
+
+    var images = CmsHelper.GetContents(paras["images"]);
+}
+@AssetsHelper.CDNCss("skitter.styles.css")
+@AssetsHelper.CDNScript("jquery.easing.js")
+@AssetsHelper.CDNScript("jquery.animate-colors-min.js")
+@AssetsHelper.CDNScript("jquery.skitter.min.js")
+<div class="image-slider box_skitter">
+    <ul>
+    @foreach (var img in images)
+    {
+        <li>
+            @if(!string.IsNullOrEmpty(img.LinkUrl))
+            {
+            @:<a target="_blank" href="@img.LinkUrl">
+            }
+            <img src="@(string.IsNullOrEmpty(img.ImageUrl) ? img.ContentUrl : img.ImageUrl)" alt="@img.Title" />
+            <span>@img.Title</span>
+            @if(!string.IsNullOrEmpty(img.LinkUrl))
+            {
+            @:</a>
+            }
+        </li>
+    }
+    </ul>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var options = {};
+        @Html.Raw(options)
+        $('.box_skitter').skitter(options);
+    });
+</script>
