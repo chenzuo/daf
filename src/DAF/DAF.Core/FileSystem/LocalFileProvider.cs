@@ -47,7 +47,6 @@ namespace DAF.Core.FileSystem
             {
                 return new DirectoryInfo[] { parent };
             }
-
             if(recursive)
             {
                 return parent.GetDirectories(relativePathPattern, true);

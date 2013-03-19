@@ -17,16 +17,12 @@ namespace DAF.Web.Api
 {
     public class WebApiGlobal : WebGlobal
     {
-        protected override ContainerBuilder BuildContainer()
+        protected override void BuildContainer(ContainerBuilder builder)
         {
-            ContainerBuilder builder = base.BuildContainer();
-
             Config.Current.AssembiesToScan.ForEach(asm =>
                 {
                     builder.RegisterApiControllers(asm);
                 });
-
-            return builder;
         }
 
         protected override void Application_Start(object sender, EventArgs e)

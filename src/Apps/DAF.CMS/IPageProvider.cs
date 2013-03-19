@@ -11,12 +11,13 @@ namespace DAF.CMS
     public interface IPageProvider
     {
         IEnumerable<WebPage> GetPages(string siteId, string parentId = null);
-
+        WebPage GetPage(string pageId);
         IEnumerable<WebPageControl> GetControls(string pageId);
         bool Save(ChangedData<WebPageControl> items);
 
         bool AddPage(WebPage page);
         bool UpdatePage(WebPage page);
         bool DeletePage(string pageId);
+        bool SetAsHomePage(string pageId);
     }
 }

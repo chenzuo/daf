@@ -13,10 +13,12 @@ namespace DAF.CMS
         private ITransactionManager trans;
         private IRepository<WebPage> repoPage;
         private IRepository<WebPageControl> repoControl;
+        private IRepository<SubSite> repoSite;
 
-        public PageProvider(ITransactionManager trans, IRepository<WebPage> repoPage, IRepository<WebPageControl> repoControl)
+        public PageProvider(ITransactionManager trans,  IRepository<SubSite> repoSite, IRepository<WebPage> repoPage, IRepository<WebPageControl> repoControl)
         {
             this.trans = trans;
+            this.repoSite = repoSite;
             this.repoPage = repoPage;
             this.repoControl = repoControl;
         }
@@ -29,6 +31,12 @@ namespace DAF.CMS
             else
                 query = query.Where(o => o.ParentPageId == parentId);
             return query.ToArray();
+        }
+
+        public WebPage GetPage(string pageId)
+        {
+            var query = repoPage.Query(o => o.PageId == pageId).FirstOrDefault();
+            return query;
         }
 
         public IEnumerable<WebPageControl> GetControls(string pageId)
@@ -56,6 +64,21 @@ namespace DAF.CMS
         public bool DeletePage(string pageId)
         {
             return repoPage.DeleteBatch(o => o.PageId == pageId);
+        }
+
+        public bool SetAsHomePage(string pageId)
+        {
+            var p = repoPage.Query(o => o.PageId == pageId).FirstOrDefault();
+            if (p != null)
+            {
+                var s = repoSite.Query(o => o.SiteId == p.SiteId).FirstOrDefault();
+                if (s != null)
+                {
+                    s.HomePageId = p.PageId;
+                    return repoSite.Update(s);
+                }
+            }
+            return false;
         }
     }
 }

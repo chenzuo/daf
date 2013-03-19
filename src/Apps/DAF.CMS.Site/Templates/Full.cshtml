@@ -1,4 +1,13 @@
-﻿<div>
+﻿@{
+    Layout = "~/_Window.cshtml";
+}
+@section head {
+    @RenderSection("head", false)
+}
+@section end {
+    @RenderSection("end", false)
+}
+<div>
     @RenderSection("top")
 </div>
 <div>
@@ -6,7 +15,7 @@
         @RenderSection("left")
     </div>
     <div>
-        @RenderSection("main")
+        @RenderBody()
     </div>
     <div>
         @RenderSection("right")

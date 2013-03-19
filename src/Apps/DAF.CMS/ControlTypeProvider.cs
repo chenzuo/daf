@@ -17,7 +17,7 @@ namespace DAF.CMS
         public ControlTypeProvider(IFileSystemProvider fileProvider)
         {
             this.fileProvider = fileProvider;
-            this.fileProvider.SetRootPath("~/Controls".GetPhysicalPath());
+            this.fileProvider.SetRootPath("~/".GetPhysicalPath());
         }
 
         public IEnumerable<ControlType> LoadControlTypes()
@@ -25,26 +25,68 @@ namespace DAF.CMS
             if (controlTypes == null || controlTypes.Count <= 0)
             {
                 controlTypes = new List<ControlType>();
-                fileProvider.GetFiles(null, "*.cshtml", true)
-                    .ForEach(f =>
+                var conFiles = fileProvider.GetFiles("Controls/*", "*.cshtml", false)
+                    .Union(fileProvider.GetFiles("Controls", "*.cshtml", false));
+                var moduleFiles = fileProvider.GetFiles("Modules/*/Controls/*", "*.cshtml", false)
+                    .Union(fileProvider.GetFiles("Modules/*/Controls", "*.cshtml", false));
+
+                conFiles.ForEach(f =>
                     {
-                        string category = fileProvider.MakeRelative(f.DirectoryName);
                         ControlType tt = new ControlType();
                         tt.Name = f.FileNameWithoutExtension();
-                        tt.Path = string.IsNullOrEmpty(category) ? f.Name : string.Join("/", category, f.Name).ToLower();
-                        tt.Category = category;
+                        tt.Path = "~/" + fileProvider.MakeRelative(f.FullName);
+                        tt.Category = f.Directory.Name.ToLower() == "controls" ? "" : f.Directory.Name;
                         tt.Parameters = GetParameters(f.FullName);
 
                         controlTypes.Add(tt);
                     });
+                moduleFiles.ForEach(f =>
+                {
+                    ControlType tt = new ControlType();
+                    tt.Name = f.FileNameWithoutExtension();
+                    tt.Path = "~/" + fileProvider.MakeRelative(f.FullName);
+                    tt.Category = f.Directory.Name.ToLower() == "controls" ? "" : f.Directory.Name;
+                    tt.Module = f.Directory.Name.ToLower() == "controls" ? f.Directory.Parent.Name : f.Directory.Parent.Parent.Name;
+                    tt.Parameters = GetParameters(f.FullName);
+
+                    controlTypes.Add(tt);
+                });
+
             }
 
             return controlTypes;
         }
 
-        private IEnumerable<string> GetParameters(string file)
+        private IEnumerable<ControlParameter> GetParameters(string file)
         {
-            return Enumerable.Empty<string>();
+            var lines = File.ReadAllLines(file);
+            bool started = false;
+            StringBuilder sb = new StringBuilder();
+            foreach (var line in lines)
+            {
+                if (started)
+                {
+                    if (line.Trim() == "/Parameters>-->")
+                    {
+                        started = false;
+                        break;
+                    }
+                    sb.Append(line);
+                }
+                else
+                {
+                    if (line.Trim() == "<!--<Parameters>")
+                    {
+                        started = true;
+                    }
+                }
+            }
+            var json = sb.ToString();
+            if (json.Length > 0)
+            {
+                return JsonHelper.Deserialize<ControlParameter[]>(json);
+            }
+            return Enumerable.Empty<ControlParameter>();
         }
 
         public ControlType GetControlType(string nameOrPath)

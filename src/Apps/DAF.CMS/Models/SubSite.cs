@@ -41,10 +41,14 @@ namespace DAF.CMS.Models
         public string DefaultMetaKeywords { get; set; }
         [StringLength(500)]
         public string DefaultMetaDescription { get; set; }
+        [StringLength(50)]
+        public string HomePageId { get; set; }
 
 
         [ForeignKey("SiteName")]
         public virtual WebSite OwnerSite { get; set; }
+        [ForeignKey("HomePageId")]
+        public virtual WebPage HomePage { get; set; }
         public virtual ICollection<AppSetting> SiteSettings { get; set; }
         public virtual ICollection<BasicDataItem> BasicDataItems { get; set; }
         public virtual ICollection<Category> Categories { get; set; }

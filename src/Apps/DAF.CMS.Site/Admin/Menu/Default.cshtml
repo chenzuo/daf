@@ -108,12 +108,12 @@
     var vm;
     $(function () {
         vm = new KVM({
-            getQueryUrl: function () { return '@(UrlHelper.ClientUrl("Api/Menu/Data"))?siteId=' + vm.SelectedSite() + '&group=' + vm.SelectedGroup().Name(); },
+            getQueryUrl: function () { return '@(UrlHelper.ClientUrl("Api/Menu/Data"))?siteId=' + vm.SelectedSite().SiteId + '&group=' + vm.SelectedGroup().Name(); },
             onQuerySuccess: function (data) { EnableItemSortable(); },
             getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Menu/Save"))'; },
             createItem: function () {
                 return {
-                    SiteId: ko.observable(vm.SelectedSite()),
+                    SiteId: ko.observable(vm.SelectedSite().SiteId),
                     MenuGroupName: ko.observable(vm.SelectedGroup().Name()),
                     Name: ko.observable(""),
                     Caption: ko.observable(""),
@@ -134,9 +134,9 @@
                 self.SelectedSite = ko.observable(null);
                 self.SelectedGroup = ko.observable(null);
                 self.EditingGroup = ko.observable(null);
-                self.SelectSite = function (siteId) {
-                    vm.SelectedSite(siteId);
-                    GetJson('@(UrlHelper.ClientUrl("Api/Menu/Groups"))?siteId=' + vm.SelectedSite(), function (data) {
+                self.SelectSite = function (site) {
+                    vm.SelectedSite(site);
+                    GetJson('@(UrlHelper.ClientUrl("Api/Menu/Groups"))?siteId=' + vm.SelectedSite().SiteId, function (data) {
                         ko.mapping.fromJS(data, null, vm.Groups);
                         if (vm.Groups().length > 0) {
                             vm.SelectGroup(vm.Groups()[0]);
@@ -148,7 +148,7 @@
                 };
                 self.AddChildItem = function (item) {
                     var ci = {
-                        SiteId: ko.observable(vm.SelectedSite()),
+                        SiteId: ko.observable(vm.SelectedSite().SiteId),
                         MenuGroupName: ko.observable(vm.SelectedGroup().Name()),
                         Name: ko.observable(""),
                         Caption: ko.observable(""),
@@ -199,7 +199,7 @@
                 };
                 self.NewGroup = function () {
                     var group = {
-                        SiteId: ko.observable(vm.SelectedSite()),
+                        SiteId: ko.observable(vm.SelectedSite().SiteId),
                         Name: ko.observable(""),
                         Caption: ko.observable("")
                     };
@@ -218,7 +218,7 @@
                     }
                     ShowConfirm("提示信息", "确认删除菜单组" + item.Name() + "？",
                     function () {
-                        GetJson('@(UrlHelper.ClientUrl("Api/Menu/DeleteGroup"))?siteId=' + vm.SelectedSite() + '&group=' + item.Name(),
+                        GetJson('@(UrlHelper.ClientUrl("Api/Menu/DeleteGroup"))?siteId=' + vm.SelectedSite().SiteId + '&group=' + item.Name(),
                             function (data) {
                                 self.Groups.remove(item);
                                 if (self.Groups().length > 0) {
@@ -247,8 +247,8 @@
         SelectFirstSite();
     });
 
-    function OnSelectSite(event, siteId) {
-        vm.SelectSite(siteId);
+    function OnSelectSite(event, site) {
+        vm.SelectSite(site);
     }
 
     function SaveGroup(isNew) {

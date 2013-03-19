@@ -32,7 +32,7 @@ namespace DAF.CMS
             return query.ToArray();
         }
 
-        public ICollection<TreeNode> GetMenu(string siteId, string groupName)
+        public ICollection<TreeNode> GetMenuTree(string siteId, string groupName)
         {
             var query = repoMenuItem.Query(o => o.SiteId == siteId && o.MenuGroupName == groupName).ToArray();
             var tree = HierarchyHelper.Build<SiteMenuItem>(query.Where(o => o.ParentName == null),

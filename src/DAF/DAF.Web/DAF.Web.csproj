@@ -84,6 +84,9 @@
     <Compile Include="Caching\WebCacheManager.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Commands\QueryStringCommand.cs" />
+    <Compile Include="Commands\SessionCommand.cs" />
+    <Compile Include="Commands\CacheCommand.cs" />
     <Compile Include="ContentItem.cs" />
     <Compile Include="Extensions\HtmlStringExtensions.cs" />
     <Compile Include="Extensions\StringExtentension.cs" />

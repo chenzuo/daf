@@ -45,6 +45,12 @@ namespace DAF.CMS.Models
         public string PageTitle { get; set; }
         [StringLength(50)]
         public string HeaderTitle { get; set; }
+        [MaxLength]
+        public string PageLinks { get; set; }
+        [MaxLength]
+        public string PageCSS { get; set; }
+        [MaxLength]
+        public string PageJS { get; set; }
 
         public DataStatus Status { get; set; }
         [StringLength(50)]

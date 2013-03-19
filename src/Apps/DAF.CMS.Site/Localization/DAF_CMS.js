@@ -1,4 +1,8 @@
 ﻿{
+    CurrentSiteNotFound: "当前站点未设置",
+    HomePageNotFoundInSite: "站点{0}未设置首页",
+    PageNotFoundInSite: "站点{0}未设置页面{1}",
+
     Content_Index_Title: "内容管理",
     Content_Index_Description: "网站的内容管理",
     Content_Add_Title: "新增内容",

@@ -1,9 +1,10 @@
 ﻿@using DAF.Core;
+@using DAF.SSO;
 @using DAF.Web;
 @using DAF.Core.Collections;
 @using DAF.Core.Security;
 
-@helper Render(IEnumerable<TreeNode> roots, Func<dynamic, object> itemTemplate = null, int depth = 99, int currentDepth = 0)
+@helper Render(IEnumerable<dynamic> roots, Func<dynamic, IEnumerable<dynamic>> getChildren, Func<dynamic, object> itemTemplate, int depth = 99, Func<dynamic, string> getPermissionUri = null, int currentDepth = 0)
 {
     int total = roots == null ? 0 : roots.Count();
     if (total > 0 && currentDepth < depth)
@@ -11,16 +12,15 @@
     <ul>
     @foreach (var item in roots)
     {
-        <li data-key="@item.Key">
-            @if (itemTemplate == null)
-            {
-                @:<span>@item.Caption</span>
-            }
-            else
-            {
+        bool allowed = true;
+        if(getPermissionUri != null)
+        {
+            string permissionUrl = getPermissionUri(item);
+            allowed = AuthHelper.CurrentSession.CanAccess(AuthHelper.CurrentClient.ClientId, permissionUrl, PermissionType.Operation);
+        }
+        <li>
             @itemTemplate(item)
-            }
-            @Render(item.ChildNodes, itemTemplate, depth, currentDepth + 1)
+            @Render(getChildren(item), getChildren, itemTemplate, depth, getPermissionUri, currentDepth + 1)
         </li>
     }
     </ul>       

@@ -29,6 +29,13 @@ namespace DAF.CMS
             return query.ToArray();
         }
 
+        public PageTemplate GetTemplate(string siteId, string template)
+        {
+            var query = repoTemplate.Query(o => o.SiteId == siteId && o.TemplateName == template).FirstOrDefault();
+            return query;
+
+        }
+
         public IEnumerable<PageTemplateControl> GetControls(string siteId, string template = null)
         {
             var query = repoControl.Query(o => o.SiteId == siteId);

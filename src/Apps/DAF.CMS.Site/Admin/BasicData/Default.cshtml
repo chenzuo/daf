@@ -102,7 +102,7 @@
     $(function () {
         vm = new KVM({
             getQueryUrl: function () {
-                var url = '@(UrlHelper.ClientUrl("Api/BasicData/Data"))?siteId=' + vm.SelectedSite();
+                var url = '@(UrlHelper.ClientUrl("Api/BasicData/Data"))?siteId=' + vm.SelectedSite().SiteId;
                 var cate = vm.SelectedCate();
                 if (cate) {
                     url = url + '&cate=' + cate;
@@ -114,7 +114,7 @@
             createItem: function () {
                 return {
                     ItemId: ko.observable(IdGenerator.NewId()),
-                    SiteId: ko.observable(vm.SelectedSite()),
+                    SiteId: ko.observable(vm.SelectedSite().SiteId),
                     Category: ko.observable(vm.SelectedCate()),
                     Name: ko.observable(""),
                     Caption: ko.observable(""),
@@ -130,9 +130,9 @@
                 self.Categories = ko.observableArray([]);
                 self.SelectedSite = ko.observable(null);
                 self.SelectedCate = ko.observable("");
-                self.SelectSite = function (siteId) {
-                    vm.SelectedSite(siteId);
-                    var url = '@(UrlHelper.ClientUrl("Api/BasicData/Categories"))?siteId=' + siteId;
+                self.SelectSite = function (site) {
+                    vm.SelectedSite(site);
+                    var url = '@(UrlHelper.ClientUrl("Api/BasicData/Categories"))?siteId=' + site.SiteId;
 
                     GetJson(url,
                     function (data, status, xhr) {
@@ -204,8 +204,8 @@
         SelectFirstSite();
     });
 
-    function OnSelectSite(event, siteId) {
-        vm.SelectSite(siteId);
+    function OnSelectSite(event, site) {
+        vm.SelectSite(site);
     }
 
     function NewCate() {
@@ -274,7 +274,7 @@
             tr.find('>.tbody').toggle();
         }
         else {
-            var url = '@(UrlHelper.ClientUrl("Api/BasicData/Data"))?siteid=' + vm.SelectedSite() + '&cate=' + vm.SelectedCate() + '&parentId=' + item.ItemId();
+            var url = '@(UrlHelper.ClientUrl("Api/BasicData/Data"))?siteid=' + vm.SelectedSite().SiteId + '&cate=' + vm.SelectedCate() + '&parentId=' + item.ItemId();
             GetJson(url, function (data) {
                 ko.mapping.fromJS(data, null, item.Children);
                 for (var i = 0; i < item.Children().length; i++) {

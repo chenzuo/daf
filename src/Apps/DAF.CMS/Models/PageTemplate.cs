@@ -22,6 +22,12 @@ namespace DAF.CMS.Models
         public string TemplatePath { get; set; }
         [StringLength(500)]
         public string AllowContentTypes { get; set; }
+        [MaxLength]
+        public string PageLinks { get; set; }
+        [MaxLength]
+        public string PageCSS { get; set; }
+        [MaxLength]
+        public string PageJS { get; set; }
 
         [ForeignKey("SiteId")]
         public virtual SubSite Site { get; set; }

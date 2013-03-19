@@ -11,7 +11,7 @@ namespace DAF.CMS
     public interface IPageTemplateProvider
     {
         IEnumerable<PageTemplate> GetTemplates(string siteId);
-
+        PageTemplate GetTemplate(string siteId, string template);
         IEnumerable<PageTemplateControl> GetControls(string siteId, string template = null);
         bool Save(ChangedData<PageTemplateControl> items);
 

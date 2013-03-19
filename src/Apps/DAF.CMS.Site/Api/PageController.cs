@@ -50,7 +50,7 @@ namespace DAF.CMS.Site.Controllers
             {
                 Name = o.TemplateName,
                 Path = o.TemplatePath,
-                Sections = templateTypes.First(t => t.Path == o.TemplatePath).Sections
+                Sections = templateTypes.First(t => t.Path.ToLower() == o.TemplatePath.ToLower()).Sections
             });
         }
 
@@ -89,6 +89,17 @@ namespace DAF.CMS.Site.Controllers
         {
             return pageId.Save(o => pageProvider.DeletePage(pageId),
                 LocaleHelper.Localizer.Get("DeleteSuccessfully"), LocaleHelper.Localizer.Get("DeleteFailure"));
+        }
+
+        [HttpGet]
+        public ServerResponse SetAsHomePage(string pageId)
+        {
+            var response = pageId.Save(o => pageProvider.SetAsHomePage(pageId));
+            if (response.Status == ResponseStatus.Success)
+            {
+                CmsHelper.CurrentSite.HomePageId = pageId;
+            }
+            return response;
         }
     }
 }

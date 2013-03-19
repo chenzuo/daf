@@ -15,19 +15,9 @@ namespace DAF.Core
             return LocaleHelper.Localizer.Get(name, objType.AssemblyName());
         }
 
-        public static string Format<T>(this ILocalizer localizer, string resourceName, params object[] paras)
+        public static string Format<T>(this ILocalizer localizer, string resourceName, string cultureInfo, params object[] paras)
         {
-            return Format(localizer, resourceName, typeof(T).AssemblyName(), null, paras);
-        }
-
-        public static string Format(this ILocalizer localizer, string resourceName, params object[] paras)
-        {
-            return Format(localizer, resourceName, "DAF.Core", null, paras);
-        }
-
-        public static string Format(this ILocalizer localizer, string resourceName, string nameSpace, params object[] paras)
-        {
-            return Format(localizer, resourceName, nameSpace, null, paras);
+            return Format(localizer, resourceName, typeof(T).AssemblyName(), cultureInfo, paras);
         }
 
         public static string Format(this ILocalizer localizer, string resourceName, string nameSpace, string cultureInfo, params object[] paras)

@@ -87,13 +87,13 @@
     var vm;
     $(function () {
         vm = new KVM({
-            getQueryUrl: function () { return '@(UrlHelper.ClientUrl("Api/Category/Data"))?siteId=' + vm.SelectedSite(); },
+            getQueryUrl: function () { return '@(UrlHelper.ClientUrl("Api/Category/Data"))?siteId=' + vm.SelectedSite().SiteId; },
             onQuerySuccess: function (data) { EnableItemSortable(); },
             getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Category/Save"))'; },
             createItem: function () {
                 return {
                     CategoryId: ko.observable(IdGenerator.NewId()),
-                    SiteId: ko.observable(vm.SelectedSite()),
+                    SiteId: ko.observable(vm.SelectedSite().SiteId),
                     Code: ko.observable(""),
                     Name: ko.observable(""),
                     CategoryType: ko.observable(2),
@@ -107,8 +107,8 @@
             onInit: function (self) {
                 self.Categories = ko.observableArray([]);
                 self.SelectedSite = ko.observable(null);
-                self.SelectSite = function (siteId) {
-                    vm.SelectedSite(siteId);
+                self.SelectSite = function (site) {
+                    vm.SelectedSite(site);
                     vm.GetData();
                 };
                 self.AddChildItem = function (item) {
@@ -170,8 +170,8 @@
         SelectFirstSite();
     });
 
-    function OnSelectSite(event, siteId) {
-        vm.SelectSite(siteId);
+    function OnSelectSite(event, site) {
+        vm.SelectSite(site);
     }
 
     function EnableItemSortable() {
@@ -217,7 +217,7 @@
             tr.find('>.tbody').toggle();
         }
         else {
-            var url = '@(UrlHelper.ClientUrl("Api/Category/Data"))?siteId=' + vm.SelectedSite() + '&parentId=' + item.CategoryId();
+            var url = '@(UrlHelper.ClientUrl("Api/Category/Data"))?siteId=' + vm.SelectedSite().SiteId + '&parentId=' + item.CategoryId();
             GetJson(url, function (data) {
                 ko.mapping.fromJS(data, null, item.Children);
                 for (var i = 0; i < item.Children().length; i++) {

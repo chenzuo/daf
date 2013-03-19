@@ -1,17 +1,4 @@
 ﻿{
-    DefaultTheme: "Default",
-    DefaultSkin: "Default",
-    DefaultLocale: "zh-CN",
-    DefaultTimeZone: "8.0",
-    SiteLogo: "/favicon.ico",
-    SiteName: "网站名称",
-    DefaultTitle: "网站标题",
-    DefaultMetaKeywords: "网站MetaKeywords",
-    DefaultMetaDescription: "网站MetaDescription",
-
-    Home: "首页",
-    About: "关于",
-
     Info: "提示",
     Warning: "警告",
     Error: "错误",

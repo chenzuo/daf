@@ -6,6 +6,8 @@ using System.IO;
 using System.Web;
 using System.Reflection;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Configuration;
 
 namespace DAF.Core
 {
@@ -235,5 +237,38 @@ namespace DAF.Core
     {
         Exclude,
         Only
+    }
+
+    public static class ConfigExtensions
+    {
+        public static IContainer InitializeDefaultIOC(this Config config, Action<ContainerBuilder> extensionBuilder = null)
+        {
+            config.IgnoreAssemblies("system", "autofac", "bltoolkit", "entityframework", "microsoft", "newtonsoft", "nservicebus", "log4net", "emitmapper")
+                .With();
+
+            ContainerBuilder builder = new ContainerBuilder();
+            List<IAutoRegisterContainerWithType> autoRegisters = new List<IAutoRegisterContainerWithType>();
+            Config.Current.TypesToScan.Where(t => typeof(IAutoRegisterContainerWithType).IsAssignableFrom(t))
+                .ForEach(o =>
+                {
+                    if (o.GetConstructor(Type.EmptyTypes) != null)
+                        autoRegisters.Add(Activator.CreateInstance(o) as IAutoRegisterContainerWithType);
+                });
+
+            Config.Current.TypesToScan.ForEach(t =>
+            {
+                autoRegisters.ForEach(o => o.Register(builder, t));
+            });
+
+            builder.RegisterModule(new ConfigurationSettingsReader());
+
+            if (extensionBuilder != null)
+                extensionBuilder(builder);
+
+            var container = builder.Build();
+            IOC.SetContainer(container);
+
+            return container;
+        }
     }
 }

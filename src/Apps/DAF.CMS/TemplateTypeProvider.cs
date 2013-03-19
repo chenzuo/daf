@@ -30,7 +30,7 @@ namespace DAF.CMS
                         {
                             TemplateType tt = new TemplateType();
                             tt.Name = f.FileNameWithoutExtension();
-                            tt.Path = f.Name.ToLower();
+                            tt.Path = f.Name;
                             tt.Sections = GetSections(f.FullName);
 
                             templateTypes.Add(tt);
@@ -50,6 +50,8 @@ namespace DAF.CMS
                 if (text.StartsWith("@RenderSection("))
                 {
                     var infos = text.Replace("@RenderSection(", "").Replace("\"", "").Replace(")", "").Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                    if (infos[0] == "head" || infos[0] == "end")
+                        continue;
                     PageSection sec = new PageSection();
                     sec.Name = infos[0];
                     if (infos.Length > 1)
@@ -65,7 +67,7 @@ namespace DAF.CMS
             }
             sections.Add(new PageSection()
             {
-                Name = "Body",
+                Name = "body",
                 Required = false
             });
             return sections;

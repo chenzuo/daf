@@ -15,7 +15,7 @@ namespace DAF.CMS
         IEnumerable<SiteMenuGroup> GetGroups(string siteId);
 
         IEnumerable<SiteMenuItem> GetMenu(string siteId, string groupName, string parentName = null);
-        ICollection<TreeNode> GetMenu(string siteId, string groupName);
+        ICollection<TreeNode> GetMenuTree(string siteId, string groupName);
 
         bool Save(ChangedData<SiteMenuItem> items);
 

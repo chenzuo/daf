@@ -79,7 +79,7 @@
     $(function () {
         vm = new KVM({
             getQueryUrl: function () {
-                var url = '@(UrlHelper.ClientUrl("Api/UserGroup/Data"))?siteId=' + vm.SelectedSite();
+                var url = '@(UrlHelper.ClientUrl("Api/UserGroup/Data"))?siteId=' + vm.SelectedSite().SiteId;
                 var selectedGroup = vm.SelectedGroup();
                 if (selectedGroup) {
                     return url + '&parentId=' + selectedGroup.UserGroupId();
@@ -106,7 +106,7 @@
             createItem: function () {
                 return {
                     UserGroupId: ko.observable(IdGenerator.NewId()),
-                    SiteId: ko.observable(vm.SelectedSite()),
+                    SiteId: ko.observable(vm.SelectedSite().SiteId),
                     Name: ko.observable(""),
                     ShowOrder: ko.observable(vm.Data().length),
                     ParentId: ko.observable(null),
@@ -118,8 +118,8 @@
                 self.SelectedSite = ko.observable(null);
                 self.Users = ko.observableArray([]);
                 self.GroupUsers = ko.observableArray([]);
-                self.SelectSite = function (siteId) {
-                    vm.SelectedSite(siteId);
+                self.SelectSite = function (site) {
+                    vm.SelectedSite(site);
                     vm.SelectGroup(null);
                     vm.GetData();
                 };
@@ -214,8 +214,8 @@
         });
     });
 
-    function OnSelectSite(event, siteId) {
-        vm.SelectSite(siteId);
+    function OnSelectSite(event, site) {
+        vm.SelectSite(site);
     }
 
     function ChangeUser(item, event) {

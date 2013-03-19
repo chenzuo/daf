@@ -34,6 +34,9 @@
       <HintPath>..\..\libs\Autofac.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Autofac.Configuration">
+      <HintPath>..\..\libs\Autofac.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -75,7 +78,16 @@
     <Compile Include="Caching\SimpleDictionaryCacheProvider.cs" />
     <Compile Include="Caching\ThreadSlotCacheProvider.cs" />
     <Compile Include="ChangedData.cs" />
+    <Compile Include="Collections\SortedObservableCollection.cs" />
+    <Compile Include="Command\AutoRegisterCommand.cs" />
+    <Compile Include="Command\ICommand.cs" />
     <Compile Include="ConstItem.cs" />
+    <Compile Include="DataMonitor\ChangeInfo.cs" />
+    <Compile Include="DataMonitor\IChangeVersionManager.cs" />
+    <Compile Include="DataMonitor\IDataChangeHandler.cs" />
+    <Compile Include="DataMonitor\IDataMonitor.cs" />
+    <Compile Include="DataMonitor\JsonChangeVersionManager.cs" />
+    <Compile Include="DataMonitor\VersionInfo.cs" />
     <Compile Include="Data\IRepositoryEventHandler.cs" />
     <Compile Include="Data\PagingInfo.cs" />
     <Compile Include="Collections\SerializableDictionary.cs" />
@@ -112,8 +124,10 @@
     <Compile Include="DateTimePart.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\LocalizerExtensions.cs" />
+    <Compile Include="Helpers\CommandHelper.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\HttpHelper.cs" />
+    <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="Helpers\LocaleHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Messaging\AutoRegisterMessageMapper.cs" />
@@ -157,9 +171,6 @@
     <Compile Include="IStartup.cs" />
     <Compile Include="Messaging\IMessageHandler.cs" />
     <Compile Include="JsonFileObjectProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="JsonObjectProvider.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="KeyEqualityComparer.cs" />

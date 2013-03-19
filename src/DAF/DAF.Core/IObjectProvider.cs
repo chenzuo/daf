@@ -9,5 +9,6 @@ namespace DAF.Core
     public interface IObjectProvider<T>
     {
         T GetObject();
+        void SaveObject(T obj);
     }
 }

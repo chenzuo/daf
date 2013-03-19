@@ -36,8 +36,8 @@ function GetCookieValue(name) {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                return decodeURIComponent(cookie.substring(name.length + 1));
+            if (cookie.substr(0, name.length + 1) == (name + '=')) {
+                return decodeURIComponent(cookie.substr(name.length + 1));
             }
         }
     }
@@ -769,4 +769,58 @@ Array.prototype.unique = function (funcCompare) {
         }
     }
     return uniqueArr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function Str2Dic(val, comma, equal, leftComma, rightComma) {
+    if (val.length <= 0)
+        return [];
+    if (!comma) { comma = '&'; }
+    if (!equal) { equal = '='; }
+    if (!leftComma) { leftComma = ''; }
+    if (!rightComma) { rightComma = ''; }
+    var dic = new Array();
+    var startIdx = 0;
+    var equalIdx = 0;
+    var leftIdx = 0, rightIdx = 0;
+    var key = "", value = "";
+    while (startIdx < val.length)
+    {
+        equalIdx = val.indexOf(equal, startIdx);
+        key = val.substr(startIdx, equalIdx - startIdx);
+        if (leftComma.length <= 0)
+            leftIdx = equalIdx + 1;
+        else
+            leftIdx = val.indexOf(leftComma, equalIdx) + leftComma.length;
+        if (rightComma.length <= 0)
+            rightIdx = val.indexOf(comma, leftIdx);
+        else
+            rightIdx = val.indexOf(rightComma, leftIdx);
+        if (rightIdx < 0)
+            rightIdx = val.length;
+        value = val.substr(leftIdx, rightIdx - leftIdx);
+        var obj = { "Key": key, "Value": value };
+        dic.push(obj);
+        rightIdx = val.indexOf(comma, rightIdx);
+        if (rightIdx < 0)
+            rightIdx = val.length;
+        startIdx = rightIdx + comma.length;
+    }
+    return dic;
+}
+
+function Dic2Str(dic, comma, equal, leftComma, rightComma) {
+    if(dic.length <= 0)
+        return "";
+    if (!comma) { comma = '&'; }
+    if (!equal) { equal = '='; }
+    if (!leftComma) { leftComma = ''; }
+    if (!rightComma) { rightComma = ''; }
+    var val = "";
+    for (var i = 0; i < dic.length; i++) {
+        if (val.length > 0)
+            val += comma;
+        val += dic[i].Key + equal + leftComma + dic[i].Value + rightComma;
+    }
+    return val;
 }

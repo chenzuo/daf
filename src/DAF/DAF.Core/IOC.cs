@@ -48,5 +48,32 @@ namespace DAF.Core
                 return defaultService;
             return svr;
         }
+
+        public static void Start(this IContainer container, object context = null)
+        {
+            var appEventHandlers = container.ResolveOptional<IEnumerable<IAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.OnApplicationStart(container, context);
+            }
+
+            var startups = container.ResolveOptional<IEnumerable<IStartup>>();
+            if (startups != null)
+            {
+                foreach (var aeh in startups.OrderBy(o => o.ExecuteOrder))
+                    aeh.OnStarted();
+            }
+        }
+
+        public static void Stop(this IContainer container, object context = null)
+        {
+            var appEventHandlers = container.ResolveOptional<IEnumerable<IAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.OnApplicatoinExit(container, context);
+            }
+        }
     }
 }

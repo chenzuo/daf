@@ -14,8 +14,8 @@
             <div class="bg-none text-center">
                 <img class="img-none rect-small ui-corner-all" data-bind="attr:{src: ContentUrl }" />
             </div>
-            <a data-bind="attr:{href:ContentUrl}" target="_blank"><span data-bind="text:Title"></span></a>
-            <button type="button" class="btn btn-mini btn-danger" onclick="vm.Data().ContentUrl('');" title="删除图片">
+            <a data-bind="attr:{href:ContentUrl}" target="_blank"><span data-bind="text:Description"></span></a>
+            <button type="button" class="btn btn-mini btn-danger" onclick="RemoveImage();" title="删除图片">
                 <i class="icon-remove"></i>
             </button>
         </div>
@@ -32,12 +32,18 @@
             LoadHtml('#imageContenHolder', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?fileType=images&owner=link_url")');
         });
 
+        function RemoveImage() {
+            var img = vm.Data();
+            img.Description('');
+            img.ContentUrl('');
+        }
+
         $(function () {
             OnReceiveMessage('fileselected', function (data) {
                 if (data.owner == "link_url") {
-                    if (data.files && data.files.length > 0) {
-                        var file = data.files[0];
-                        vm.Data().Title(file.name);
+                    var file = data.file || (data.files && data.files.length > 0 ? data.files[0] : null);
+                    if (file) {
+                        vm.Data().Description(file.name);
                         vm.Data().ContentUrl(file.url);
                     };
                 }
@@ -45,18 +51,17 @@
 
             OnReceiveMessage('fileuploaded', function (data) {
                 if (data.owner == "link_url") {
-                    $.each(data.files, function () {
-                        var file = $(this);
-                        vm.Data().Title(file.name);
+                    var file = data.file || (data.files && data.files.length > 0 ? data.files[0] : null);
+                    if (file) {
+                        vm.Data().Description(file.name);
                         vm.Data().ContentUrl(file.url);
-                    });
+                    };
                 }
             });
 
             OnReceiveMessage('fileremoved', function (data) {
-                var file = data.file;
                 if (data.owner == "link_url") {
-                    vm.Data().Title("");
+                    vm.Data().Description("");
                     vm.Data().ContentUrl(null);
                 }
             });

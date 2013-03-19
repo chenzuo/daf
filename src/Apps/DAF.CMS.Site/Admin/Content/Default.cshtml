@@ -87,7 +87,7 @@
     $(function () {
         vm = new KVM({
             getQueryUrl: function () {
-                var url = '@(UrlHelper.ClientUrl("Api/Content/Data"))?siteId=' + vm.SelectedSite();
+                var url = '@(UrlHelper.ClientUrl("Api/Content/Data"))?siteId=' + vm.SelectedSite().SiteId;
                 if (vm.SelectedCate()) {
                     url = url + '&cate=' + vm.SelectedCate().Code;
                 }
@@ -96,9 +96,9 @@
             onInit: function (self) {
                 self.SelectedSite = ko.observable(null);
                 self.SelectedCate = ko.observable("");
-                self.SelectSite = function (siteId) {
-                    vm.SelectedSite(siteId);
-                    var url = '@(UrlHelper.ClientUrl("Admin/Category/Tree"))?siteId=' + siteId;
+                self.SelectSite = function (site) {
+                    vm.SelectedSite(site);
+                    var url = '@(UrlHelper.ClientUrl("Admin/Category/Tree"))?siteId=' + site.SiteId;
                     LoadHtml('#cates', url,
                         function () {
                             Progress();
@@ -131,19 +131,19 @@
         SelectFirstSite();
     });
 
-    function OnSelectSite(event, siteId) {
-        vm.SelectSite(siteId);
+    function OnSelectSite(event, site) {
+        vm.SelectSite(site);
     }
 
     function NewContent(type) {
-        var url = '@(UrlHelper.ClientUrl("Admin/Content/Edit"))/' + ContentTypeInfo(type).Name + '?siteId=' + vm.SelectedSite();
+        var url = '@(UrlHelper.ClientUrl("Admin/Content/Edit"))/' + ContentTypeInfo(type).Name + '?siteId=' + vm.SelectedSite().SiteId;
         //var title = $(event.target).prop('title') || $(event.currentTarget).prop('title');
         OpenBlank(url);
         //OpenDialog(title, url, 1020, 600);
     }
 
     function EditContent(obj) {
-        var url = '@(UrlHelper.ClientUrl("Admin/Content/Edit"))/' + ContentTypeInfo(obj.ContentType()).Name + '?id=' + obj.ContentId() + '&siteId=' + vm.SelectedSite();
+        var url = '@(UrlHelper.ClientUrl("Admin/Content/Edit"))/' + ContentTypeInfo(obj.ContentType()).Name + '?id=' + obj.ContentId() + '&siteId=' + vm.SelectedSite().SiteId;
         //var title = $(event.target).prop('title') || $(event.currentTarget).prop('title');
         OpenBlank(url);
         //OpenDialog(title, url, 1020, 600);

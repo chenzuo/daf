@@ -318,7 +318,7 @@ namespace DAF.Core
             return UTF8Encoding.Unicode.GetString(msOut.GetBuffer()).TrimEnd('\0');
         }
 
-        public static string FormatWhenHasValue(this string source, string format)
+        public static string FormatIfStringNotEmpty(this string source, string format)
         {
             if (string.IsNullOrWhiteSpace(source))
                 return source;

@@ -166,7 +166,9 @@
     <Content Include="Themes\Default\Skins\Default\Contents\content.css" />
     <Content Include="Themes\Default\Skins\Default\Scripts\content.js" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\AppSettingsController.cs" />
@@ -197,13 +199,10 @@
     <Content Include="Themes\Default\_Banner.cshtml" />
     <Content Include="Themes\Default\_DialogEnd.cshtml" />
     <Content Include="Themes\Default\_DialogHead.cshtml" />
-    <Content Include="Themes\Default\_HomeBody.cshtml" />
     <Content Include="Themes\Default\_HtmlEnd.cshtml" />
     <Content Include="Themes\Default\_HtmlHead.cshtml" />
     <Content Include="Themes\Default\_WindowEnd.cshtml" />
-    <Content Include="Themes\Default\_WindowFooter.cshtml" />
     <Content Include="Themes\Default\_WindowHead.cshtml" />
-    <Content Include="Themes\Default\_WindowHeader.cshtml" />
     <Content Include="App_Code\Form.cshtml" />
     <Content Include="App_Code\Menu.cshtml" />
     <Content Include="App_Code\Tree.cshtml" />
@@ -215,9 +214,9 @@
     <Content Include="packages.config" />
     <Content Include="Admin\Default.cshtml" />
     <Content Include="Account\Captcha.cshtml" />
-    <Content Include="Account\_AccountInfo.cshtml" />
+    <Content Include="Controls\User\_AccountInfo.cshtml" />
     <Content Include="Account\SignOff.cshtml" />
-    <Content Include="Controls\_ImageSlideShow.cshtml">
+    <Content Include="Controls\Image\_ImageSlideShow.cshtml">
       <SubType>
       </SubType>
     </Content>
@@ -245,14 +244,14 @@
     <Content Include="Account\ResetPassword.cshtml" />
     <Content Include="Account\ResetPasswordSuccess.cshtml" />
     <Content Include="Admin\_PageStart.cshtml" />
-    <Content Include="Controls\_ContentDetail.cshtml" />
-    <Content Include="Controls\_ContentBrief.cshtml" />
-    <Content Include="Controls\_ContentList.cshtml" />
-    <Content Include="Controls\_ContentSlide.cshtml" />
-    <Content Include="Controls\_ContentGallary.cshtml" />
-    <Content Include="Controls\_ContentButtonList.cshtml" />
-    <Content Include="Controls\_ContentTopList.cshtml" />
-    <Content Include="Controls\_ContentTabList.cshtml" />
+    <Content Include="Controls\Content\_ContentDetail.cshtml" />
+    <Content Include="Controls\Content\_ContentBrief.cshtml" />
+    <Content Include="Controls\Content\_ContentList.cshtml" />
+    <Content Include="Controls\Content\_ContentSlide.cshtml" />
+    <Content Include="Controls\Content\_ContentGallary.cshtml" />
+    <Content Include="Controls\Content\_ContentButtonList.cshtml" />
+    <Content Include="Controls\Content\_ContentTopList.cshtml" />
+    <Content Include="Controls\Content\_ContentTabList.cshtml" />
     <Content Include="Admin\WebSite\Default.cshtml" />
     <Content Include="Controls\_SelectSites.cshtml" />
     <Content Include="Admin\PageTemplate\Default.cshtml" />
@@ -260,6 +259,23 @@
     <Content Include="Templates\LeftMainRight.cshtml" />
     <Content Include="Templates\Full.cshtml" />
     <Content Include="Admin\Page\Default.cshtml" />
+    <Content Include="Pages\Full.cshtml" />
+    <Content Include="Pages\LeftMainRight.cshtml" />
+    <Content Include="Pages\TopMainBottom.cshtml" />
+    <Content Include="Account\_AccountInfo.cshtml" />
+    <Content Include="Templates\Web.config" />
+    <Content Include="Pages\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Modules\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Modules\ECommerce\Controls\common.cshtml" />
+    <Content Include="Modules\ECommerce\Controls\Menu\menu.cshtml" />
+    <Content Include="Controls\Menu\_CascadeHorzMenu.cshtml" />
+    <Content Include="Controls\Menu\_FooterMenu.cshtml" />
+    <Content Include="Controls\Logo\_SiteLogo.cshtml" />
+    <Content Include="Controls\Category\_SubCategories.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -274,11 +290,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Admin\Content\Display\" />
-    <Folder Include="Controls\Category\" />
-    <Folder Include="Controls\Content\" />
-    <Folder Include="Controls\Menu\" />
-    <Folder Include="Pages\" />
-    <Folder Include="Themes\Default\Templates\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAF.CMS\DAF.CMS.csproj">

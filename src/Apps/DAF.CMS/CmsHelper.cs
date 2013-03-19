@@ -33,19 +33,42 @@ namespace DAF.CMS
         {
             var items = BasicDataProvider.Query(CurrentSite.SiteId, category, groupName, null, null, true)
                 .OrderBy(o => o.ShowOrder);
-            return items;
+            return items.ToArray();
+        }
+
+        public static IEnumerable<MenuItem> GetMenuItems(string groupName)
+        {
+            var items = MenuProvider.GetMenu(CurrentSite.SiteId, groupName)
+                .Select(o => new MenuItem()
+                {
+                    Name = o.Name,
+                    Caption = o.Caption,
+                    LinkUrl = o.LinkUrl,
+                    Icon = o.Icon,
+                    Target = o.Target,
+                    Tooltip = o.Tooltip,
+                });
+            var menu = HierarchyHelper.Build<MenuItem, MenuItem>(items.Where(o => string.IsNullOrEmpty(o.ParentName)),
+                o => o, o => o.Children, (p, c) => p.Children.Add(c));
+            return menu;
         }
 
         public static IEnumerable<Category> GetCategories(string groupName = null, string code = null, string parentId = null, DataStatus? status = DataStatus.Normal, string language = null)
         {
             var query = CategoryProvider.Query(CurrentSite.SiteId, groupName, code, parentId, status);
-            return query;
+            return query.ToArray();
         }
 
-        public static IEnumerable<Content> GetContents(string category, int pi = 0, int ps = 10, string language = null)
+        public static IEnumerable<Category> GetSubCategories(string parentCode, int depth = 1)
+        {
+            var query = CategoryProvider.GetSubCategories(CurrentSite.SiteId, parentCode, depth);
+            return query.ToArray();
+        }
+
+        public static IEnumerable<Content> GetContents(string category, int pi = 0, int ps = 20)
         {
             var query = ContentProvider.GetContents(CurrentSite.SiteId, category, true, null, null, null, pi, ps);
-            return query;
+            return query.ToArray();
         }
 
         public static Content GetContent(string contentIdOrShortUrl, bool withRelatedContents = true, bool withCategories = true, string language = null)
@@ -59,6 +82,34 @@ namespace DAF.CMS
                 contentIdOrShortUrl = contentIdOrShortUrl.Substring(0, idx);
 
             return ContentProvider.Get(CurrentSite.SiteId, contentIdOrShortUrl, withRelatedContents, withCategories);
+        }
+
+        public static WebPage GetPage(string pageId)
+        {
+            var page = PageProvider.GetPage(pageId);
+            if (page != null)
+            {
+                page.Controls = PageProvider.GetControls(page.PageId).ToArray();
+                page.Template = PageTemplateProvider.GetTemplate(page.SiteId, page.TemplateName);
+                page.Template.Controls = PageTemplateProvider.GetControls(page.SiteId, page.TemplateName).ToArray();
+            }
+            return page;
+        }
+
+        public static Dictionary<string, string> GetControlParas(string paras)
+        {
+            var dic = paras.ToDictionary<string, string>(o => o, v =>
+                {
+                    if (v.StartsWith("cmd"))
+                    {
+                        var cmd = v.Substring(4, v.Length - 5);
+                        var val = CommandHelper.Run(cmd, HttpContext.Current);
+                        return val == null ? string.Empty : val.ToString();
+                    }
+                    return v;
+                });
+
+            return dic;
         }
 
         public static SubSite CurrentSite
@@ -137,6 +188,11 @@ namespace DAF.CMS
         public static IContentProvider ContentProvider
         {
             get { return IOC.Current.GetService<IContentProvider>(); }
+        }
+
+        public static IPageProvider PageProvider
+        {
+            get { return IOC.Current.GetService<IPageProvider>(); }
         }
 
         public static IPageTemplateProvider PageTemplateProvider

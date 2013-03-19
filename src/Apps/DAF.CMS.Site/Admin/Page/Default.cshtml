@@ -12,6 +12,7 @@
 <script type="text/html" id="page-template">
     <li data-bind="attr:{id:PageId}">
         <a href="javascript:void(0);" data-bind="click:$root.SelectPage"><span data-bind="text:Name"></span></a>
+        <span data-bind="visible:$root.IsHomePage($data)">[首页]</span>
         <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.AddPage" title="新增下级页面"><i class="icon-plus"></i></button>
         <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditPage" title="编辑页面"><i class="icon-pencil"></i></button>
         <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemovePage.bind($data, $parent)" title="删除页面"><i class="icon-remove"></i></button>
@@ -37,15 +38,20 @@
         </div>
     </div>
     <div class="data-container span9 lgap1" data-bind="visible:SelectedPage">
-        <h3 data-bind="with:SelectedPage">当前页面：<span data-bind="text:Name"></span></h3>
+        <h3 data-bind="with:SelectedPage" class="pull-left bgap1">当前页面：<span data-bind="text:Name"></span></h3>
+        <div data-bind="with:SelectedPage" class="tgap1">
+            <a href="javascript:SetLinks();" class="rgap2">编辑页面Links</a><a href="javascript:SetCSS();" class="rgap2">编辑页面CSS</a><a href="javascript:SetJS();" class="rgap2">编辑页面JavaScript</a>
+            <button class="btn btn-primary" type="button" data-bind="visible:!vm.IsHomePage($data), click:vm.SetAsSiteHomePage">
+                <i class="icon-plus"></i><span>设置为网站首页</span></button>
+        </div>
         <form method="post">
             <div class="table table-bordered">
                 <div class="thead">
                     <div class="tr">
                         <div class="th span1"></div>
                         <div class="th th-input">@(pageModel.CaptionFor(o => o.Section))</div>
-                        <div class="th th-input span3">@(pageModel.CaptionFor(o => o.ControlPath))</div>
-                        <div class="th th-input span3">@(pageModel.CaptionFor(o => o.ControlParas))</div>
+                        <div class="th th-input span5">@(pageModel.CaptionFor(o => o.ControlPath))</div>
+                        @*<div class="th th-input span3">@(pageModel.CaptionFor(o => o.ControlParas))</div>*@
                         <div class="th th-input">@(pageModel.CaptionFor(o => o.Container))</div>
                         <div class="th"></div>
                     </div>
@@ -60,17 +66,18 @@
                         <div class="td td-input">
                             <select data-bind="options: $root.Sections, optionsText: 'Name', optionsValue: 'Name', value: Section"></select>
                         </div>
-                        <div class="td td-input span3">
+                        <div class="td td-input span5">
                             <select data-bind="options: $root.ControlTypes, optionsText: 'Name', optionsValue: 'Path', value: ControlPath"></select>
+                            <button type="button" class="btn btn-mini" data-bind="click:vm.EditItemControl" title="编辑控件参数"><i class="icon-th"></i></button>
                         </div>
-                        <div class="td td-input span3">
+                        @*<div class="td td-input span3">
                             @pageModel.TextBoxFor(o => o.ControlParas, new { data_bind = "value:ControlParas" })
-                        </div>
+                        </div>*@
                         <div class="td td-input">
                             @pageModel.TextBoxFor(o => o.Container, new { data_bind = "value:Container" })
                         </div>
                         <div class="td">
-                            <button type="button" class="btn btn-danger btn-mini" data-bind="click:vm.DeleteItem" title="删除"><i class="icon-remove"></i></button>
+                            <button type="button" class="btn btn-danger btn-mini" data-bind="click:vm.RemoveItem" title="删除"><i class="icon-remove"></i></button>
                         </div>
                     </div>
                 </div>
@@ -91,13 +98,43 @@
                     <input id="Name" type="text" class="input-medium" required="true" data-bind="value:Name, visible:$root.IsNew($data)" /></td>
             </tr>
             <tr>
-                <td class="caption">路径：</td>
+                <td class="caption">模板：</td>
                 <td>
                     <select data-bind="options: vm.Templates, optionsText: 'Name', optionsValue: 'Name', value: TemplateName"></select>
                 </td>
             </tr>
         </table>
     </div>
+    <div id="controlParas" data-bind="with:EditingControl" class="hide">
+        <!-- ko foreach:Parameters -->
+        <table class="table table-bordered">
+            <tr>
+                <td class="caption">参数名称：</td>
+                <td><span data-bind="text:Name"></span></td>
+                <td class="caption">默认值：</td>
+                <td><span data-bind="text:DefaultValue"></span></td>
+            </tr>
+            <tr>
+                <td class="caption">参数说明：</td>
+                <td colspan="3">
+                    <span data-bind="text:Description"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="caption">参数值：</td>
+                <td colspan="3">
+                    <textarea class="span6" rows="4" data-bind="value:ParaValue"></textarea>
+                </td>
+            </tr>
+        </table>
+        <!-- /ko -->
+    </div>
+    <div id="linksDiv" class="hide">
+        <textarea id="linksEditor" style="width:98%; height: 96%;"></textarea></div>
+    <div id="cssDiv" class="hide">
+        <textarea id="cssEditor" style="width:98%; height: 96%;"></textarea></div>
+    <div id="jsDiv" class="hide">
+        <textarea id="jsEditor" style="width:98%; height: 96%;"></textarea></div>
 </div>
 
 <script type="text/javascript">
@@ -125,8 +162,10 @@
                 self.ControlTypes = ko.observableArray([]);
                 self.Pages = ko.observableArray([]);
                 self.SelectedSite = ko.observable(null);
+                self.SelectedSiteHomePage = ko.observable(null);
                 self.SelectedPage = ko.observable(null);
                 self.EditingPage = ko.observable(null);
+                self.EditingControl = ko.observable(null);
                 self.Sections = ko.computed(function () {
                     var st = self.SelectedPage();
                     if (st) {
@@ -138,15 +177,15 @@
                     }
                     return null;
                 });
-                self.SelectSite = function (siteId) {
-                    vm.SelectedSite(siteId);
-                    GetJson('@(UrlHelper.ClientUrl("Api/Page/Templates"))?siteId=' + vm.SelectedSite(), function (data) {
+                self.SelectSite = function (site) {
+                    vm.SelectedSite(site);
+                    GetJson('@(UrlHelper.ClientUrl("Api/Page/Templates"))?siteId=' + vm.SelectedSite().SiteId(), function (data) {
                         ko.mapping.fromJS(data, null, vm.Templates);
                         vm.GetPages(null);
                     });
                 };
                 self.GetPages = function (parent) {
-                    var url = '@(UrlHelper.ClientUrl("Api/Page/Pages"))?siteId=' + vm.SelectedSite();
+                    var url = '@(UrlHelper.ClientUrl("Api/Page/Pages"))?siteId=' + vm.SelectedSite().SiteId();
                     if (parent) {
                         url = url + '&parentId=' + parent.PageId();
                     }
@@ -168,7 +207,7 @@
                 self.AddPage = function (parent) {
                     var obj = {
                         PageId: ko.observable(IdGenerator.NewId()),
-                        SiteId: ko.observable(vm.SelectedSite()),
+                        SiteId: ko.observable(vm.SelectedSite().SiteId()),
                         Name: ko.observable(""),
                         TemplateName: ko.observable(""),
                         CategoryId: ko.observable(null),
@@ -232,6 +271,47 @@
                 self.HasChildren = function (item) {
                     return item.Children() && item.Children().length > 0;
                 };
+                self.SetAsSiteHomePage = function (item) {
+                    var pageId = item.PageId();
+                    GetJson('@(UrlHelper.ClientUrl("Api/Page/SetAsHomePage"))?pageId=' + pageId, function (data) {
+                        if (data.Status == 0) {
+                            vm.SelectedSite().HomePageId(pageId);
+                        }
+                    });
+                };
+                self.IsHomePage = function (item) {
+                    return item.PageId() == vm.SelectedSite().HomePageId();
+                };
+                self.EditItemControl = function (item) {
+                    var cons = $.grep(vm.ControlTypes(), function (n, i) { return n.Path().toLowerCase() == item.ControlPath().toLowerCase(); });
+                    if (cons.length > 0) {
+                        var con = cons[0];
+                        if (con.Parameters().length > 0) {
+                            var dic = Str2Dic(item.ControlParas());
+                            $.each(con.Parameters(), function (i, n) {
+                                if (!n.ParaValue)
+                                    n.ParaValue = ko.observable(null);
+                                var vals = $.grep(dic, function (item, idx) { return item.Key == n.Name(); });
+                                n.ParaValue(vals.length > 0 ? vals[0].Value : '');
+                            });
+                        }
+                        vm.EditingControl(con);
+                        vm.EditingItem(item);
+                        ShowDialog('#controlParas', '编辑控件参数', function () {
+                            var dic = [];
+                            var con = vm.EditingControl();
+                            var paras = con.Parameters();
+                            for (var i = 0; i < paras.length; i++) {
+                                var val = paras[i].ParaValue();
+                                if (!val || val.length <= 0) {
+                                    val = paras[i].DefaultValue();
+                                }
+                                dic.push({ Key: paras[i].Name(), Value: val });
+                            }
+                            vm.EditingItem().ControlParas(Dic2Str(dic));
+                        }, null, 660, 500);
+                    }
+                };
             },
             validate: function () {
                 return $('.data-container>form').valid();
@@ -245,58 +325,84 @@
         });
     });
 
-    function OnSelectSite(event, siteId) {
-        vm.SelectSite(siteId);
+    function OnSelectSite(event, site) {
+        var ksite = ko.observable(null);
+        ko.mapping.fromJO(site, null, ksite);
+        vm.SelectSite(ksite());
     }
 
     function SavePage(isNew, parent) {
-        ShowDialog('#editPage', isNew ? '新增页面' : '编辑页面',
-            function () {
-                var exists = $('#pages li[id=' + vm.EditingPage().Name() + ']').length;
-                if (isNew && exists > 0 || exists > 1) {
-                    ShowMessage("提示信息", "已经存在页面" + groupName);
-                    return true;
-                }
+        ShowDialog('#editPage', isNew ? '新增页面' : '编辑页面', function () {
+            var exists = $('#pages li[id=' + vm.EditingPage().Name() + ']').length;
+            if (isNew && exists > 0 || exists > 1) {
+                ShowMessage("提示信息", "已经存在页面" + groupName);
+                return true;
+            }
 
-                var url = isNew ? '@(UrlHelper.ClientUrl("Api/Page/AddPage"))' : '@(UrlHelper.ClientUrl("Api/Page/EditPage"))';
-                PostJson(url, ko.mapping.toJS(vm.EditingPage),
-                    function (data) {
-                        if (isNew) {
-                            vm.EditingPage().DataState = DataState.None;
-                            if (parent) {
-                                parent.Children.push(vm.EditingPage());
-                            } else {
-                                vm.Pages.push(vm.EditingPage());
-                            }
-                            vm.SelectPage(vm.EditingPage());
+            var url = isNew ? '@(UrlHelper.ClientUrl("Api/Page/AddPage"))' : '@(UrlHelper.ClientUrl("Api/Page/EditPage"))';
+            PostJson(url, ko.mapping.toJS(vm.EditingPage),
+                function (data) {
+                    if (isNew) {
+                        vm.EditingPage().DataState = DataState.None;
+                        if (parent) {
+                            parent.Children.push(vm.EditingPage());
+                        } else {
+                            vm.Pages.push(vm.EditingPage());
                         }
-                        vm.EditingPage(null);
-                        ShowMessage(data.Title, data.Message);
-                    });
-            });
-        }
+                        vm.SelectPage(vm.EditingPage());
+                    }
+                    vm.EditingPage(null);
+                    ShowMessage(data.Title, data.Message);
+                });
+        });
+    }
 
-        function EnableItemSortable() {
-            $('.tbody').sortable({
-                axis: 'y',
-                start: function (event, ui) {
-                    var tr = ui.item.closest('.tr');
-                    var tbody = tr.closest('.tbody');
-                    $('.tr:first>.td:first>button:first>i', tbody).prop('class', 'icon-plus');
-                    $('.tr>.tbody', tbody).hide();
-                },
-                beforeStop: function (event, ui) {
-                    var tr = ui.item.closest('.tr');
-                    var tbody = tr.closest('.tbody');
-                    var idx = 0;
-                    $('>.tr:not(.ui-sortable-placeholder)', tbody).each(function () {
-                        var item = ko.dataFor(this);
-                        if (item && item.ShowOrder) {
-                            item.ShowOrder(idx);
-                            idx++;
-                        }
-                    });
-                }
-            });
-        }
+    function EnableItemSortable() {
+        $('.tbody').sortable({
+            axis: 'y',
+            start: function (event, ui) {
+                var tr = ui.item.closest('.tr');
+                var tbody = tr.closest('.tbody');
+                $('.tr>.tbody', tbody).hide();
+            },
+            beforeStop: function (event, ui) {
+                var tr = ui.item.closest('.tr');
+                var tbody = tr.closest('.tbody');
+                var idx = 0;
+                $('>.tr:not(.ui-sortable-placeholder)', tbody).each(function () {
+                    var item = ko.dataFor(this);
+                    if (item && item.ShowOrder) {
+                        item.ShowOrder(idx);
+                        idx++;
+                    }
+                });
+            }
+        });
+    }
+
+    function SetLinks() {
+        var links = vm.SelectedPage().PageLinks();
+        $('#linksEditor').val(links);
+        ShowDialog('#linksDiv', '编辑页面Links', function () {
+            vm.SelectedPage().PageLinks($('#linksEditor').val());
+        }, null, 660, 500);
+    }
+
+    function SetCSS() {
+        var css = vm.SelectedPage().PageCSS();
+        css = BeautifyCss(css);
+        $('#cssEditor').val(css);
+        ShowDialog('#cssDiv', '编辑页面CSS', function () {
+            vm.SelectedPage().PageCSS($('#cssEditor').val());
+        }, null, 660, 500);
+    }
+
+    function SetJS() {
+        var js = vm.SelectedPage().PageJS();
+        js = BeautifyJs(js);
+        $('#jsEditor').val(js);
+        ShowDialog('#jsDiv', '编辑页面JavaScript', function () {
+            vm.SelectedPage().PageJS($('#jsEditor').val());
+        }, null, 660, 500);
+    }
 </script>

@@ -1,4 +1,6 @@
-﻿@using DAF.Core;
+﻿<!--<Parameters>
+/Parameters>-->
+@using DAF.Core;
 @using DAF.Web;
 @using DAF.CMS;
 @using DAF.CMS.Models;
@@ -10,16 +12,16 @@
     <ul class="nav nav-pills">
         @foreach (var site in sites)
         {
-            <li data-key="@site.SiteId"><a href="javascript:void(0);" onclick="SelectSite('@site.SiteId');">@site.SubSiteName</a></li>
+            <li data-key="@site.SiteId"><a href="javascript:void(0);" onclick="SelectSite({ SiteId:'@site.SiteId', Language: '@site.Language', HomePageId: '@site.HomePageId' });">@site.SubSiteName</a></li>
         }
     </ul>
 </div>
 <script type="text/javascript">
-    function SelectSite(siteId) {
+    function SelectSite(site) {
         var sitesDiv = $('#@id');
         sitesDiv.find('ul>li').removeClass('active');
-        sitesDiv.find('ul>li[data-key="' + siteId + '"]').addClass('active');
-        $(document).trigger('selectsite', [siteId]);
+        sitesDiv.find('ul>li[data-key="' + site.SiteId + '"]').addClass('active');
+        $(document).trigger('selectsite', [site]);
         return false;
     }
     function SelectFirstSite() {

@@ -355,10 +355,10 @@ namespace DAF.Web
 
                     defaultSession = new Session
                     {
-                        Theme = DAF.Web.Resources.Locale(o => o.DefaultTheme),
-                        Skin = DAF.Web.Resources.Locale(o => o.DefaultSkin),
-                        Locale = DAF.Web.Resources.Locale(o => o.DefaultLocale),
-                        TimeZone = Convert.ToDouble(DAF.Web.Resources.Locale(o => o.DefaultTimeZone)),
+                        Theme = "Default",
+                        Skin = "Default",
+                        Locale = Thread.CurrentThread.CurrentCulture.Name,
+                        TimeZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).TotalHours,
                         SessionId = HttpContext.Current.Session.SessionID
                     };
 
