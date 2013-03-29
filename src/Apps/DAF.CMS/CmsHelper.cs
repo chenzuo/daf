@@ -84,9 +84,13 @@ namespace DAF.CMS
             return ContentProvider.Get(CurrentSite.SiteId, contentIdOrShortUrl, withRelatedContents, withCategories);
         }
 
-        public static WebPage GetPage(string pageId)
+        public static WebPage GetPage(string pageIdOrNameOrShortUrl)
         {
-            var page = PageProvider.GetPage(pageId);
+            var page = PageProvider.GetPageByName(pageIdOrNameOrShortUrl);
+            if (page == null)
+                page = PageProvider.GetPageByShortUrl(pageIdOrNameOrShortUrl);
+            if(page == null)
+                page = PageProvider.GetPageById(pageIdOrNameOrShortUrl);
             if (page != null)
             {
                 page.Controls = PageProvider.GetControls(page.PageId).ToArray();
@@ -198,11 +202,6 @@ namespace DAF.CMS
         public static IPageTemplateProvider PageTemplateProvider
         {
             get { return IOC.Current.GetService<IPageTemplateProvider>(); }
-        }
-
-        public static IWebControlProvider WebControlProvider
-        {
-            get { return IOC.Current.GetService<IWebControlProvider>(); }
         }
 
         public static IMenuProvider MenuProvider

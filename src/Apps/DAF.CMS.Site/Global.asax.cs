@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Web.Routing;
+using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Validation;
 using System.Web.Http.Validation.Providers;
@@ -24,6 +25,34 @@ namespace DAF.CMS.Site
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"
+                );
+            GlobalConfiguration.Configuration.Routes.MapHttpRoute(
+                name: "Category",
+                routeTemplate: "category/{cate1}/{cate2}/{cate3}",
+                defaults: null,
+                constraints: null,
+                handler: new CmsMessageHandler("category")
+                );
+            GlobalConfiguration.Configuration.Routes.MapHttpRoute(
+                name: "CategoryPage2",
+                routeTemplate: "{cate1}/{cate2}/{pid}",
+                defaults: null,
+                constraints: null,
+                handler: new CmsMessageHandler()
+                );
+            GlobalConfiguration.Configuration.Routes.MapHttpRoute(
+                name: "CategoryPage",
+                routeTemplate: "{cate1}/{pid}",
+                defaults: null,
+                constraints: null,
+                handler: new CmsMessageHandler()
+                );
+            GlobalConfiguration.Configuration.Routes.MapHttpRoute(
+                name: "DefaultPage",
+                routeTemplate: "{pid}",
+                defaults: null,
+                constraints: null,
+                handler: new CmsMessageHandler()
                 );
         }
     }

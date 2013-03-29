@@ -16,7 +16,6 @@ namespace DAF.CMS
             builder.RegisterType<ContentProvider>().As<IContentProvider>().SingleInstance();
             builder.RegisterType<WebSiteProvider>().As<IWebSiteProvider>().SingleInstance();
             builder.RegisterType<PageTemplateProvider>().As<IPageTemplateProvider>().SingleInstance();
-            builder.RegisterType<WebControlProvider>().As<IWebControlProvider>().SingleInstance();
             builder.RegisterType<MenuProvider>().As<IMenuProvider>().SingleInstance();
             builder.RegisterType<UserGroupProvider>().As<IUserGroupProvider>().SingleInstance();
             builder.RegisterType<TemplateTypeProvider>().As<ITemplateTypeProvider>().SingleInstance();

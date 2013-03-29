@@ -33,9 +33,23 @@ namespace DAF.CMS
             return query.ToArray();
         }
 
-        public WebPage GetPage(string pageId)
+        public WebPage GetPageById(string pageId)
         {
             var query = repoPage.Query(o => o.PageId == pageId).FirstOrDefault();
+            return query;
+        }
+
+        public WebPage GetPageByName(string pageName)
+        {
+            pageName = pageName.ToLower();
+            var query = repoPage.Query(o => o.Name == pageName).FirstOrDefault();
+            return query;
+        }
+
+        public WebPage GetPageByShortUrl(string shortUrl)
+        {
+            shortUrl = shortUrl.ToLower();
+            var query = repoPage.Query(o => o.ShortUrl == shortUrl).FirstOrDefault();
             return query;
         }
 

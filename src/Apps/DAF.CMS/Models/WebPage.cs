@@ -23,17 +23,40 @@ namespace DAF.CMS.Models
         [Required]
         [StringLength(50)]
         public string SiteId { get; set; }
+
+        private string name;
         [Required]
         [StringLength(50)]
-        public string Name { get; set; }
+        public string Name
+        {
+            get { return name; }
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                    name = value.ToLower();
+                else
+                    name = null;
+            }
+        }
         [Required]
         [StringLength(50)]
         public string TemplateName { get; set; }
         [StringLength(50)]
         public string CategoryId { get; set; }
 
+        private string shortUrl;
         [StringLength(200)]
-        public string ShortUrl { get; set; }
+        public string ShortUrl
+        {
+            get { return shortUrl; }
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                    shortUrl = value.ToLower();
+                else
+                    shortUrl = null;
+            }
+        }
         [StringLength(200)]
         public string HtmlUrl { get; set; }
         [StringLength(200)]

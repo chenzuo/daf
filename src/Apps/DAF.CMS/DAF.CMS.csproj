@@ -52,7 +52,12 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\libs\System.Web.Razor.dll</HintPath>
@@ -76,7 +81,7 @@
     <Compile Include="BasicDataProvider.cs" />
     <Compile Include="CategoryProvider.cs" />
     <Compile Include="CmsHelper.cs" />
-    <Compile Include="CmsHttpModule.cs" />
+    <Compile Include="CmsMessageHandler.cs" />
     <Compile Include="CmsModule.cs" />
     <Compile Include="ContentProvider.cs" />
     <Compile Include="ControlTypeProvider.cs" />
@@ -92,7 +97,6 @@
     <Compile Include="IPageProvider.cs" />
     <Compile Include="IPageTemplateProvider.cs" />
     <Compile Include="ITemplateTypeProvider.cs" />
-    <Compile Include="IWebControlProvider.cs" />
     <Compile Include="IWebSiteProvider.cs" />
     <Compile Include="MenuProvider.cs" />
     <Compile Include="Migrations\201303120637229_Init.cs" />
@@ -133,7 +137,6 @@
     <Compile Include="TemplateTypeProvider.cs" />
     <Compile Include="WebSiteProvider.cs" />
     <Compile Include="PageTemplateProvider.cs" />
-    <Compile Include="WebControlProvider.cs" />
     <Compile Include="IUserGroupProvider.cs" />
     <Compile Include="UserGroupProvider.cs" />
   </ItemGroup>

@@ -232,6 +232,7 @@
     <Content Include="Controls\_SelectLanguages.cshtml" />
     <Content Include="Account\ResetPassword.cshtml" />
     <Content Include="Account\ResetPasswordSuccess.cshtml" />
+    <Content Include="Uploads\web.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,46 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@{
+    string pageId = Request.QueryString["pid"];
+    bool pageFound = false;
+    string msg;
+    if (string.IsNullOrEmpty(pageId))
+    {
+        if (CmsHelper.CurrentSite == null)
+        {
+            msg = LocaleHelper.Localizer.Get("CurrentSiteNotFound", "DAF.CMS");
+        }
+        else if (string.IsNullOrEmpty(CmsHelper.CurrentSite.HomePageId))
+        {
+            msg = LocaleHelper.Localizer.Format("HomePageNotFoundInSite", "DAF.CMS", null, CmsHelper.CurrentSite.SubSiteName);
+        }
+        else
+        {
+            pageId = CmsHelper.CurrentSite.HomePageId;
+        }
+    }
+    var pageData = CmsHelper.GetPage(pageId);
+    if (pageData == null)
+    {
+        msg = LocaleHelper.Localizer.Format("PageNotFoundInSite", "DAF.CMS", null, CmsHelper.CurrentSite.SubSiteName, pageId);
+    }
+    else
+    {
+        msg = "~/Pages/" + pageData.Template.TemplatePath;
+        pageFound = true;
+    }
+}
+@if (pageFound)
+{
+    @RenderPage(msg, new { PageData = pageData })
+}
+else
+{
+    <h1></h1>
+    <div class="error">
+        @msg
+    </div>
+    <hr />
+    <a href="/Admin">进入后台管理</a>
+}

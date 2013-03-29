@@ -276,6 +276,7 @@
     <Content Include="Controls\Menu\_FooterMenu.cshtml" />
     <Content Include="Controls\Logo\_SiteLogo.cshtml" />
     <Content Include="Controls\Category\_SubCategories.cshtml" />
+    <Content Include="category\Default.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -11,7 +11,9 @@ namespace DAF.CMS
     public interface IPageProvider
     {
         IEnumerable<WebPage> GetPages(string siteId, string parentId = null);
-        WebPage GetPage(string pageId);
+        WebPage GetPageById(string pageId);
+        WebPage GetPageByName(string pageName);
+        WebPage GetPageByShortUrl(string shortUrl);
         IEnumerable<WebPageControl> GetControls(string pageId);
         bool Save(ChangedData<WebPageControl> items);
 
