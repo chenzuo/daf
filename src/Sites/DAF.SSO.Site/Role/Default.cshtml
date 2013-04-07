@@ -19,8 +19,8 @@
     </li>
 </script>
 
-<div class="row">
-    <div class="span3">
+<div class="flex">
+    <div class="flex1">
         <div class="well">
             <h3>
                 <span class="title">角色</span>
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="span9 tgap1" data-bind="visible:SelectedRole">
+    <div class="flex4 tgap1" data-bind="visible:SelectedRole">
         <div>
             <h3 class="pull-left" data-bind="with:SelectedRole">当前角色：<span data-bind="text:RoleName"></span></h3>
             @RenderPage("~/Controls/SelectClients.cshtml")
@@ -41,7 +41,7 @@
                 <ul>
                     @foreach (var it in EnumHelper.GetObjectsFromEnum(typeof(DAF.SSO.PermissionType), LocaleHelper.Localizer))
                     {
-                        <li><a href="#data-list-container" onclick="vm.SelectPermissionType(@(it.Item2));">@it.Item1</a></li>
+                        <li><a href="#data-list-container" onclick="vm.SelectPermissionType('@((int)it.Item2)');">@it.Item1</a></li>
                     }
                 </ul>
                 <div id="data-list-container">
@@ -70,36 +70,36 @@
             </div>
         </div>
     </div>
-    <div id="editItem" class="hide" data-bind="with:EditingItem">
-        <form method="post">
-            <table class="table table-bordered">
-                <tr>
-                    <td class="caption">@(pageModel.CaptionFor(o => o.RoleName))</td>
-                    <td><span data-bind="text:RoleName, visible:!$root.IsNew($data)"></span>
-                        @pageModel.TextBoxFor(m => m.RoleName, new { data_bind = "value:RoleName, blur:CheckExists, visible:$root.IsNew($data)" })
-                    </td>
-                </tr>
-                <tr>
-                    <td class="caption">@(pageModel.CaptionFor(o => o.ActiveTime))</td>
-                    <td>
-                        @pageModel.TextBoxFor(m => m.ActiveTime, new { @data_bind = "date:ActiveTime" })
-                    </td>
-                </tr>
-                <tr>
-                    <td class="caption">@(pageModel.CaptionFor(o => o.ExpiryTime))</td>
-                    <td>
-                        @pageModel.TextBoxFor(m => m.ExpiryTime, new { @data_bind = "date:ExpiryTime" })
-                    </td>
-                </tr>
-                <tr>
-                    <td class="caption">@(pageModel.CaptionFor(o => o.Status))</td>
-                    <td>
-                        @(UIHelper.SelectEnumEditor<DataStatus>(attrs: "data-bind='value:Status'"))
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
+</div>
+<div id="editItem" class="hide" data-bind="with:EditingItem">
+    <form method="post">
+        <table class="table table-bordered">
+            <tr>
+                <td class="caption">@(pageModel.CaptionFor(o => o.RoleName))</td>
+                <td><span data-bind="text:RoleName, visible:!$root.IsNew($data)"></span>
+                    @pageModel.TextBoxFor(m => m.RoleName, new { data_bind = "value:RoleName, event:{blur:CheckExists}, visible:$root.IsNew($data)" })
+                </td>
+            </tr>
+            <tr>
+                <td class="caption">@(pageModel.CaptionFor(o => o.ActiveTime))</td>
+                <td>
+                    @pageModel.TextBoxFor(m => m.ActiveTime, new { @data_bind = "date:ActiveTime" })
+                </td>
+            </tr>
+            <tr>
+                <td class="caption">@(pageModel.CaptionFor(o => o.ExpiryTime))</td>
+                <td>
+                    @pageModel.TextBoxFor(m => m.ExpiryTime, new { @data_bind = "date:ExpiryTime" })
+                </td>
+            </tr>
+            <tr>
+                <td class="caption">@(pageModel.CaptionFor(o => o.Status))</td>
+                <td>
+                    @(UIHelper.SelectEnumEditor<DataStatus>(attrs: "data-bind='value:Status'"))
+                </td>
+            </tr>
+        </table>
+    </form>
 </div>
 
 <script type="text/javascript">
@@ -268,10 +268,9 @@
     }
 
     function CheckExists(item, event) {
-        var name = $(event.target).val();
-        var items = $('#items tr[key="' + name + '"]');
-        if (items.length > 1) {
-            ShowMessage("提示信息", "已经存在名称为“" + name + "”的角色。", function () { $(event.target).val('').focus(); });
+        var items = $.grep(vm.Data(), function (n, i) { return n.RoleName() == item.RoleName(); });
+        if (items.length > (item.DataState == DataState.New ? 0 : 1)) {
+            ShowMessage("提示信息", "已经存在名称为“" + item.RoleName() + "”的角色。", function () { $(event.target).val('').focus(); });
             return false;
         }
     }

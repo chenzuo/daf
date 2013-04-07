@@ -2,10 +2,10 @@
 @{
     Layout = "~/_Admin.cshtml";
     var resName = Request.Path.TrimStart('/');
-    if(!string.IsNullOrEmpty(Request.CurrentExecutionFilePathExtension))
+    if (!string.IsNullOrEmpty(Request.CurrentExecutionFilePathExtension))
     {
         resName = resName.Replace(Request.CurrentExecutionFilePathExtension, "");
     }
     resName = resName.Replace("/", "_");
-    Page.Title = LocaleHelper.Localizer.Get(resName, "DAF.File.Site");
+    Page.Title = LocaleHelper.Localizer.Get(resName, "DAF.SSO.Site");
 }

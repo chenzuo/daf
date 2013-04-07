@@ -12,8 +12,7 @@ namespace DAF.CMS.Models
     {
         public WebPage()
         {
-            Parent = null;
-            Children = new List<WebPage>();
+            Controls = new List<WebPageControl>();
         }
 
         [Required]
@@ -76,14 +75,9 @@ namespace DAF.CMS.Models
         public string PageJS { get; set; }
 
         public DataStatus Status { get; set; }
-        [StringLength(50)]
-        public string ParentPageId { get; set; }
 
         [ForeignKey("SiteId")]
         public virtual SubSite Site { get; set; }
-        [ForeignKey("PageId")]
-        public virtual WebPage Parent { get; set; }
-        public virtual ICollection<WebPage> Children { get; set; }
         [ForeignKey("SiteId, TemplateName")]
         public virtual PageTemplate Template { get; set; }
         public virtual ICollection<WebPageControl> Controls { get; set; }

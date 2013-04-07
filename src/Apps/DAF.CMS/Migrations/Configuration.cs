@@ -35,6 +35,8 @@ namespace DAF.CMS.Migrations
                 CurrencyFormat = "￥{0:00}",
                 NumberFormat = "{0:00}",
                 TimeZone = 8.0d,
+                DefaultTheme = "Default",
+                DefaultSkin = "Default",
                 DefaultPageTitle = "测试网站",
                 DefaultMetaKeywords = "测试网站,CMS,自助建站",
                 DefaultMetaDescription = "自助建站系统"
@@ -52,6 +54,8 @@ namespace DAF.CMS.Migrations
                 CurrencyFormat = "${0:00}",
                 NumberFormat = "{0:00}",
                 TimeZone = -8.0d,
+                DefaultTheme = "Default",
+                DefaultSkin = "Default",
                 DefaultPageTitle = "Test Site",
                 DefaultMetaKeywords = "Test Site,CMS,Site DIY",
                 DefaultMetaDescription = "Site DIY"

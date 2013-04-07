@@ -4,29 +4,29 @@
 @{
     var pageModel = this.PageModel<WebPageControl>();
 }
-@section head {
-    @AssetsHelper.CDNCss("jquery.treeview.css")
-    @AssetsHelper.CDNScript("jquery.treeview.js")
-}
 
 <script type="text/html" id="page-template">
     <li data-bind="attr:{id:PageId}">
-        <a href="javascript:void(0);" data-bind="click:$root.SelectPage"><span data-bind="text:Name"></span></a>
+        <a href="javascript:;" data-bind="click:$root.SelectPage"><span data-bind="text:Name"></span></a>
         <span data-bind="visible:$root.IsHomePage($data)">[首页]</span>
-        <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.AddPage" title="新增下级页面"><i class="icon-plus"></i></button>
         <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditPage" title="编辑页面"><i class="icon-pencil"></i></button>
-        <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemovePage.bind($data, $parent)" title="删除页面"><i class="icon-remove"></i></button>
-        <!-- ko if:$root.HasChildren($data) -->
-        <ul data-bind="template:{ name:'page-template', foreach:Children }"></ul>
+        <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemovePage" title="删除页面"><i class="icon-remove"></i></button>
+    </li>
+</script>
+<script type="text/html" id="temp-template">
+    <li data-bind="attr:{id:Name}">
+        <a href="javascript:;" data-bind="click:$root.SelectTemplate"><span data-bind="text:Name"></span></a>
+        <!-- ko if:(Children() && Children().length > 0) -->
+        <ul data-bind="template:{ name:'temp-template', foreach:Children }"></ul>
         <!-- /ko -->
     </li>
 </script>
 
-<div class="row">
-    <div class="span12">
-        @RenderPage("~/Controls/_SelectSites.cshtml")
-    </div>
-    <div class="span3">
+<div class="clear">
+    @RenderPage("~/Controls/_SelectSites.cshtml")
+</div>
+<div class="flex">
+    <div class="flex1">
         <div class="well">
             <h3>
                 <span class="title">页面</span>
@@ -37,7 +37,7 @@
             </div>
         </div>
     </div>
-    <div class="data-container span9 lgap1" data-bind="visible:SelectedPage">
+    <div class="data-container flex4" data-bind="visible:SelectedPage">
         <h3 data-bind="with:SelectedPage" class="pull-left bgap1">当前页面：<span data-bind="text:Name"></span></h3>
         <div data-bind="with:SelectedPage" class="tgap1">
             <a href="javascript:SetLinks();" class="rgap2">编辑页面Links</a><a href="javascript:SetCSS();" class="rgap2">编辑页面CSS</a><a href="javascript:SetJS();" class="rgap2">编辑页面JavaScript</a>
@@ -49,10 +49,11 @@
                 <div class="thead">
                     <div class="tr">
                         <div class="th span1"></div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Section))</div>
-                        <div class="th th-input span5">@(pageModel.CaptionFor(o => o.ControlPath))</div>
-                        @*<div class="th th-input span3">@(pageModel.CaptionFor(o => o.ControlParas))</div>*@
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Container))</div>
+                        <div class="th span5">@(pageModel.CaptionFor(o => o.TemplateName))</div>
+                        <div class="th span5">@(pageModel.CaptionFor(o => o.Section))</div>
+                        <div class="th span14">@(pageModel.CaptionFor(o => o.ControlPath))</div>
+                        <div class="th span10">@(pageModel.CaptionFor(o => o.Container))</div>
+                        <div class="th span8">@(pageModel.CaptionFor(o => o.Cached))</div>
                         <div class="th"></div>
                     </div>
                 </div>
@@ -63,18 +64,27 @@
                                 <i class="icon-resize-vertical"></i>
                             </button>
                         </div>
-                        <div class="td td-input">
-                            <select data-bind="options: $root.Sections, optionsText: 'Name', optionsValue: 'Name', value: Section"></select>
+                        <div class="td span5">
+                            <select data-bind="options: $root.SelectedTemplates, optionsText: 'Name', optionsValue: 'Name', value: TemplateName"></select>
                         </div>
-                        <div class="td td-input span5">
-                            <select data-bind="options: $root.ControlTypes, optionsText: 'Name', optionsValue: 'Path', value: ControlPath"></select>
-                            <button type="button" class="btn btn-mini" data-bind="click:vm.EditItemControl" title="编辑控件参数"><i class="icon-th"></i></button>
+                        <div class="td span5">
+                            <select data-bind="options: $root.SelectedSections($data), optionsText: 'Name', optionsValue: 'Name', value: Section"></select>
                         </div>
-                        @*<div class="td td-input span3">
-                            @pageModel.TextBoxFor(o => o.ControlParas, new { data_bind = "value:ControlParas" })
-                        </div>*@
-                        <div class="td td-input">
-                            @pageModel.TextBoxFor(o => o.Container, new { data_bind = "value:Container" })
+                        <div class="td span14">
+                            <span data-bind="text:$root.GetControlName($data)"></span>
+                            <button type="button" class="btn btn-mini" data-bind="click:vm.ShowItemControl" title="选择控件"><i class="icon-th"></i></button>
+                            <button type="button" class="btn btn-mini" data-bind="click:vm.EditItemControl" title="编辑控件参数"><i class="icon-list"></i></button>
+                        </div>
+                        <div class="td span10">
+                            @pageModel.TextBoxFor(o => o.Container, new { data_bind = "value:Container", @class="span7" })
+                            <button type="button" class="btn btn-mini" data-bind="click:SetContainerStyle, css: { 'btn-primary': (CssStyle() && CssStyle().length > 0) }" title="容器样式"><i data-bind="cls: (CssStyle() && CssStyle().length > 0) ? 'icon-asterisk' : 'icon-plus'"></i></button>
+                        </div>
+                        <div class="td span8">
+                            <button type="button" class="btn btn-mini" data-bind="click: vm.ToggleCache, css: { 'btn-success': Cached() }" title="设置有无缓存">
+                                <i data-bind="css: { 'icon-ok-circle': Cached(), 'icon-ban-circle': !Cached() }"></i>
+                            </button>
+                            @pageModel.TextBoxFor(o => o.CacheKey, new { data_bind = "value:CacheKey, visible: Cached", @class="span3" })
+                            @pageModel.TextBoxFor(o => o.CacheMunites, new { data_bind = "value:CacheMunites, visible: Cached", @class="span1" })
                         </div>
                         <div class="td">
                             <button type="button" class="btn btn-danger btn-mini" data-bind="click:vm.RemoveItem" title="删除"><i class="icon-remove"></i></button>
@@ -90,52 +100,34 @@
             </div>
         </form>
     </div>
-    <div id="editPage" data-bind="with:EditingPage" class="hide">
-        <table class="table table-bordered">
-            <tr>
-                <td class="caption">名称：</td>
-                <td><span data-bind="text:Name, visible:!$root.IsNew($data)"></span>
-                    <input id="Name" type="text" class="input-medium" required="true" data-bind="value:Name, visible:$root.IsNew($data)" /></td>
-            </tr>
-            <tr>
-                <td class="caption">模板：</td>
-                <td>
-                    <select data-bind="options: vm.Templates, optionsText: 'Name', optionsValue: 'Name', value: TemplateName"></select>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div id="controlParas" data-bind="with:EditingControl" class="hide">
-        <!-- ko foreach:Parameters -->
-        <table class="table table-bordered">
-            <tr>
-                <td class="caption">参数名称：</td>
-                <td><span data-bind="text:Name"></span></td>
-                <td class="caption">默认值：</td>
-                <td><span data-bind="text:DefaultValue"></span></td>
-            </tr>
-            <tr>
-                <td class="caption">参数说明：</td>
-                <td colspan="3">
-                    <span data-bind="text:Description"></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="caption">参数值：</td>
-                <td colspan="3">
-                    <textarea class="span6" rows="4" data-bind="value:ParaValue"></textarea>
-                </td>
-            </tr>
-        </table>
-        <!-- /ko -->
-    </div>
-    <div id="linksDiv" class="hide">
-        <textarea id="linksEditor" style="width:98%; height: 96%;"></textarea></div>
-    <div id="cssDiv" class="hide">
-        <textarea id="cssEditor" style="width:98%; height: 96%;"></textarea></div>
-    <div id="jsDiv" class="hide">
-        <textarea id="jsEditor" style="width:98%; height: 96%;"></textarea></div>
 </div>
+<div id="editPage" data-bind="with:EditingPage" class="hide">
+    <table class="table table-bordered spanfull">
+        <tr>
+            <td class="caption">名称：</td>
+            <td><span data-bind="text:Name, visible:!$root.IsNew($data)"></span>
+                <input id="Name" type="text" class="input-medium" required="true" data-bind="value:Name, visible:$root.IsNew($data)" /></td>
+        </tr>
+        <tr>
+            <td class="caption">模板：</td>
+            <td>
+                <button class="btn dropdown-toggle" data-popup="#templateDiv">
+                    <span data-bind="text:TemplateName"></span>
+                    <span class="caret"></span>
+                </button>
+            </td>
+        </tr>
+    </table>
+    <div id="templateDiv" class="well span2 hide">
+        <ul id="templateTree" data-bind="template:{ name:'temp-template', foreach:$root.Templates }">
+        </ul>
+    </div>
+</div>
+<div id="styleDiv" class="hide">
+    <textarea id="styleEditor" style="width: 98%; height: 96%;"></textarea>
+</div>
+@RenderPage("~/Admin/_SetPageProperties.cshtml")
+@RenderPage("~/Admin/_SelectControlType.cshtml")
 
 <script type="text/javascript">
     var vm;
@@ -148,35 +140,66 @@
                 return {
                     ControlId: ko.observable(IdGenerator.NewId()),
                     PageId: ko.observable(vm.SelectedPage().PageId()),
+                    TemplateName: ko.observable(""),
                     Section: ko.observable(""),
                     ControlPath: ko.observable(""),
                     ControlParas: ko.observable(""),
                     Container: ko.observable(""),
+                    CssStyle: ko.observable(""),
                     Cached: ko.observable(false),
+                    CacheKey: ko.observable(""),
                     CacheMunites: ko.observable(0),
                     ShowOrder: ko.observable(vm.Data().length)
                 };
             },
             onInit: function (self) {
                 self.Templates = ko.observableArray([]);
-                self.ControlTypes = ko.observableArray([]);
                 self.Pages = ko.observableArray([]);
                 self.SelectedSite = ko.observable(null);
                 self.SelectedSiteHomePage = ko.observable(null);
                 self.SelectedPage = ko.observable(null);
                 self.EditingPage = ko.observable(null);
-                self.EditingControl = ko.observable(null);
-                self.Sections = ko.computed(function () {
+                self.SelectedTemplates = ko.computed(function () {
                     var st = self.SelectedPage();
                     if (st) {
                         var tn = st.TemplateName();
-                        var ts = $.grep(self.Templates(), function (n, i) { return n.Name().toLowerCase() == tn.toLowerCase(); });
-                        if (ts && ts.length > 0) {
-                            return ts[0].Sections();
+                        var ts = self.GetTemplate(tn, self.Templates());
+                        if (ts) {
+                            var temps = [];
+                            var parent = ts;
+                            while (parent) {
+                                temps.push(parent);
+                                if (parent.ParentName()) {
+                                    parent = self.GetTemplate(parent.ParentName(), self.Templates());
+                                } else {
+                                    parent = null;
+                                }
+                            }
+                            return temps;
                         }
                     }
                     return null;
                 });
+                self.SelectedSections = function (item) {
+                    var tn = item.TemplateName();
+                    var ts = self.GetTemplate(tn, self.Templates());
+                    if (ts) {
+                        return ts.Sections();
+                    }
+                    return null;
+                };
+                self.GetTemplate = function (name, templates) {
+                    if (!name || name.length <= 0 || !templates || templates.length <= 0) { return null; }
+                    var ts = $.grep(templates, function (n, i) { return n.Name().toLowerCase() == name.toLowerCase(); });
+                    if (ts && ts.length > 0) { return ts[0]; }
+                    else {
+                        for (var i = 0; i < templates.length; i++) {
+                            var t = vm.GetTemplate(name, templates[i].Children());
+                            if (t) { return t; }
+                        }
+                    }
+                    return null;
+                };
                 self.SelectSite = function (site) {
                     vm.SelectedSite(site);
                     GetJson('@(UrlHelper.ClientUrl("Api/Page/Templates"))?siteId=' + vm.SelectedSite().SiteId(), function (data) {
@@ -201,7 +224,6 @@
                                 vm.SelectPage(null);
                             }
                         }
-                        $('#pages').treeview();
                     });
                 };
                 self.AddPage = function (parent) {
@@ -218,6 +240,9 @@
                         PageTitle: ko.observable(""),
                         HeaderTitle: ko.observable(""),
                         Status: ko.observable(1),
+                        PageLinks: ko.observable(null),
+                        PageCSS: ko.observable(null),
+                        PageJS: ko.observable(null),
                         ParentPageId: ko.observable(parent == null ? null : parent.PageId()),
                         Children: ko.observableArray([])
                     };
@@ -230,10 +255,6 @@
                     SavePage(false, item);
                 };
                 self.RemovePage = function (parent, item) {
-                    if (vm.HasChildren(item)) {
-                        ShowMessage('提示信息', '分组' + item.Name() + '下包含子分组，不允许删除！');
-                        return false;
-                    }
                     if (vm.Data() && vm.Data().length > 0) {
                         ShowMessage('提示信息', '该页面' + item.Name() + '下包含控件，不允许删除！');
                         return false;
@@ -262,14 +283,8 @@
                 self.SelectPage = function (obj) {
                     self.SelectedPage(obj);
                     if (obj) {
-                        if (!self.HasChildren(obj)) {
-                            vm.GetPages(obj);
-                        }
                         self.GetData();
                     }
-                };
-                self.HasChildren = function (item) {
-                    return item.Children() && item.Children().length > 0;
                 };
                 self.SetAsSiteHomePage = function (item) {
                     var pageId = item.PageId();
@@ -282,47 +297,23 @@
                 self.IsHomePage = function (item) {
                     return item.PageId() == vm.SelectedSite().HomePageId();
                 };
-                self.EditItemControl = function (item) {
-                    var cons = $.grep(vm.ControlTypes(), function (n, i) { return n.Path().toLowerCase() == item.ControlPath().toLowerCase(); });
-                    if (cons.length > 0) {
-                        var con = cons[0];
-                        if (con.Parameters().length > 0) {
-                            var dic = Str2Dic(item.ControlParas());
-                            $.each(con.Parameters(), function (i, n) {
-                                if (!n.ParaValue)
-                                    n.ParaValue = ko.observable(null);
-                                var vals = $.grep(dic, function (item, idx) { return item.Key == n.Name(); });
-                                n.ParaValue(vals.length > 0 ? vals[0].Value : '');
-                            });
-                        }
-                        vm.EditingControl(con);
-                        vm.EditingItem(item);
-                        ShowDialog('#controlParas', '编辑控件参数', function () {
-                            var dic = [];
-                            var con = vm.EditingControl();
-                            var paras = con.Parameters();
-                            for (var i = 0; i < paras.length; i++) {
-                                var val = paras[i].ParaValue();
-                                if (!val || val.length <= 0) {
-                                    val = paras[i].DefaultValue();
-                                }
-                                dic.push({ Key: paras[i].Name(), Value: val });
-                            }
-                            vm.EditingItem().ControlParas(Dic2Str(dic));
-                        }, null, 660, 500);
-                    }
+                self.ToggleCache = function (item, e) {
+                    var cached = item.Cached();
+                    item.Cached(!cached);
+                };
+                self.SelectTemplate = function (item, e) {
+                    StopEvent(e);
+                    vm.EditingPage().TemplateName(item.Name());
+                    $('body').trigger('click');
                 };
             },
             validate: function () {
                 return $('.data-container>form').valid();
             }
         });
+        InitControlTypes();
         ko.applyBindings(vm);
         $(document).off('selectsite').on('selectsite', OnSelectSite);
-        GetJson('@(UrlHelper.ClientUrl("Api/Page/ControlTypes"))', function (data) {
-            ko.mapping.fromJS(data, null, vm.ControlTypes);
-            SelectFirstSite();
-        });
     });
 
     function OnSelectSite(event, site) {
@@ -355,6 +346,8 @@
                     ShowMessage(data.Title, data.Message);
                 });
         });
+
+        InitEditors();
     }
 
     function EnableItemSortable() {
@@ -380,29 +373,11 @@
         });
     }
 
-    function SetLinks() {
-        var links = vm.SelectedPage().PageLinks();
-        $('#linksEditor').val(links);
-        ShowDialog('#linksDiv', '编辑页面Links', function () {
-            vm.SelectedPage().PageLinks($('#linksEditor').val());
-        }, null, 660, 500);
-    }
-
-    function SetCSS() {
-        var css = vm.SelectedPage().PageCSS();
-        css = BeautifyCss(css);
-        $('#cssEditor').val(css);
-        ShowDialog('#cssDiv', '编辑页面CSS', function () {
-            vm.SelectedPage().PageCSS($('#cssEditor').val());
-        }, null, 660, 500);
-    }
-
-    function SetJS() {
-        var js = vm.SelectedPage().PageJS();
-        js = BeautifyJs(js);
-        $('#jsEditor').val(js);
-        ShowDialog('#jsDiv', '编辑页面JavaScript', function () {
-            vm.SelectedPage().PageJS($('#jsEditor').val());
-        }, null, 660, 500);
+    function SetContainerStyle(item) {
+        var styles = item.CssStyle();
+        $('#styleEditor').val(styles);
+        ShowDialog('#styleDiv', '编辑控容器件样式', function () {
+            item.CssStyle($('#styleEditor').val());
+        }, null, 660, 200);
     }
 </script>

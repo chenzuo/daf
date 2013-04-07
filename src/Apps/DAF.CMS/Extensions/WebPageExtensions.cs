@@ -2,20 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DAF.CMS.Models;
+using System.Web;
+using System.Web.WebPages;
+using System.Web.WebPages.Html;
+using DAF.Core;
+using DAF.Core.Caching;
 
 namespace DAF.CMS
 {
     public static class WebPageExtensions
     {
-        public static IEnumerable<SectionControl> OrderedControls(this WebPage pageData, string section)
+        public static IHtmlString RenderCachedPage(this WebPage webpage, string cacheKey, int cacheMunites, string path, params object[] data)
         {
-            var templateControls = pageData.Template.Controls.Where(o => o.Section == section)
-                .Select(o => new SectionControl() { Path = o.ControlPath, Paras = o.ControlParas, Container = o.Container, Order = o.ShowOrder });
-            var pageControls = pageData.Controls.Where(o => o.Section == section)
-                .Select(o => new SectionControl() { Path = o.ControlPath, Paras = o.ControlParas, Container = o.Container, Order = o.ShowOrder });
-            var controls = templateControls.Union(pageControls).OrderBy(o => o.Order);
-            return controls;
+            if (!string.IsNullOrEmpty(cacheKey) && cacheMunites > 0)
+            {
+                var cm = IOC.Current.GetService<ICacheManager>();
+                var cp = cm.CreateCacheProvider(CacheScope.Global);
+                var html = cp.GetData(cacheKey) as IHtmlString;
+                if (html == null)
+                {
+                    var helper = webpage.RenderPage(path, data);
+                    html = new HtmlString(helper.ToHtmlString());
+                    cp.Add(cacheKey, html, null, TimeSpan.FromMinutes(cacheMunites), DateTime.MaxValue);
+                }
+                return html;
+            }
+            else
+            {
+                return webpage.RenderPage(path, data);
+            }
         }
     }
 }

@@ -33,7 +33,7 @@ namespace DAF.CMS
             this.repoContentRelation = repoContentRelation;
         }
 
-        public IEnumerable<Content> GetContents(string siteId, string category
+        public IEnumerable<Content> GetContents(string siteId, string category, out int total
             , bool? published = null, ContentType[] contentTypes = null, DateTime? startDate = null, DateTime? endDate = null
             , int pi = 0, int ps = 0)
         {
@@ -42,7 +42,11 @@ namespace DAF.CMS
             if (string.IsNullOrEmpty(category))
             {
                 query = from o in repoContent.Query(null)
-                        where o.SiteId == siteId && o.CreateAsRelated == false
+                        join cc in repoContentCategory.Query(null)
+                            on o.ContentId equals cc.ContentId
+                        join c in repoCategory.Query(null)
+                            on cc.CategoryId equals c.CategoryId
+                        where o.SiteId == siteId && o.CreateAsRelated == false && c.Code == null
                         select o;
             }
             else
@@ -87,6 +91,7 @@ namespace DAF.CMS
 
             query = query.OrderBy(o => o.ShowOrder).ThenByDescending(o => o.PublishTime).ThenByDescending(o => o.CreateTime);
 
+            total = query.Count();
             if (pi >= 0 && ps > 0)
             {
                 query = query.Skip(pi * ps).Take(ps);
@@ -220,7 +225,7 @@ namespace DAF.CMS
                 {
                     if (obj.Published)
                     {
-                        var dbObjs = repoContentCategory.Query(o => o.SiteId == obj.SiteId && o.ContentId == obj.ContentId);
+                        var dbObjs = repoContentCategory.Query(o => o.SiteId == obj.SiteId && o.ContentId == obj.ContentId).ToArray();
                         repoContentCategory.SaveAll(trans, dbObjs, obj.Categories,
                             (o, n) => o.SiteId == n.SiteId && o.ContentId == n.ContentId && o.CategoryId == n.CategoryId,
                             (r, o) =>
@@ -275,7 +280,7 @@ namespace DAF.CMS
                             }
                         });
 
-                        var dbObjs = repoContentRelation.Query(o => o.SiteId == obj.SiteId && o.ContentId == obj.ContentId);
+                        var dbObjs = repoContentRelation.Query(o => o.SiteId == obj.SiteId && o.ContentId == obj.ContentId).ToArray();
 
                         repoContentRelation.SaveAll(trans, dbObjs, obj.RelatedContents,
                             (o, n) => o.SiteId == n.SiteId && o.ContentId == n.ContentId && o.RelatedContentId == n.RelatedContentId,

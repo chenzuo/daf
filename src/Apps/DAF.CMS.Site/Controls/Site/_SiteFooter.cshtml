@@ -1,0 +1,14 @@
+﻿@*<Parameters>
+[ { Name:'footerPage', DefaultValue:'footer', Description:'页底内容，取自“内容管理”中的页底页面' }
+]
+/Parameters>*@
+@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@{
+    Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
+    var content = CmsHelper.GetContent(paras["footerPage"], false, false);
+}
+<div class="footer">
+    @Html.Raw(content.HtmlBody)
+</div>

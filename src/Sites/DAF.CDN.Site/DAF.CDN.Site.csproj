@@ -1199,6 +1199,10 @@
     <Content Include="Scripts\jquery.Jcrop.min.js" />
     <Content Include="Scripts\jquery.mobile.js" />
     <Content Include="Scripts\jquery.mobile.min.js" />
+    <Content Include="Scripts\jquery.multiselect.filter.js" />
+    <Content Include="Scripts\jquery.multiselect.filter.min.js" />
+    <Content Include="Scripts\jquery.multiselect.js" />
+    <Content Include="Scripts\jquery.multiselect.min.js" />
     <Content Include="Scripts\jquery.postmessage-transport.js" />
     <Content Include="Scripts\jquery.skitter.js" />
     <Content Include="Scripts\jquery.skitter.min.js" />
@@ -1353,6 +1357,8 @@
     <Content Include="Scripts\utils.js" />
     <Content Include="Scripts\svgs\worldMap.js" />
     <Content Include="Scripts\jquery.myplayer.js" />
+    <Content Include="Scripts\jquery.dropdown.js" />
+    <Content Include="Scripts\jquery.widget.base.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

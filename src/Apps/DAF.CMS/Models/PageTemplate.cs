@@ -10,6 +10,13 @@ namespace DAF.CMS.Models
     [Table("cms_PageTemplate")]
     public class PageTemplate
     {
+        public PageTemplate()
+        {
+            Parent = null;
+            Children = new List<PageTemplate>();
+            Controls = new List<PageTemplateControl>();
+        }
+
         [Required]
         [Key, Column(Order = 0)]
         [StringLength(50)]
@@ -28,9 +35,14 @@ namespace DAF.CMS.Models
         public string PageCSS { get; set; }
         [MaxLength]
         public string PageJS { get; set; }
+        [StringLength(50)]
+        public string ParentTemplateName { get; set; }
 
         [ForeignKey("SiteId")]
         public virtual SubSite Site { get; set; }
+        [ForeignKey("SiteId, TemplateName")]
+        public virtual PageTemplate Parent { get; set; }
+        public virtual ICollection<PageTemplate> Children { get; set; }
         public virtual ICollection<PageTemplateControl> Controls { get; set; }
     }
 }

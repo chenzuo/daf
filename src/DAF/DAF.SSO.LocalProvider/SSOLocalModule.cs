@@ -34,6 +34,7 @@ namespace DAF.SSO.LocalProvider
             builder.RegisterType<DefaultSSOConfiguration>().As<ISSOConfiguration>().SingleInstance();
             builder.RegisterType<SSOServerProvider>().As<Server.ISSOServerProvider>().SingleInstance();
             builder.RegisterType<SSOClientProvider>().As<Client.ISSOClientProvider>().SingleInstance();
+            builder.RegisterType<Client.DefaultSessionProvider>().As<Client.IDefaultSessionProvider>().SingleInstance();
         }
     }
 }

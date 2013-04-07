@@ -1,0 +1,49 @@
+﻿@*<Parameters>
+[ { Name:'category', DefaultValue:'', Description:'滚动的html内容，设置对应内容的栏目编码' }
+  , { Name:'width', DefaultValue:'600', Description:'滚动区域宽度' }
+  , { Name:'height', DefaultValue:'450', Description:'滚动区域高度' }
+]
+/Parameters>*@
+@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
+    var contents = CmsHelper.GetContents(paras["category"]);
+    int width = paras["width"].ConvertTo<int>(600);
+    int height = paras["height"].ConvertTo<int>(450);
+}
+@AssetsHelper.CDNScript("slides.min.jquery.js")
+
+<div id="contentSlide_@(paras["category"])" class="auto-margin" style="width:@(width)px;height:@(height)px;overflow:hidden;">
+    <div class="slides">
+        <ul class="pagination pagination-centered">
+            @foreach(var c in contents)
+            {
+            <li><a href="#@c.ContentId">@c.Title</a></li>
+            }
+        </ul>
+        <div class="slides_container">
+            @foreach(var c in contents)
+            {
+            <div id="@c.ContentId" class="slides_page">
+                @Html.Raw(c.HtmlBody)
+            </div>
+            }
+        </div>
+        <a href="javacript:;" class="prev"></a>
+        <a href="javacript:;" class="next"></a>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $(".slides").slides({
+            generateNextPrev: false,
+            generatePagination: false,
+            hoverPause: true,
+            play: 5000,
+            pause: 2500,
+        });
+    });
+</script>

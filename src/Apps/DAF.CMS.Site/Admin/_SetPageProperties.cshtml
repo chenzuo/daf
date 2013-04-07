@@ -1,0 +1,40 @@
+﻿@{
+    Layout = null;
+}
+<div id="linksDiv" class="hide">
+    <textarea id="linksEditor" style="width: 98%; height: 96%;"></textarea>
+</div>
+<div id="cssDiv" class="hide">
+    <textarea id="cssEditor" style="width: 98%; height: 96%;"></textarea>
+</div>
+<div id="jsDiv" class="hide">
+    <textarea id="jsEditor" style="width: 98%; height: 96%;"></textarea>
+</div>
+
+<script type="text/javascript">
+    function SetLinks() {
+        var links = vm.SelectedPage().PageLinks();
+        $('#linksEditor').val(links);
+        ShowDialog('#linksDiv', '编辑页面Links', function () {
+            vm.SelectedPage().PageLinks($('#linksEditor').val());
+        }, null, 660, 300);
+    }
+
+    function SetCSS() {
+        var css = vm.SelectedPage().PageCSS();
+        css = BeautifyCss(css);
+        $('#cssEditor').val(css);
+        ShowDialog('#cssDiv', '编辑页面CSS', function () {
+            vm.SelectedPage().PageCSS($('#cssEditor').val());
+        }, null, 660, 500);
+    }
+
+    function SetJS() {
+        var js = vm.SelectedPage().PageJS();
+        js = BeautifyJs(js);
+        $('#jsEditor').val(js);
+        ShowDialog('#jsDiv', '编辑页面JavaScript', function () {
+            vm.SelectedPage().PageJS($('#jsEditor').val());
+        }, null, 660, 500);
+    }
+</script>

@@ -161,10 +161,6 @@
     <Content Include="Localization\DAF_SSO.js" />
     <Content Include="Localization\DAF_ApiSiteSample.js" />
     <Content Include="Localization\DAF_Web.js" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner-mask.png" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_1.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_2.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_3.jpg" />
     <Content Include="Themes\Default\Skins\Default\Contents\site.css" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
     <Content Include="Web.config" />
@@ -194,7 +190,6 @@
     <Content Include="Themes\Default\_AdminFooter.cshtml" />
     <Content Include="Themes\Default\_AdminHead.cshtml" />
     <Content Include="Themes\Default\_AdminHeader.cshtml" />
-    <Content Include="Themes\Default\_Banner.cshtml" />
     <Content Include="Themes\Default\_DialogEnd.cshtml" />
     <Content Include="Themes\Default\_DialogHead.cshtml" />
     <Content Include="Themes\Default\_HomeBody.cshtml" />
@@ -204,14 +199,11 @@
     <Content Include="Themes\Default\_WindowFooter.cshtml" />
     <Content Include="Themes\Default\_WindowHead.cshtml" />
     <Content Include="Themes\Default\_WindowHeader.cshtml" />
-    <Content Include="App_Code\Form.cshtml" />
     <Content Include="App_Code\Menu.cshtml" />
     <Content Include="App_Code\Tree.cshtml" />
     <Content Include="_PageStart.cshtml" />
     <Content Include="packages.config" />
-    <Content Include="Controls\_ImageSlideShow.cshtml" />
-    <Content Include="Controls\_Paging.cshtml" />
-    <Content Include="Controls\_SelectLanguages.cshtml" />
+    <Content Include="Controls\SelectLanguages.cshtml" />
     <Content Include="Admin.cshtml" />
     <Content Include="Account\_AccountInfo.cshtml" />
     <Content Include="Account\Captcha.cshtml" />
@@ -222,6 +214,7 @@
     <Content Include="Account\SignOn.cshtml" />
     <Content Include="Account\ResetPassword.cshtml" />
     <Content Include="Account\ResetPasswordSuccess.cshtml" />
+    <Content Include="Themes\Default\_Paging.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -233,11 +226,15 @@
     <Content Include="_Dialog.cshtml" />
     <Content Include="_Html.cshtml" />
     <Content Include="_Window.cshtml" />
+    <Content Include="_AdminFull.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201211020640428_Init.resx">
       <DependentUpon>201211020640428_Init.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Themes\Default\Skins\Default\Contents\Images\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -1,0 +1,17 @@
+﻿@{
+    Layout = Page.IsNested == true ? "~/_Null.cshtml" : "~/_Window.cshtml";
+}
+
+@section head {
+    @RenderSection("head", false)
+}
+@section end {
+    @RenderSection("end", false)
+}
+
+<aside class="page-left">
+    @RenderSection("left")
+</aside>
+<div class="page-body">
+    @RenderBody()
+</div>

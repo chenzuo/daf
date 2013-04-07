@@ -19,19 +19,18 @@
 @AssetsHelper.Script("ckfinder/ckfinder.js", AssetsHelper.CDNUrl)
 
 <style type="text/css">
-    .tabs-left > .nav-tabs > li > a, .tabs-right > .nav-tabs > li > a
-    {
+    .tabs-left > .nav-tabs > li > a, .tabs-right > .nav-tabs > li > a {
         min-width: 40px;
     }
 </style>
-<div class="row">
-    <div class="data-container span9">
+<div class="flex">
+    <div class="flex4">
         <form method="post">
-            <table class="table table-bordered span9 lgap0" data-bind="with:Data">
+            <table class="table table-bordered spanfull" data-bind="with:Data">
                 <tr>
                     <td>@(pageModel.CaptionFor(o => o.Title))</td>
                     <td>
-                        @pageModel.TextBoxFor(o => o.Title, new { @class = "span8", @data_bind = "value:Title" })
+                        @pageModel.TextBoxFor(o => o.Title, new { @data_bind = "value:Title", style="width:750px;" })
                         <button type="button" class="btn btn-mini pull-right" data-bind="css:{ 'btn-success':Published }, event:{ click: vm.TogglePublish }">
                             <i class="icon-tasks"></i>
                             <span data-bind="visible:Published()">已发布</span>
@@ -41,19 +40,16 @@
                 </tr>
                 <tr>
                     <td>@(pageModel.CaptionFor(o => o.ShortUrl))</td>
-                    <td>@pageModel.TextBoxFor(o => o.ShortUrl, new { @class = "span8", @data_bind = "value:ShortUrl", onblur = "MakeShortUrl(this);" })</td>
+                    <td>@pageModel.TextBoxFor(o => o.ShortUrl, new { @class = "spanfull", @data_bind = "value:ShortUrl", onblur = "MakeShortUrl(this);" })</td>
                 </tr>
                 <tr>
                     <td>@(pageModel.CaptionFor(o => o.Description))</td>
-                    <td>@pageModel.TextAreaFor(o => o.Description, new { @class = "span8", @data_bind = "value:Description", rows = "1", cols = "80" })
-                        <button type="button" class="btn" onclick="$('#Description').prop('rows', 4);">
-                            <i class="icon-chevron-down"></i>
-                        </button>
+                    <td>@pageModel.TextAreaFor(o => o.Description, new { @class = "spanfull", @data_bind = "value:Description", rows = "2" })
                     </td>
                 </tr>
                 <tr>
                     <td>@(pageModel.CaptionFor(o => o.Keywords))</td>
-                    <td>@pageModel.TextBoxFor(o => o.Keywords, new { @class = "span8", @data_bind = "value:Keywords" })</td>
+                    <td>@pageModel.TextBoxFor(o => o.Keywords, new { @class = "spanfull", @data_bind = "value:Keywords" })</td>
                 </tr>
                 @RenderBody()
                 <tr>
@@ -71,103 +67,105 @@
             </table>
         </form>
     </div>
-    <div id="publishDiv" class="span3 well tgap1 lgap1" data-bind="with:Data">
-        <h3>发布</h3>
-        <div class="tgap1" data-bind="visible:Published()">
-            <span class="pull-left rgap1">@(pageModel.CaptionFor(o => o.PublishTime))</span>
-            @pageModel.TextBoxFor(o => o.PublishTime, new { @class = "input-small", data_bind = "date:PublishTime" })
+    <div class="well flex1 span3 nonefloat">
+        <div id="publishDiv" data-bind="with:Data">
+            <h3>发布</h3>
+            <div class="tgap1 lgap0" data-bind="visible:Published()">
+                <span class="pull-left rgap1">@(pageModel.CaptionFor(o => o.PublishTime))</span>
+                @pageModel.TextBoxFor(o => o.PublishTime, new { @class = "input-small", data_bind = "date:PublishTime" })
+            </div>
+            <div id="cates" class="tgap1 lgap0" data-bind="visible:Published()">
+                <ul data-bind="template:{ name:'item-template', foreach:$root.Categories}"></ul>
+            </div>
+            <div class="tgap1 lgap0" data-bind="visible:!Published()">
+                <p>请先发布内容，再设置发布的相关设置。</p>
+            </div>
         </div>
-        <div id="cates" class="tgap1" data-bind="visible:Published()">
-            <ul data-bind="template:{ name:'item-template', foreach:$root.Categories}"></ul>
-        </div>
-        <div class="tgap1" data-bind="visible:!Published()">
-            <p>请先发布内容，再设置发布的相关设置。</p>
-        </div>
-    </div>
-    <div id="relatedDiv" class="span3 well tgap1 lgap1 hide">
-        <h3>关联内容</h3>
-        <div class="tgap1 tabbable tabs-left">
-            <ul class="nav nav-tabs">
-                @*<li class="active"><a href="#html" data-toggle="tab">Html</a></li>*@
-                <li class="active"><a href="#image" data-toggle="tab">图片</a></li>
-                <li><a href="#file" data-toggle="tab">下载</a></li>
-                <li><a href="#link" data-toggle="tab">链接</a></li>
-                @*<li><a href="#text" data-toggle="tab">文本</a></li>*@
-                <li><a href="#audio" data-toggle="tab">音频</a></li>
-                <li><a href="#video" data-toggle="tab">视频</a></li>
-                <li><a href="#org" data-toggle="tab">机构</a></li>
-                <li><a href="#person" data-toggle="tab">人物</a></li>
-                <li><a href="#contact" data-toggle="tab">联系</a></li>
-            </ul>
-            <div class="tab-content">
-                @*<div id="html" data-content-type="0" class="tab-pane active">
+        <div id="relatedDiv" class="hide">
+            <h3>关联内容</h3>
+            <div class="tgap1 lgap0 tabbable tabs-left">
+                <ul class="nav nav-tabs">
+                    @*<li class="active"><a href="#html" data-toggle="tab">Html</a></li>*@
+                    <li class="active"><a href="#image" data-toggle="tab">图片</a></li>
+                    <li><a href="#file" data-toggle="tab">下载</a></li>
+                    <li><a href="#link" data-toggle="tab">链接</a></li>
+                    @*<li><a href="#text" data-toggle="tab">文本</a></li>*@
+                    <li><a href="#audio" data-toggle="tab">音频</a></li>
+                    <li><a href="#video" data-toggle="tab">视频</a></li>
+                    <li><a href="#org" data-toggle="tab">机构</a></li>
+                    <li><a href="#person" data-toggle="tab">人物</a></li>
+                    <li><a href="#contact" data-toggle="tab">联系</a></li>
+                </ul>
+                <div class="tab-content">
+                    @*<div id="html" data-content-type="0" class="tab-pane active">
                     <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(0)}"></ul>
                 </div>*@
-                <div id="image" data-content-type="1" data-relation-type="1" class="tab-pane active">
-                    <div id="imageuploader"></div>
-                    <div class="panel ui-corner-all lgap0" data-bind="foreach:vm.GetRelatedContents(1)">
-                        <div data-bind="with:RelatedContent">
-                            <div class="bg-none text-center">
-                                <img class="img-none rect-small ui-corner-all" data-bind="attr:{src: ContentUrl }" />
+                    <div id="image" data-content-type="1" data-relation-type="1" class="tab-pane active">
+                        <div id="imageuploader"></div>
+                        <div class="panel ui-corner-all lgap0" data-bind="foreach:vm.GetRelatedContents(1)">
+                            <div data-bind="with:RelatedContent">
+                                <div class="bg-none text-center">
+                                    <img class="img-none rect-small ui-corner-all" data-bind="attr:{src: ContentUrl }" />
+                                </div>
+                                <a data-bind="attr:{href:ContentUrl}" target="_blank"><span data-bind="text:Title"></span></a>
+                                <button type="button" class="btn btn-mini btn-danger" data-bind="click: vm.DeleteRelatedContent" title="删除关联内容">
+                                    <i class="icon-remove"></i>
+                                </button>
                             </div>
-                            <a data-bind="attr:{href:ContentUrl}" target="_blank"><span data-bind="text:Title"></span></a>
-                            <button type="button" class="btn btn-mini btn-danger" data-bind="click: vm.DeleteRelatedContent" title="删除关联内容">
-                                <i class="icon-remove"></i>
-                            </button>
                         </div>
                     </div>
-                </div>
-                <div id="file" data-content-type="2" data-relation-type="1" class="tab-pane">
-                    <div id="fileuploader"></div>
-                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(2)}"></ul>
-                </div>
-                <div id="link" data-content-type="3" data-relation-type="1" class="tab-pane">
-                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(3)}"></ul>
-                </div>
-                @*<div id="text" data-content-type="4" class="tab-pane">
+                    <div id="file" data-content-type="2" data-relation-type="1" class="tab-pane">
+                        <div id="fileuploader"></div>
+                        <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(2)}"></ul>
+                    </div>
+                    <div id="link" data-content-type="3" data-relation-type="1" class="tab-pane">
+                        <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(3)}"></ul>
+                    </div>
+                    @*<div id="text" data-content-type="4" class="tab-pane">
                     <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(4)}"></ul>
                 </div>*@
-                <div id="audio" data-content-type="5" data-relation-type="1" class="tab-pane">
-                    <div id="audiouploader"></div>
-                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(5)}"></ul>
-                </div>
-                <div id="video" data-content-type="6" data-relation-type="1" class="tab-pane">
-                    <div id="videouploader"></div>
-                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(6)}"></ul>
-                </div>
-                <div id="org" data-content-type="10" data-relation-type="1" class="tab-pane">
-                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(10)}"></ul>
-                </div>
-                <div id="person" data-content-type="11" data-relation-type="1" class="tab-pane">
-                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(11)}"></ul>
-                </div>
-                <div id="contact" data-content-type="12" data-relation-type="1" class="tab-pane">
-                    <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(12)}"></ul>
+                    <div id="audio" data-content-type="5" data-relation-type="1" class="tab-pane">
+                        <div id="audiouploader"></div>
+                        <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(5)}"></ul>
+                    </div>
+                    <div id="video" data-content-type="6" data-relation-type="1" class="tab-pane">
+                        <div id="videouploader"></div>
+                        <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(6)}"></ul>
+                    </div>
+                    <div id="org" data-content-type="10" data-relation-type="1" class="tab-pane">
+                        <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(10)}"></ul>
+                    </div>
+                    <div id="person" data-content-type="11" data-relation-type="1" class="tab-pane">
+                        <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(11)}"></ul>
+                    </div>
+                    <div id="contact" data-content-type="12" data-relation-type="1" class="tab-pane">
+                        <ul data-bind="template:{ name:'rc-template', foreach:vm.GetRelatedContents(12)}"></ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="form-actions clear">
-        <button class="btn btn-primary" type="button" onclick="vm.Save();">
-            <i class="icon-ok"></i><span>保存并留在本页</span></button>
-        <button class="btn btn-primary" type="button" onclick="vm.Save();">
-            <i class="icon-ok"></i><span>保存并继续新增</span></button>
-        <button class="btn btn-primary" type="button" onclick="vm.Save();">
-            <i class="icon-ok"></i><span>保存并返回列表页</span></button>
-    </div>
+</div>
+<div class="form-actions clear">
+    <button class="btn btn-primary" type="button" onclick="vm.Save();">
+        <i class="icon-ok"></i><span>保存并留在本页</span></button>
+    <button class="btn btn-primary" type="button" onclick="vm.Save();">
+        <i class="icon-ok"></i><span>保存并继续新增</span></button>
+    <button class="btn btn-primary" type="button" onclick="vm.Save();">
+        <i class="icon-ok"></i><span>保存并返回列表页</span></button>
 </div>
 <script type="text/html" id="item-template">
     <li>
-        <input type="checkbox" data-bind="checkChange:{ checkChanged: $root.CheckCategory, isChecked:$root.IsCategorySelected, data:Key }" />
-        <span data-bind="text:Caption"></span>
+        <input type="checkbox" data-bind="checkChange:{ checkChanged: $root.CheckCategory, isChecked:$root.IsCategorySelected, data:CategoryId }" />
+        <span data-bind="text:Name"></span>
         <button type="button" class="btn btn-mini" data-bind="click: vm.ToggleTop, css: { 'btn-success': vm.IsTop($data) }" title="在该栏目中设置为置顶">
             <i class="icon-chevron-up"></i>
         </button>
         <button type="button" class="btn btn-mini" data-bind="click: vm.ToggleHot, css: { 'btn-danger': vm.IsHot($data) }" title="在该栏目中设置为热点">
             <i class="icon-fire"></i>
         </button>
-        <!-- ko if:$data.ChildNodes().length > 0 -->
-        <ul data-bind="template:{ name:'item-template', foreach:ChildNodes }"></ul>
+        <!-- ko if:$data.Children().length > 0 -->
+        <ul data-bind="template:{ name:'item-template', foreach:Children }"></ul>
         <!-- /ko -->
     </li>
 </script>
@@ -227,15 +225,15 @@
                                     OnTime: ko.observable(null),
                                     OffTime: ko.observable(null)
                                 };
-                                obj.Categories.push(cc);
-                            }
-                        }
-                        else {
-                            if (cate != null) {
-                                obj.Categories.remove(cate);
-                            }
+                            obj.Categories.push(cc);
                         }
                     }
+                    else {
+                        if (cate != null) {
+                            obj.Categories.remove(cate);
+                        }
+                    }
+                }
                 };
                 self.TogglePublish = function (item) {
                     item.Published(!item.Published());
@@ -245,14 +243,14 @@
                     ResizeIFrame();
                 };
                 self.IsTop = function (item) {
-                    var cate = vm.GetContentCategory(item.Key());
+                    var cate = vm.GetContentCategory(item.CategoryId());
                     if (cate != null) {
                         return cate.TopIndex && cate.TopIndex() >= 0;
                     }
                     return false;
                 };
                 self.ToggleTop = function (item) {
-                    var cate = vm.GetContentCategory(item.Key());
+                    var cate = vm.GetContentCategory(item.CategoryId());
                     if (cate != null) {
                         if (cate.TopIndex() >= 0)
                             cate.TopIndex(-1);
@@ -261,14 +259,14 @@
                     }
                 };
                 self.IsHot = function (item) {
-                    var cate = vm.GetContentCategory(item.Key());
+                    var cate = vm.GetContentCategory(item.CategoryId());
                     if (cate != null) {
                         return cate.HotIndex && cate.HotIndex() >= 0;
                     }
                     return false;
                 };
                 self.ToggleHot = function (item) {
-                    var cate = vm.GetContentCategory(item.Key());
+                    var cate = vm.GetContentCategory(item.CategoryId());
                     if (cate != null) {
                         if (cate.HotIndex() >= 0)
                             cate.HotIndex(-1);

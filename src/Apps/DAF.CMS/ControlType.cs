@@ -21,15 +21,4 @@ namespace DAF.CMS
         public string DefaultValue { get; set; }
         public string Description { get; set; }
     }
-
-    //public static class ControlTypeExtensions
-    //{
-    //    public static string ParameterValues(this ControlType ct)
-    //    {
-    //        if (ct.Parameters == null || ct.Parameters.Count() <= 0)
-    //            return string.Empty;
-    //        var paras = ct.Parameters.Select(o => string.Format("{0}=", o));
-    //        return string.Join(";", paras);
-    //    }
-    //}
 }

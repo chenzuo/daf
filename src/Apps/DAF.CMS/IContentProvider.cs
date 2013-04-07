@@ -10,7 +10,7 @@ namespace DAF.CMS
 {
     public interface IContentProvider
     {
-        IEnumerable<Content> GetContents(string siteId, string category
+        IEnumerable<Content> GetContents(string siteId, string category, out int total
            , bool? published = null, ContentType[] contentTypes = null, DateTime? startDate = null, DateTime? endDate = null
            , int pi = 0, int ps = 0);
 

@@ -13,9 +13,8 @@ namespace DAF.CMS
     public interface IMenuProvider
     {
         IEnumerable<SiteMenuGroup> GetGroups(string siteId);
-
-        IEnumerable<SiteMenuItem> GetMenu(string siteId, string groupName, string parentName = null);
-        ICollection<TreeNode> GetMenuTree(string siteId, string groupName);
+        IEnumerable<SiteMenuItem> GetMenu(string siteId, string groupName);
+        IEnumerable<SiteMenuItem> GetMenu(string siteId, string groupName, string parentName);
 
         bool Save(ChangedData<SiteMenuItem> items);
 

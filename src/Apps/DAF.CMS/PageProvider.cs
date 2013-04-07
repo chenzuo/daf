@@ -26,10 +26,6 @@ namespace DAF.CMS
         public IEnumerable<WebPage> GetPages(string siteId, string parentId = null)
         {
             var query = repoPage.Query(o => o.SiteId == siteId);
-            if (string.IsNullOrEmpty(parentId))
-                query = query.Where(o => o.ParentPageId == null);
-            else
-                query = query.Where(o => o.ParentPageId == parentId);
             return query.ToArray();
         }
 

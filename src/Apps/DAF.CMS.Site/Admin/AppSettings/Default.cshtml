@@ -5,55 +5,53 @@
 @{
     var pageModel = this.PageModel<AppSetting>();
 }
-<div class="row">
-    <div class="span12">
-        @RenderPage("~/Controls/_SelectSites.cshtml")
+<div class="clear">
+    @RenderPage("~/Controls/_SelectSites.cshtml")
+</div>
+<div class="clear">
+    <div class="control-group tgap1 pull-left">
+        <button class="btn btn-primary" type="button" onclick="NewCate();">
+            <i class="icon-plus"></i><span>新增分类</span>
+        </button>
     </div>
-    <div class="span12">
-        <div class="control-group tgap1 pull-left">
-            <button class="btn btn-primary" type="button" onclick="NewCate();">
-                <i class="icon-plus"></i><span>新增分类</span>
-            </button>
-        </div>
-        <div id="cates" class="clear">
-            <ul data-bind="foreach:Categories">
-                <li><a href="#data-container" data-bind="text: $data, click:vm.SelectCate"></a></li>
-            </ul>
-            <div id="data-container" data-bind="visible:SelectedCate">
-                <form method="post">
-                    <table id="data-list" class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>@(pageModel.CaptionFor(o => o.Name))</th>
-                                <th>@(pageModel.CaptionFor(o => o.Caption))</th>
-                                <th>@(pageModel.CaptionFor(o => o.Value))</th>
-                                <th>&nbsp;</th>
-                            </tr>
-                        </thead>
-                        <tbody data-bind="foreach: { data: Data, afterRender: AfterRender }">
-                            <tr data-bind="attr:{ key:Category() + '_' + Name(), id:Name, idx:ShowOrder }">
-                                <td>
-                                    <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Name"></span></div>
-                                    <div data-bind="visible:vm.IsNew($data)">
-                                        @pageModel.TextBoxFor(o => o.Name, new { data_bind = "value:Name, event: { blur: CheckExists }" })
-                                    </div>
-                                </td>
-                                <td>@pageModel.TextBoxFor(o => o.Caption, new { data_bind = "value:Caption" })</td>
-                                <td>@pageModel.TextBoxFor(o => o.Value, new { data_bind = "value:Value" })</td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="form-actions">
-                        <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
-                            <i class="icon-plus"></i><span>新增</span></button>
-                        <button class="btn btn-success" type="button" onclick="vm.Save();">
-                            <i class="icon-ok"></i><span>保存</span></button>
-                    </div>
-                </form>
-            </div>
+    <div id="cates" class="clear">
+        <ul data-bind="foreach:Categories">
+            <li><a href="#data-container" data-bind="text: $data, click:vm.SelectCate"></a></li>
+        </ul>
+        <div id="data-container" data-bind="visible:SelectedCate">
+            <form method="post">
+                <table id="data-list" class="table table-bordered spanfull">
+                    <thead>
+                        <tr>
+                            <th>@(pageModel.CaptionFor(o => o.Name))</th>
+                            <th>@(pageModel.CaptionFor(o => o.Caption))</th>
+                            <th>@(pageModel.CaptionFor(o => o.Value))</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: { data: Data, afterRender: AfterRender }">
+                        <tr data-bind="attr:{ key:Category() + '_' + Name(), id:Name, idx:ShowOrder }">
+                            <td>
+                                <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Name"></span></div>
+                                <div data-bind="visible:vm.IsNew($data)">
+                                    @pageModel.TextBoxFor(o => o.Name, new { data_bind = "value:Name, event: { blur: CheckExists }" })
+                                </div>
+                            </td>
+                            <td>@pageModel.TextBoxFor(o => o.Caption, new { data_bind = "value:Caption" })</td>
+                            <td>@pageModel.TextBoxFor(o => o.Value, new { data_bind = "value:Value" })</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+                        <i class="icon-plus"></i><span>新增</span></button>
+                    <button class="btn btn-success" type="button" onclick="vm.Save();">
+                        <i class="icon-ok"></i><span>保存</span></button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -27,11 +27,11 @@
     </li>
 </script>
 
-<div class="row">
-    <div class="span12">
-        @RenderPage("~/Controls/_SelectSites.cshtml")
-    </div>
-    <div class="span3">
+<div class="clear">
+    @RenderPage("~/Controls/_SelectSites.cshtml")
+</div>
+<div class="flex">
+    <div class="flex1">
         <div class="well">
             <h3>
                 <span class="title">用户分组</span>
@@ -42,7 +42,7 @@
             </div>
         </div>
     </div>
-    <div class="span9 lgap1" data-bind="visible:SelectedGroup">
+    <div class="flex4" data-bind="visible:SelectedGroup">
         <h3 data-bind="with:SelectedGroup">当前用户分组：<span class="info" data-bind="text:Name"></span></h3>
         <div id="group-users" class="ui-corner-all">
             <form id="items" name="items" onsubmit="return Save();">

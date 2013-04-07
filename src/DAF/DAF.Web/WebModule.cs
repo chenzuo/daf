@@ -39,7 +39,12 @@ namespace DAF.Web
             }).As<IObjectProvider<IEnumerable<Menu.MenuGroup>>>().SingleInstance();
 
             builder.RegisterModule(new AutoWireModule<Core.Localization.ILocalizer>(
-                o => o.RegisterType<Localization.JsonLocalizer>().As<Core.Localization.ILocalizer>().SingleInstance()));
+                o => o.RegisterType<Localization.JsonLocalizer>().OnPreparing(pe =>
+            {
+                NamedParameter np = new NamedParameter("paths", "Localization");
+                pe.Parameters = new Parameter[] { np };
+            }).As<Core.Localization.ILocalizer>().SingleInstance()));
+
             //builder.RegisterModule(new AutoWireModule<Core.Logging.ILogger>(
             //    o => o.RegisterType<Core.Logging.ILogger>().As<Core.Logging.ILogger>()));
 

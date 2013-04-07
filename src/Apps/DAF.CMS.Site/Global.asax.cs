@@ -28,14 +28,14 @@ namespace DAF.CMS.Site
                 );
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
                 name: "Category",
-                routeTemplate: "category/{cate1}/{cate2}/{cate3}",
+                routeTemplate: "category/{cate3}/{cate2}/{cate1}",
                 defaults: null,
                 constraints: null,
                 handler: new CmsMessageHandler("category")
                 );
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
                 name: "CategoryPage2",
-                routeTemplate: "{cate1}/{cate2}/{pid}",
+                routeTemplate: "{cate2}/{cate1}/{pid}",
                 defaults: null,
                 constraints: null,
                 handler: new CmsMessageHandler()

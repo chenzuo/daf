@@ -7,7 +7,7 @@
 }
 <script type="text/html" id="item-template">
     <div class="tr" data-bind="attr:{id:Name, idx:ShowOrder}">
-        <div class="td span2">
+        <div class="td span6">
             <button type="button" class="btn btn-mini indent" data-bind="click:ToggleChildren" title="展开/收缩子项">
                 <i class="icon-plus"></i>
             </button>
@@ -15,20 +15,20 @@
                 <i class="icon-resize-vertical"></i>
             </button>
         </div>
-        <div class="td td-input">
+        <div class="td span10">
             <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Code"></span></div>
             <div data-bind="visible:vm.IsNew($data)">
                 @pageModel.TextBoxFor(o => o.Code, new { data_bind = "value:Code, event: { blur: CheckExists }" })
             </div>
         </div>
-        <div class="td td-input">
+        <div class="td span10">
             @pageModel.TextBoxFor(o => o.Name, new { data_bind = "value:Name" })
         </div>
-        <div class="td td-input">
+        <div class="td span10">
             @pageModel.TextBoxFor(o => o.GroupName, new { data_bind = "value:GroupName" })
         </div>
-        <div class="td text-center">
-            <button class="btn btn-mini" type="button" data-bind="click: ToggleStates, attr: { title: $root.GetState.bind($data, 'name') }, cls: $root.GetState.bind($data, 'btn')">
+        <div class="td text-center span4">
+            <button class="btn btn-mini dropdown-toggle" type="button" data-popup="#states" data-without-click="true" data-bind="click: ToggleStates, attr: { title: $root.GetState.bind($data, 'name') }, cls: $root.GetState.bind($data, 'btn')">
                 <i data-bind="cls: $root.GetState.bind($data, 'icon')"></i>
                 <span class="caret"></span>
             </button>
@@ -43,44 +43,42 @@
     </div>
 </script>
 
-<div class="row">
-    <div class="span12">
-        @RenderPage("~/Controls/_SelectSites.cshtml")
-    </div>
-    <div class="span12">
-        <div class="data-container clear">
-            <form method="post">
-                <div class="table table-bordered">
-                    <div class="thead">
-                        <div class="tr">
-                            <div class="th span2"></div>
-                            <div class="th th-input">@(pageModel.CaptionFor(o => o.Code))</div>
-                            <div class="th th-input">@(pageModel.CaptionFor(o => o.Name))</div>
-                            <div class="th th-input">@(pageModel.CaptionFor(o => o.GroupName))</div>
-                            <div class="th">@(pageModel.CaptionFor(o => o.Status))</div>
-                            <div class="th"></div>
-                        </div>
+<div class="clear">
+    @RenderPage("~/Controls/_SelectSites.cshtml")
+</div>
+<div class="clear">
+    <div class="data-container clear">
+        <form method="post">
+            <div class="table table-bordered">
+                <div class="thead">
+                    <div class="tr">
+                        <div class="th span6"></div>
+                        <div class="th span10">@(pageModel.CaptionFor(o => o.Code))</div>
+                        <div class="th span10">@(pageModel.CaptionFor(o => o.Name))</div>
+                        <div class="th span10">@(pageModel.CaptionFor(o => o.GroupName))</div>
+                        <div class="th span4">@(pageModel.CaptionFor(o => o.Status))</div>
+                        <div class="th"></div>
                     </div>
-                    <div class="tbody" data-bind="template:{ name:'item-template', foreach:Data, afterRender: AfterRender }"></div>
                 </div>
-                <div class="form-actions">
-                    <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
-                        <i class="icon-plus"></i><span>新增</span></button>
-                    <button class="btn btn-success" type="button" onclick="vm.Save();">
-                        <i class="icon-ok"></i><span>保存</span></button>
-                </div>
-            </form>
-        </div>
+                <div class="tbody" data-bind="template:{ name:'item-template', foreach:Data, afterRender: AfterRender }"></div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+                    <i class="icon-plus"></i><span>新增</span></button>
+                <button class="btn btn-success" type="button" onclick="vm.Save();">
+                    <i class="icon-ok"></i><span>保存</span></button>
+            </div>
+        </form>
     </div>
-    <div id="states" class="dropdown-menu">
-        <ul class="unstyled" data-bind="foreach: States">
-            <li>
-                <button class="btn btn-mini" type="button" data-bind="click: ChangeState, attr: { title: name }, cls: btn">
-                    <i data-bind="cls: icon"></i>
-                </button>
-            </li>
-        </ul>
-    </div>
+</div>
+<div id="states" class="dropdown-menu">
+    <ul class="unstyled" data-bind="foreach: States">
+        <li>
+            <button class="btn btn-mini" type="button" data-bind="click: ChangeState, attr: { title: name }, cls: btn">
+                <i data-bind="cls: icon"></i>
+            </button>
+        </li>
+    </ul>
 </div>
 
 <script type="text/javascript">
@@ -88,7 +86,7 @@
     $(function () {
         vm = new KVM({
             getQueryUrl: function () { return '@(UrlHelper.ClientUrl("Api/Category/Data"))?siteId=' + vm.SelectedSite().SiteId; },
-            onQuerySuccess: function (data) { EnableItemSortable(); },
+            onQuerySuccess: function (data) { InitEditors(); EnableItemSortable(); },
             getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Category/Save"))'; },
             createItem: function () {
                 return {
@@ -233,13 +231,8 @@
     }
 
     function ToggleStates(item, event) {
-        event.stopPropagation();
-        event.preventDefault();
-        var pos = $(event.target).offset();
-        var t = pos.top; // + $(event.target).height();
-        var l = pos.left;
-        $('#states').css({ top: t.toString() + 'px', left: l.toString() + 'px' });
-        $('#states').toggle();
+        StopEvent(event);
+        $(event.target).closest('button').dropdown('toggle');
         $('#states').data('item', item);
     }
 

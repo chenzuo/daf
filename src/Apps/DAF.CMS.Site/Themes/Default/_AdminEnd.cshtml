@@ -1,9 +1,9 @@
 ﻿<script type="text/javascript">
     $(function () {
-        $('#adminMenu a[href]').each(function () {
-            var href = $(this).prop('href');
+        $('#admin-menu ul:first a[href]').each(function () {
+            var href = $(this).attr('href');
             if (href.indexOf('://') > 0) {
-                $(this).prop('href', 'javascript:OpenIFrame("admin-body","' + href + '");');
+                $(this).attr('href', 'javascript:OpenIFrame("admin-body","' + href + '");');
             }
         });
     });

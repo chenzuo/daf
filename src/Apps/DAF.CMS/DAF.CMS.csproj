@@ -80,9 +80,12 @@
     <Compile Include="AppSettingProvider.cs" />
     <Compile Include="BasicDataProvider.cs" />
     <Compile Include="CategoryProvider.cs" />
+    <Compile Include="CmsAppEventHandler.cs" />
+    <Compile Include="CmsDefaultSessionProvider.cs" />
     <Compile Include="CmsHelper.cs" />
     <Compile Include="CmsMessageHandler.cs" />
     <Compile Include="CmsModule.cs" />
+    <Compile Include="Configurations\ModuleConfigurationProvider.cs" />
     <Compile Include="ContentProvider.cs" />
     <Compile Include="ControlTypeProvider.cs" />
     <Compile Include="DB\BT\CMSDB.cs" />
@@ -128,9 +131,13 @@
     <Compile Include="Models\PageTemplate.cs" />
     <Compile Include="Models\PageTemplateControl.cs" />
     <Compile Include="Models\WebPageControl.cs" />
+    <Compile Include="ModuleMenuGroupProvider.cs" />
     <Compile Include="PageProvider.cs" />
     <Compile Include="PageSection.cs" />
-    <Compile Include="SectionControl.cs" />
+    <Compile Include="SectionControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SitePage.cs" />
     <Compile Include="TemplateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ControlType.cs" />
@@ -155,6 +162,7 @@
       <DependentUpon>201303120637229_Init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

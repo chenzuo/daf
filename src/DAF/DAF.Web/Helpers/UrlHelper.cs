@@ -66,6 +66,5 @@ namespace DAF.Web
             }
             return "/".UriCombine(url);
         }
-
     }
 }

@@ -9,7 +9,7 @@ namespace DAF.Report.Site
 {
     public class ReportHelper
     {
-        public const string ReportTemplatePath = "Templates";
+        public const string ReportTemplatePath = "ReportTemplates";
         
         public static string GetPath(string client, string group = null, string report = null)
         {

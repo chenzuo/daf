@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Web;
 using DAF.Core;
 using DAF.Core.Data;
+using DAF.Core.Caching;
 using DAF.Core.Generators;
 using DAF.Core.Collections;
 using DAF.Web;
@@ -17,6 +18,11 @@ namespace DAF.CMS
 {
     public class CmsHelper
     {
+        public static string Random(string prefix)
+        {
+            return string.Format("{0}_{1}", prefix, DateTime.Now.Ticks);
+        }
+
         public static string GetAppSettingValue(string name)
         {
             var appSetting = GetAppSetting(name);
@@ -47,27 +53,41 @@ namespace DAF.CMS
                     Icon = o.Icon,
                     Target = o.Target,
                     Tooltip = o.Tooltip,
-                });
-            var menu = HierarchyHelper.Build<MenuItem, MenuItem>(items.Where(o => string.IsNullOrEmpty(o.ParentName)),
-                o => o, o => o.Children, (p, c) => p.Children.Add(c));
+                    ParentName = o.ParentName
+                }).ToArray();
+            var menu = HierarchyHelper.Build<MenuItem>(items, o => string.IsNullOrEmpty(o.ParentName),
+                (p, c) => c.ParentName == p.Name, (p, c) => p.Children.Add(c));
             return menu;
         }
 
-        public static IEnumerable<Category> GetCategories(string groupName = null, string code = null, string parentId = null, DataStatus? status = DataStatus.Normal, string language = null)
+        public static IEnumerable<Category> GetCategories(string code = null, DataStatus? status = DataStatus.Normal, string language = null)
         {
-            var query = CategoryProvider.Query(CurrentSite.SiteId, groupName, code, parentId, status);
+            var query = CategoryProvider.Query(CurrentSite.SiteId, code, status);
             return query.ToArray();
         }
 
-        public static IEnumerable<Category> GetSubCategories(string parentCode, int depth = 1)
+        public static IEnumerable<Category> GetSubCategories(string parentId, int depth)
         {
-            var query = CategoryProvider.GetSubCategories(CurrentSite.SiteId, parentCode, depth);
-            return query.ToArray();
+            var query = CategoryProvider.GetSubCategories(CurrentSite.SiteId, parentId);
+            var roots = HierarchyHelper.Build(query, o => CategoryProvider.GetSubCategories(o.SiteId, o.CategoryId), (p, c) => p.Children.Add(c), depth);
+            return roots;
         }
 
-        public static IEnumerable<Content> GetContents(string category, int pi = 0, int ps = 20)
+        public static Category GetCategory(string idOrCode)
         {
-            var query = ContentProvider.GetContents(CurrentSite.SiteId, category, true, null, null, null, pi, ps);
+            var cate = CategoryProvider.GetCategory(CurrentSite.SiteId, idOrCode);
+            return cate;
+        }
+
+        public static IEnumerable<Content> GetContents(string category)
+        {
+            int total = 0;
+            return GetContents(category, out total, 0, 0);
+        }
+
+        public static IEnumerable<Content> GetContents(string category, out int total, int pi = 0, int ps = 20)
+        {
+            var query = ContentProvider.GetContents(CurrentSite.SiteId, category, out total, true, null, null, null, pi, ps);
             return query.ToArray();
         }
 
@@ -84,7 +104,7 @@ namespace DAF.CMS
             return ContentProvider.Get(CurrentSite.SiteId, contentIdOrShortUrl, withRelatedContents, withCategories);
         }
 
-        public static WebPage GetPage(string pageIdOrNameOrShortUrl)
+        public static SitePage GetPage(string pageIdOrNameOrShortUrl)
         {
             var page = PageProvider.GetPageByName(pageIdOrNameOrShortUrl);
             if (page == null)
@@ -94,23 +114,93 @@ namespace DAF.CMS
             if (page != null)
             {
                 page.Controls = PageProvider.GetControls(page.PageId).ToArray();
-                page.Template = PageTemplateProvider.GetTemplate(page.SiteId, page.TemplateName);
-                page.Template.Controls = PageTemplateProvider.GetControls(page.SiteId, page.TemplateName).ToArray();
+                SitePage sp = new SitePage();
+                sp.Page = page;
+                if (!string.IsNullOrEmpty(page.TemplateName))
+                {
+                    string tn = page.TemplateName;
+                    LinkedList<PageTemplate> llt = new LinkedList<PageTemplate>();
+                    LinkedListNode<PageTemplate> last = null;
+                    while (!string.IsNullOrEmpty(tn))
+                    {
+                        var t = PageTemplateProvider.GetTemplate(page.SiteId, tn);
+                        if (t != null)
+                        {
+                            t.Controls = PageTemplateProvider.GetControls(t.SiteId, t.TemplateName).ToArray();
+                            tn = t.ParentTemplateName;
+                            if (last == null)
+                            {
+                                last = llt.AddLast(t);
+                            }
+                            else
+                            {
+                                last = llt.AddBefore(last, t);
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    sp.Templates = llt;
+                }
+                return sp;
             }
-            return page;
+            return null;
+        }
+
+        public static IEnumerable<SectionControl> GetControls(WebPage page, PageTemplate template, string section)
+        {
+            var cons = page.Controls.Where(o => o.Section == section).Select(o => o.ToSectionControl())
+                .Union(template.Controls.Where(o => o.Section == section).Select(o => o.ToSectionControl()))
+                .OrderBy(o => o.Order);
+            return cons;
+        }
+
+        public static string GetPageLinks(WebPage page, LinkedListNode<PageTemplate> template)
+        {
+            StringBuilder sb = new StringBuilder();
+            var node = template;
+            while (node != null)
+            {
+                sb.AppendLine(node.Value.PageLinks);
+                node = node.Next;
+            }
+            sb.AppendLine(page.PageLinks);
+            return sb.ToString();
+        }
+
+        public static string GetPageCSS(WebPage page, LinkedListNode<PageTemplate> template)
+        {
+            StringBuilder sb = new StringBuilder();
+            var node = template;
+            while (node != null)
+            {
+                sb.AppendLine(node.Value.PageCSS);
+                node = node.Next;
+            }
+            sb.AppendLine(page.PageCSS);
+            return sb.ToString();
+        }
+
+        public static string GetPageJS(WebPage page, LinkedListNode<PageTemplate> template)
+        {
+            StringBuilder sb = new StringBuilder();
+            var node = template;
+            while (node != null)
+            {
+                sb.AppendLine(node.Value.PageJS);
+                node = node.Next;
+            }
+            sb.AppendLine(page.PageJS);
+            return sb.ToString();
         }
 
         public static Dictionary<string, string> GetControlParas(string paras)
         {
             var dic = paras.ToDictionary<string, string>(o => o, v =>
                 {
-                    if (v.StartsWith("cmd"))
-                    {
-                        var cmd = v.Substring(4, v.Length - 5);
-                        var val = CommandHelper.Run(cmd, HttpContext.Current);
-                        return val == null ? string.Empty : val.ToString();
-                    }
-                    return v;
+                    return CommandHelper.AnalysisCommands(v, HttpContext.Current);
                 });
 
             return dic;

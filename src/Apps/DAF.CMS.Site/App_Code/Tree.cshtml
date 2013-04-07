@@ -1,10 +1,10 @@
 ﻿@using DAF.Core;
-@using DAF.SSO;
 @using DAF.Web;
+@using DAF.SSO;
 @using DAF.Core.Collections;
 @using DAF.Core.Security;
 
-@helper Render(IEnumerable<dynamic> roots, Func<dynamic, IEnumerable<dynamic>> getChildren, Func<dynamic, object> itemTemplate, int depth = 99, Func<dynamic, string> getPermissionUri = null, int currentDepth = 0)
+@helper Render(IEnumerable<TreeNode> roots, Func<dynamic, object> itemTemplate = null, int depth = 99, int currentDepth = 0)
 {
     int total = roots == null ? 0 : roots.Count();
     if (total > 0 && currentDepth < depth)
@@ -12,16 +12,44 @@
     <ul>
     @foreach (var item in roots)
     {
-        bool allowed = true;
-        if(getPermissionUri != null)
-        {
-            string permissionUrl = getPermissionUri(item);
-            allowed = AuthHelper.CurrentSession.CanAccess(AuthHelper.CurrentClient.ClientId, permissionUrl, PermissionType.Operation);
-        }
-        <li>
+        <li data-key="@item.Key">
+            @if (itemTemplate == null)
+            {
+                @:<span>@item.Caption</span>
+            }
+            else
+            {
             @itemTemplate(item)
-            @Render(getChildren(item), getChildren, itemTemplate, depth, getPermissionUri, currentDepth + 1)
+            }
+            @Render(item.ChildNodes, itemTemplate, depth, currentDepth + 1)
         </li>
+    }
+    </ul>       
+    }
+}
+
+@helper Render(IEnumerable<dynamic> roots, Func<dynamic, IEnumerable<dynamic>> getChildren, Func<dynamic, string> getKey, Func<dynamic, string> getProtectedUri, Func<dynamic, object> itemTemplate, int depth = 99, int currentDepth = 0)
+{
+    int total = roots == null ? 0 : roots.Count();
+    if (total > 0 && currentDepth < depth)
+    {
+    <ul>
+    @foreach (var item in roots)
+    {
+        bool canAccess = true;
+        if(getProtectedUri != null)
+        {
+            var session = AuthHelper.CurrentSession;
+            string protectedUri = getProtectedUri(item);
+            canAccess = session.CanAccess(AuthHelper.CurrentClient.ClientId, protectedUri, PermissionType.Operation);
+        }
+        if(canAccess)
+        {
+        <li @(getKey == null ? "" : string.Format("data-key=\"{0}\"", getKey(item)))>
+            @itemTemplate(item)
+            @Render(getChildren(item), getChildren, getKey, getProtectedUri, itemTemplate, depth, currentDepth + 1)
+        </li>
+        }
     }
     </ul>       
     }

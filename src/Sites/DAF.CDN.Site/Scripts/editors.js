@@ -11,7 +11,16 @@ function InitEditors() {
         $('.datetime:not([class*="hasDatepicker"])').datetimepicker({ dateFormat: "yy-mm-dd", timeFormat: "HH:mm" });
     }
     if ($.fn.dropdown) {
-        $('.dropdown-toggle').dropdown();
+        $('.dropdown-toggle').dropdown({
+            getOffset: function (ele) {
+                var dlg = $(ele).closest('.ui-dialog-content');
+                if (dlg.is('div')) {
+                    var offset = dlg.offset();
+                    return '-' + (offset.left + parseInt(dlg.css('padding-left'))).toString() + ' -' + (offset.top + parseInt(dlg.css('padding-top'))).toString();
+                }
+                return null;
+            }
+        });
     }
     if ($.fn.tabs) {
         $('.tabs').tabs();

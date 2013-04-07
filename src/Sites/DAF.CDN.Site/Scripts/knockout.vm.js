@@ -36,7 +36,7 @@ var DataState = {
 function KVM(options) {
     var self = this;
     self.options = $.extend({
-        pageIndex: 1,
+        pageIndex: 0,
         pageSize: 50,
         appendPagingData: false,
         trackDataChange: true,
@@ -94,13 +94,13 @@ function KVM(options) {
     };
     self.GetPages = function (pageCount) {
         if (!pageCount)
-            page = 10;
+            pageCount = 10;
         var pinfo = self.PagingInfo();
         if (pinfo) {
             var spi = pinfo.PageIndex() - Math.ceil(pageCount / 2);
-            if (spi < 1) { spi = 1 }
+            if (spi < 0) { spi = 0 }
             var epi = pinfo.PageIndex() + Math.ceil(pageCount / 2);
-            if (epi > pinfo.TotalPageCount()) { epi = pinfo.TotalPageCount(); }
+            if (epi > pinfo.TotalPageCount() - 1) { epi = pinfo.TotalPageCount() - 1; }
             var pages = [];
             for (var i = spi; i <= epi; i++) {
                 pages.push(i);
@@ -110,10 +110,10 @@ function KVM(options) {
         return [];
     };
     self.IsFirstPage = function () {
-        return self.PagingInfo().PageIndex() <= 1;
+        return self.PagingInfo().PageIndex() <= 0;
     };
     self.IsLastPage = function () {
-        return self.PagingInfo().PageIndex() >= self.PagingInfo().TotalPageCount();
+        return self.PagingInfo().PageIndex() >= self.PagingInfo().TotalPageCount() - 1;
     };
     self.IsCurrentPage = function (p) {
         return self.PagingInfo().PageIndex() == p;
@@ -129,11 +129,11 @@ function KVM(options) {
                 pidx += op.offset;
             }
         }
-        if (pidx > self.PagingInfo().TotalPageCount()) {
-            pidx = self.PagingInfo().TotalPageCount();
+        if (pidx > self.PagingInfo().TotalPageCount() - 1) {
+            pidx = self.PagingInfo().TotalPageCount() - 1;
         }
-        if (pidx < 1) {
-            pidx = 1;
+        if (pidx < 0) {
+            pidx = 0;
         }
         if (pidx == self.PagingInfo().PageIndex()) {
             return false;
@@ -279,6 +279,9 @@ function KVM(options) {
         if (self.options.onAdd) {
             self.options.onAdd(item);
         }
+        if (typeof (ResizeIFrame) == "function") {
+            ResizeIFrame();
+        }
     };
 
     self.UndoAddItem = function () {
@@ -333,6 +336,9 @@ function KVM(options) {
             self._lastDeletedItem = item;
             if (self.options.onRemove) {
                 self.options.onRemove(item);
+            }
+            if (typeof (ResizeIFrame) == "function") {
+                ResizeIFrame();
             }
         });
     };

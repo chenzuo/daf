@@ -10,15 +10,6 @@
     @RenderPage(AssetsHelper.ThemePartial("_WindowEnd.cshtml"))
     @RenderSection("end", false)
 }
-
-<header class="page-header">
-    @RenderSection("header", false)
-</header> 
-
-<div class="page-body">
+<div class="page container">
     @RenderBody()
 </div>
-
-<footer class="page-footer">
-    @RenderSection("footer", false) 
-</footer>

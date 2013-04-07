@@ -1,32 +1,42 @@
-﻿<!--<Parameters>
+﻿@*<Parameters>
 [ 
-    { Name:'cate', DefaultValue:'', Description:'栏目编码，一般取自query string，可输入：cmd(qs name:cate)。' }
+    { Name:'cate', DefaultValue:'cmd(qs name:cate1)', Description:'栏目编码，一般取自query string，可输入：cmd(qs name:cate)。' }
     ,{ Name:'pi', DefaultValue:'0', Description:'当前页码，一般取自query string，可输入：cmd(qs name:pi)。' }
-    ,{ Name:'ps', DefaultValue:'20', Description:'每页页数，一般取自query string，可输入：cmd(qs name:ps)。' }
+    ,{ Name:'ps', DefaultValue:'50', Description:'每页页数。' }
 ]
-/Parameters>-->
+/Parameters>*@
 @using DAF.Core;
 @using DAF.Web;
 @using DAF.CMS;
 @using DAF.CMS.Models;
 @{
     Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
-    IEnumerable<Content> objs  = CmsHelper.GetContents(paras["cate"], Convert.ToInt32(paras["pi"]), Convert.ToInt32(paras["ps"]));
+    var cate = CmsHelper.GetCategory(paras["cate"]);
+    int total = 0;
+    IEnumerable<Content> objs = CmsHelper.GetContents(paras["cate"], out total, Convert.ToInt32(paras["pi"]), Convert.ToInt32(paras["ps"]));
 }
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var obj in objs)
-        {
+<div id="contents_@(cate.Code)" class="content-list">
+    <h3>@cate.Name</h3>
+    <table class="table table-bordered spanfull">
+        <thead>
             <tr>
-                <td>@obj.Title</td>
-                <td></td>
+                <th></th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var obj in objs)
+            {
+                <tr>
+                    <td>@obj.Title</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="pagination">
+        <ul>
+            <li></li>
+        </ul>
+    </div>
+</div>

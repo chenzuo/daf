@@ -1,5 +1,10 @@
-﻿.page-header .banner .box_skitter {
-    width: 1170px;
+﻿.page {
+}
+
+.page-header {
+}
+
+.page-header .banner .box_skitter {
     background: transparent;
 }
 

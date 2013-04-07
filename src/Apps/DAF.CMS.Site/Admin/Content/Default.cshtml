@@ -8,18 +8,18 @@
 @AssetsHelper.CDNCss("jquery.treeview.css")
 @AssetsHelper.CDNScript("jquery.treeview.js")
 
-<div class="row">
-    <div class="span12">
-        @RenderPage("~/Controls/_SelectSites.cshtml")
-    </div>
-    <div class="span3">
+<div class="clear">
+    @RenderPage("~/Controls/_SelectSites.cshtml")
+</div>
+<div class="flex">
+    <div class="flex1">
         <div class="well">
             <h3>网站栏目</h3>
-            <div><a href="javascript:void(0);" onclick="SelectCategory(null, null);">未发布到栏目</a></div>
+            <div><a href="javascript:;" onclick="vm.SelectCate(null, null);">未发布到栏目</a></div>
             <div id="cates"></div>
         </div>
     </div>
-    <div class="span9 lgap1">
+    <div class="flex4">
         @if (enumContentTypes != null && enumContentTypes.Count > 0)
         {
             var first = enumContentTypes[0];
@@ -28,24 +28,14 @@
                     <i class="icon-plus"></i>
                     <span>@first.Item1</span>
                 </button>
-                <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                <button class="btn btn-success dropdown-toggle" data-popup="#addContentDropdown">
                     <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    @foreach (var li in enumContentTypes)
-                    {
-                        <li>
-                            <a href="javascript:void(0);" onclick="NewContent('@((int)li.Item2)');" title="@li.Item1">
-                                <span>@li.Item1</span>
-                            </a>
-                        </li>
-                    }
-                </ul>
+                </button>
             </div>
         }
-        <h3><span data-bind="with:SelectedCate">当前栏目：<span data-bind="text:Name"></span></span><span data-bind="visible:!SelectedCate()">未发布到任何栏目</span></h3>
+        <h3><span data-bind="with:SelectedCate">当前栏目：<span data-bind="text:Name"></span>（<span data-bind="text:Code"></span>）</span><span data-bind="visible:!SelectedCate()">未发布到任何栏目</span></h3>
         <div class="tgap1">
-            <table class="table table-bordered">
+            <table class="table table-bordered spanfull">
                 <thead>
                     <tr>
                         <th class="text-center">
@@ -78,9 +68,21 @@
                     </tr>
                 </tbody>
             </table>
+            @RenderPage(AssetsHelper.ThemePartial("_Paging.cshtml"))
         </div>
     </div>
 </div>
+
+<ul id="addContentDropdown" class="dropdown-menu hide">
+    @foreach (var li in enumContentTypes)
+    {
+        <li>
+            <a href="javascript:void(0);" onclick="NewContent('@((int)li.Item2)');" title="@li.Item1">
+                <span>@li.Item1</span>
+            </a>
+        </li>
+    }
+</ul>
 
 <script type="text/javascript">
     var vm;
@@ -117,17 +119,8 @@
 
         ko.applyBindings(vm);
 
-        $('button.dropdown-toggle').click(function (event) {
-            event.stopPropagation();
-            event.preventDefault();
-            $(this).closest('div.btn-group').toggleClass('open');
-        });
-
-        $(document).click(function () {
-            $('div.btn-group').removeClass('open');
-        });
-
         $(document).off('selectsite').on('selectsite', OnSelectSite);
+        $(document).off('selectcategory').on('selectcategory', OnSelectCate);
         SelectFirstSite();
     });
 
@@ -135,8 +128,14 @@
         vm.SelectSite(site);
     }
 
+    function OnSelectCate(event, cate) {
+        vm.SelectCate(cate);
+    }
+
     function NewContent(type) {
         var url = '@(UrlHelper.ClientUrl("Admin/Content/Edit"))/' + ContentTypeInfo(type).Name + '?siteId=' + vm.SelectedSite().SiteId;
+        url = AppendUrl(url, 'frame', GetQueryString('frame'));
+        url = '@(UrlHelper.ClientUrl("Admin"))?url=' + escape(url);
         //var title = $(event.target).prop('title') || $(event.currentTarget).prop('title');
         OpenBlank(url);
         //OpenDialog(title, url, 1020, 600);
@@ -144,6 +143,8 @@
 
     function EditContent(obj) {
         var url = '@(UrlHelper.ClientUrl("Admin/Content/Edit"))/' + ContentTypeInfo(obj.ContentType()).Name + '?id=' + obj.ContentId() + '&siteId=' + vm.SelectedSite().SiteId;
+        url = AppendUrl(url, 'frame', GetQueryString('frame'));
+        url = '@(UrlHelper.ClientUrl("Admin"))?url=' + escape(url);
         //var title = $(event.target).prop('title') || $(event.currentTarget).prop('title');
         OpenBlank(url);
         //OpenDialog(title, url, 1020, 600);

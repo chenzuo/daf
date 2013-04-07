@@ -176,6 +176,7 @@
     <Compile Include="KeyEqualityComparer.cs" />
     <Compile Include="Messages\EmailMessage.cs" />
     <Compile Include="Messages\SMSMessage.cs" />
+    <Compile Include="MultiJsonFileObjectProvider.cs" />
     <Compile Include="ResourceBase.cs" />
     <Compile Include="Localization\ILocalizer.cs" />
     <Compile Include="Localization\LocalizationInfo.cs" />

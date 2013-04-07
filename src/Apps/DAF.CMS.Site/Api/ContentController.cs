@@ -26,14 +26,22 @@ namespace DAF.CMS.Site.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Content> Data(string siteId, string cate = null, ContentType? contentType = null)
+        public dynamic Data(string siteId, string cate = null, ContentType? contentType = null, int pi = 0, int ps = 50)
         {
             ContentType[] contentTypes = null;
             if (contentType != null)
                 contentTypes = new ContentType[] { contentType.Value };
-            var query = provider.GetContents(siteId, cate, null, contentTypes);
+            int total = 0;
+            var query = provider.GetContents(siteId, cate, out total, null, contentTypes, null, null, pi, ps);
 
-            return query.ToArray();
+            PagingInfo paging = new PagingInfo()
+            {
+                PageIndex = pi,
+                PageSize = ps,
+                TotalItemCount = total
+            };
+
+            return new { Status = 0, PagingInfo = paging, Data = query.ToArray() };
         }
 
         [HttpGet]

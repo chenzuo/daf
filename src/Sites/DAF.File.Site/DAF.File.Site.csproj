@@ -156,10 +156,6 @@
     <Content Include="Localization\DAF_SSO.js" />
     <Content Include="Localization\DAF_File_Site.js" />
     <Content Include="Localization\DAF_Web.js" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner-mask.png" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_1.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_2.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_3.jpg" />
     <Content Include="Themes\Default\Skins\Default\Contents\site.css" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
     <Content Include="Uploads\audio\_placehoder.txt" />
@@ -206,7 +202,6 @@
     <Content Include="Themes\Default\_AdminFooter.cshtml" />
     <Content Include="Themes\Default\_AdminHead.cshtml" />
     <Content Include="Themes\Default\_AdminHeader.cshtml" />
-    <Content Include="Themes\Default\_Banner.cshtml" />
     <Content Include="Themes\Default\_DialogEnd.cshtml" />
     <Content Include="Themes\Default\_DialogHead.cshtml" />
     <Content Include="Themes\Default\_HomeBody.cshtml" />
@@ -224,15 +219,13 @@
     <Content Include="Account\Register.cshtml" />
     <Content Include="Account\SignOff.cshtml" />
     <Content Include="Account\SignOn.cshtml" />
-    <Content Include="App_Code\Form.cshtml" />
     <Content Include="App_Code\Menu.cshtml" />
     <Content Include="App_Code\Tree.cshtml" />
-    <Content Include="Controls\_ImageSlideShow.cshtml" />
-    <Content Include="Controls\_Paging.cshtml" />
-    <Content Include="Controls\_SelectLanguages.cshtml" />
+    <Content Include="Controls\SelectLanguages.cshtml" />
     <Content Include="Account\ResetPassword.cshtml" />
     <Content Include="Account\ResetPasswordSuccess.cshtml" />
     <Content Include="Uploads\web.config" />
+    <Content Include="Themes\Default\_Paging.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -244,8 +237,11 @@
     <Content Include="_Dialog.cshtml" />
     <Content Include="_Html.cshtml" />
     <Content Include="_Window.cshtml" />
+    <Content Include="_AdminFull.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Themes\Default\Skins\Default\Contents\Images\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -27,13 +27,13 @@
     }
     else
     {
-        msg = "~/Pages/" + pageData.Template.TemplatePath;
+        msg = "~/Pages/" + pageData.Templates.First.Value.TemplatePath;
         pageFound = true;
     }
 }
 @if (pageFound)
 {
-    @RenderPage(msg, new { PageData = pageData })
+    @RenderPage(msg, new { Page = pageData.Page, Template = pageData.Templates.First })
 }
 else
 {

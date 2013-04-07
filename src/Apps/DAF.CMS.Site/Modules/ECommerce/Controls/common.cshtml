@@ -12,7 +12,7 @@
 {
     @foreach (var con in pageData.OrderedControls("top"))
     {
-        <div class="container @con.Container">
+        <div class="container @con.Container" style="@con.Styles">
             @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
         </div>
     }
@@ -22,7 +22,7 @@
 {
     @foreach (var con in pageData.OrderedControls("left"))
     {
-        <div class="container @con.Container">
+        <div class="container @con.Container" style="@con.Styles">
             @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
         </div>
     }
@@ -32,7 +32,7 @@
 {
     @foreach (var con in pageData.OrderedControls("right"))
     {
-        <div class="container @con.Container">
+        <div class="container @con.Container" style="@con.Styles">
             @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
         </div>
     }
@@ -42,7 +42,7 @@
 {
     @foreach (var con in pageData.OrderedControls("bottom"))
     {
-        <div class="container @con.Container">
+        <div class="container @con.Container" style="@con.Styles">
             @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
         </div>
     }
@@ -50,7 +50,7 @@
 
 @foreach (var con in pageData.OrderedControls("body"))
 {
-    <div class="container @con.Container">
+    <div class="container @con.Container" style="@con.Styles">
         @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
     </div>
 }

@@ -16,6 +16,12 @@ namespace DAF.Web.Mvc
         protected override void Load(ContainerBuilder builder)
         {
             //builder.RegisterType<Configurations.AreaConfigurationProvider>().As<Core.Configurations.IConfigurationProvider>();
+            builder.RegisterModule(new AutoWireModule<Core.Localization.ILocalizer>(
+                o => o.RegisterType<Localization.JsonLocalizer>().OnPreparing(pe =>
+                {
+                    NamedParameter np = new NamedParameter("paths", "Localization, Areas/*/Localization");
+                    pe.Parameters = new Parameter[] { np };
+                }).As<Core.Localization.ILocalizer>().SingleInstance()));
 
             builder.RegisterType<WebMvcAppEventHandler>().As<IAppEventHandler>();
         }

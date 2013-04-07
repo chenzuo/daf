@@ -5,6 +5,11 @@ body {
     font-family: 'Î¢ÈíÑÅºÚ','ºÚÌå','ËÎÌå',"Helvetica Neue",Helvetica,Arial,sans-serif !important;
 }
 
+div {
+    display: block;
+    overflow: hidden;
+}
+
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
     margin: 0px;
 }
@@ -40,12 +45,6 @@ img {
 
 [class*="span"] [class*="span"] {
     margin-left: 0px;
-}
-
-.spanfull {
-    width: 100%;
-    margin-left: 0px;
-    margin-right: 0px;
 }
 
 /* backgrouds */
@@ -174,18 +173,22 @@ img {
         color: #faa732;
     }
 
-.nav > li {
+.nav {
+    margin-bottom: 8px;
 }
 
-    .nav > li > span,
-    .nav > li > a {
-        display: block;
-        float: none;
-        padding: 9px 10px 11px;
-        line-height: 18px;
-        color: #999;
-        text-decoration: none;
+    .nav > li {
     }
+
+        .nav > li > span,
+        .nav > li > a {
+            display: block;
+            float: none;
+            padding: 9px 10px 11px;
+            line-height: 18px;
+            color: #999;
+            text-decoration: none;
+        }
 
 .btn-circle {
     width: 24px;
@@ -194,6 +197,10 @@ img {
     -moz-border-radius: 12px;
     border-radius: 12px;
     padding: 4px 0px;
+}
+
+.btn-mini {
+    height: 22px;
 }
 
 .btn-mini.btn-circle {
@@ -298,9 +305,9 @@ img {
         padding: 2px 6px;
     }
 
-.nav-pills > li > a {
-    display: inline-block;
-}
+    .nav-pills > li > a {
+        display: inline-block;
+    }
 
 /* .ui-tabs .ui-tabs-panel */
 .ui-tabs .ui-tabs-panel {
@@ -436,18 +443,6 @@ img {
     flex-direction: row;
 }
 
-    .flex .narrow {
-        -webkit-flex: 20%;
-        -moz-flex: 20%;
-        flex: 20%;
-    }
-
-    .flex .wide {
-        -webkit-flex: 1;
-        -moz-flex: 1;
-        flex: 1;
-    }
-
 .flex-column {
     display: -webkit-flex;
     -webkit-flex-direction: column;
@@ -457,28 +452,96 @@ img {
     flex-direction: column;
 }
 
-.flex-1 {
+.flex1 {
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    flex: 1;
+}
+
+.flex2 {
+    -webkit-flex: 2;
+    -moz-flex: 2;
+    flex: 2;
+}
+
+.flex3 {
+    -webkit-flex: 3;
+    -moz-flex: 3;
+    flex: 3;
+}
+
+.flex4 {
+    -webkit-flex: 4;
+    -moz-flex: 4;
+    flex: 4;
+}
+
+.flex5 {
+    -webkit-flex: 5;
+    -moz-flex: 5;
+    flex: 5;
+}
+
+.flex6 {
+    -webkit-flex:6;
+    -moz-flex: 6;
+    flex: 6;
+}
+
+.flex7 {
+    -webkit-flex: 7;
+    -moz-flex: 7;
+    flex: 7;
+}
+
+.flex8 {
+    -webkit-flex: 8;
+    -moz-flex: 8;
+    flex: 8;
+}
+
+.flex9{
+    -webkit-flex:9;
+    -moz-flex:9;
+    flex: 9;
+}
+
+.flex10 {
+    -webkit-flex: 10;
+    -moz-flex: 10;
+    flex: 10;
+}
+
+.flex-order1 {
     -webkit-order: 1;
     -moz-order: 1;
     flex-order: 1;
 }
 
-.flex-2 {
+.flex-order2 {
     -webkit-order: 2;
     -moz-order: 2;
     flex-order: 2;
 }
 
-.flex-3 {
+.flex-order3 {
     -webkit-order: 3;
     -moz-order: 3;
     flex-order: 3;
 }
 
-.flex-4 {
+.flex-order4 {
     -webkit-order: 4;
     -moz-order: 4;
     flex-order: 4;
+}
+
+[class*="flex"] [class*="flex"] {
+    margin-left: 8px;
+}
+
+.flex [class*="flex"]:first-child {
+    margin-left: 0px;
 }
 
 .collapse {
@@ -503,24 +566,30 @@ table td.caption,
 }
 
 .table {
+    width: auto;
     max-width: 100%;
     background-color: transparent;
     clear: both;
     overflow: hidden;
 }
 
+    .table th,
+    .table td,
     .table .th,
     .table .td {
         padding: 6px;
-        line-height: 31px;
         text-align: left;
-        float: left;
-        min-width: 65px;
         min-height: 23px;
         vertical-align: middle;
     }
 
-    table th,
+    .table div.th,
+    .table div.td {
+        float: left;
+    }
+
+    .table th,
+    .table .th,
     .table .thead .tr {
         text-align: center;
         color: #49afcd;
@@ -536,9 +605,8 @@ table td.caption,
         font-weight: bold;
     }
 
-        table th label,
-        .table .th label,
-        .table .th {
+        th label,
+        .th label {
             text-align: center;
             color: #49afcd;
             font-weight: bold;
@@ -622,135 +690,103 @@ table td.caption,
     background-color: #f5f5f5;
 }
 
-.table th-input,
-.table td-input,
-.table .th-input,
-.table .td-input {
-    width: 105px;
+.table [class*="span"] {
+    margin-left: 0;
+}
+
+td input,
+.td input,
+td textarea,
+.td textarea {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+td input,
+.td input {
+    height: 28px;
 }
 
 .table .span1 {
-    width: 44px;
-    margin-left: 0;
+    width: 30px;
 }
 
 .table .span2 {
-    width: 124px;
-    margin-left: 0;
+    width: 45px;
 }
 
 .table .span3 {
-    width: 204px;
-    margin-left: 0;
+    width: 60px;
 }
 
 .table .span4 {
-    width: 284px;
-    margin-left: 0;
+    width: 75px;
 }
 
 .table .span5 {
-    width: 364px;
-    margin-left: 0;
+    width: 90px;
 }
 
 .table .span6 {
-    width: 444px;
-    margin-left: 0;
+    width: 105px;
 }
 
 .table .span7 {
-    width: 524px;
-    margin-left: 0;
+    width: 120px;
 }
 
 .table .span8 {
-    width: 604px;
-    margin-left: 0;
+    width: 135px;
 }
 
 .table .span9 {
-    width: 684px;
-    margin-left: 0;
+    width: 150px;
 }
 
 .table .span10 {
-    width: 764px;
-    margin-left: 0;
+    width: 165px;
 }
 
 .table .span11 {
-    width: 844px;
-    margin-left: 0;
+    width: 180px;
 }
 
 .table .span12 {
-    width: 924px;
-    margin-left: 0;
+    width: 210px;
 }
 
 .table .span13 {
-    width: 1004px;
-    margin-left: 0;
+    width: 240px;
 }
 
 .table .span14 {
-    width: 1084px;
-    margin-left: 0;
+    width: 270px;
 }
 
 .table .span15 {
-    width: 1164px;
-    margin-left: 0;
+    width: 300px;
 }
 
 .table .span16 {
-    width: 1244px;
-    margin-left: 0;
+    width: 330px;
 }
 
 .table .span17 {
-    width: 1324px;
-    margin-left: 0;
+    width: 360px;
 }
 
 .table .span18 {
-    width: 1404px;
-    margin-left: 0;
+    width: 390px;
 }
 
 .table .span19 {
-    width: 1484px;
-    margin-left: 0;
+    width: 420px;
 }
 
 .table .span20 {
-    width: 1564px;
-    margin-left: 0;
-}
-
-.table .span21 {
-    width: 1644px;
-    margin-left: 0;
-}
-
-.table .span22 {
-    width: 1724px;
-    margin-left: 0;
-}
-
-.table .span23 {
-    width: 1804px;
-    margin-left: 0;
-}
-
-.table .span24 {
-    width: 1884px;
-    margin-left: 0;
-}
-
-.table *[class*="span"] input {
-    width: 96% !important;
+    width: 450px;
 }
 
 .indent .indent:first-child {
@@ -767,20 +803,13 @@ table td.caption,
 
 /* table editors */
 
-.table td input:not([class*="span"]),
-.table td input:not([class*="span"]),
-.table .td input:not([class*="span"]),
-.table .td input:not([class*="span"]) {
-    width: 95px;
-    margin-top: -3px;
-}
-
 .table td select:not([class*="span"]),
 .table .td select:not([class*="span"]) {
     width: auto;
     border-radius: 3px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
+    width: auto;
 }
 
 .table td input[type="checkbox"],
@@ -788,6 +817,12 @@ table td.caption,
 .table .td input[type="checkbox"],
 .table .td input[type="radio"] {
     width: auto;
+}
+
+.table td .btn-mini,
+.table .td .btn-mini {
+    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 /* forms */
@@ -818,6 +853,9 @@ fieldset {
 }
 
 /* form fields */
+select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    height: 28px;
+}
 
 input[type="checkbox"] + span {
     margin-left: 0px;
@@ -843,6 +881,16 @@ input[type="checkbox"] + span {
 }
 
 /* sizes */
+
+.nonefloat {
+    float: none;
+}
+
+.spanfull {
+    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
+}
 
 .rect {
     display: inline-block;

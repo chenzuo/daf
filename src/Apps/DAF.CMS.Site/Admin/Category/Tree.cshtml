@@ -8,12 +8,8 @@
     string siteId = Request.QueryString["siteId"];
     string code = Request.QueryString["code"];
 
-    var provider = IOC.Current.GetService<ICategoryProvider>();
-    var query = provider.Query(siteId, null, code);
-
-    var tree = HierarchyHelper.Build(query, o => o.Code, o => o.Name,
-        o => provider.Query(siteId, null, null, o.CategoryId));
-
+    var query = CmsHelper.CategoryProvider.Query(siteId, code);
+    var items = HierarchyHelper.Build(query, o => o.ParentId == null, (p, c) => c.ParentId == p.CategoryId, (p, c) => p.Children.Add(c));
 }
 <script type="text/javascript">
     function OnSelectCate(code, name) {
@@ -21,6 +17,6 @@
     }
 </script>
 
-@Tree.Render(tree, 
-    @:<a href="javascript:void(0);" onclick="OnSelectCate('@item.Key', '@item.Caption');">@item.Caption</a>
+@Tree.Render(items, o => o.Children, o => o.CategoryId, null,
+    @:<a href="javascript:;" title="@item.Name（@item.Code）" onclick="OnSelectCate('@item.Code', '@item.Name');">@item.Name</a>
     )

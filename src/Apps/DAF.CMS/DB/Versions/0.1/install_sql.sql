@@ -19,6 +19,8 @@ CREATE TABLE [dbo].[cms_SubSite] (
     [CurrencyFormat] [nvarchar](50),
     [NumberFormat] [nvarchar](50),
     [TimeZone] [float] NOT NULL,
+    [DefaultTheme] [nvarchar](50),
+    [DefaultSkin] [nvarchar](50),
     [DefaultPageTitle] [nvarchar](50),
     [DefaultMetaKeywords] [nvarchar](500),
     [DefaultMetaDescription] [nvarchar](500),
@@ -72,8 +74,10 @@ CREATE TABLE [dbo].[cms_PageTemplateControl] (
     [ControlPath] [nvarchar](200) NOT NULL,
     [ControlParas] [nvarchar](max),
     [Container] [nvarchar](50),
+    [CssStyle] [nvarchar](max),
     [ShowOrder] [int] NOT NULL,
     [Cached] [bit] NOT NULL,
+    [CacheKey] [nvarchar](50),
     [CacheMunites] [int],
     CONSTRAINT [PK_dbo.cms_PageTemplateControl] PRIMARY KEY ([TemplateControlId])
 )
@@ -82,12 +86,15 @@ CREATE INDEX [IX_SiteId_TemplateName] ON [dbo].[cms_PageTemplateControl]([SiteId
 CREATE TABLE [dbo].[cms_WebPageControl] (
     [ControlId] [nvarchar](50) NOT NULL,
     [PageId] [nvarchar](50) NOT NULL,
+    [TemplateName] [nvarchar](50) NOT NULL,
     [Section] [nvarchar](50) NOT NULL,
     [ControlPath] [nvarchar](200) NOT NULL,
     [ControlParas] [nvarchar](max),
     [Container] [nvarchar](50),
+    [CssStyle] [nvarchar](max),
     [ShowOrder] [int] NOT NULL,
     [Cached] [bit] NOT NULL,
+    [CacheKey] [nvarchar](50),
     [CacheMunites] [int],
     CONSTRAINT [PK_dbo.cms_WebPageControl] PRIMARY KEY ([ControlId])
 )

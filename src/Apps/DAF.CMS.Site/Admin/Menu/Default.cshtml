@@ -7,7 +7,7 @@
 
 <script type="text/html" id="item-template">
     <div class="tr" data-bind="attr:{id:Name, idx:ShowOrder}">
-        <div class="td span2">
+        <div class="td span6">
             <button type="button" class="btn btn-mini indent" data-bind="click:ToggleChildren" title="展开/收缩子项">
                 <i class="icon-plus"></i>
             </button>
@@ -15,22 +15,22 @@
                 <i class="icon-resize-vertical"></i>
             </button>
         </div>
-        <div class="td td-input">
+        <div class="td span6">
             <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Name"></span></div>
             <div data-bind="visible:vm.IsNew($data)">
                 @pageModel.TextBoxFor(o => o.Name, new { data_bind = "value:Name, event: { blur: CheckExists }" })
             </div>
         </div>
-        <div class="td td-input">
+        <div class="td span8">
             @pageModel.TextBoxFor(o => o.Caption, new { data_bind = "value:Caption" })
         </div>
-        <div class="td td-input">
+        <div class="td span12">
             @pageModel.TextBoxFor(o => o.LinkUrl, new { data_bind = "value:LinkUrl" })
         </div>
-        <div class="td td-input">
+        <div class="td span8">
             @pageModel.TextBoxFor(o => o.ProtectedUri, new { data_bind = "value:ProtectedUri" })
         </div>
-        <div class="td td-input">
+        <div class="td span4">
             @pageModel.TextBoxFor(o => o.Target, new { data_bind = "value:Target" })
         </div>
         <div class="td">
@@ -43,11 +43,11 @@
     </div>
 </script>
 
-<div class="row">
-    <div class="span12">
+    <div class="clear">
         @RenderPage("~/Controls/_SelectSites.cshtml")
     </div>
-    <div class="span3">
+<div class="flex">
+    <div class="flex1">
         <div class="well">
             <h3>
                 <span class="title">菜单组</span>
@@ -62,18 +62,18 @@
             </ul>
         </div>
     </div>
-    <div class="data-container span9 lgap1" data-bind="visible:SelectedGroup">
+    <div class="data-container flex4" data-bind="visible:SelectedGroup">
         <h3 data-bind="with:SelectedGroup">当前菜单组：<span data-bind="text:Caption"></span></h3>
         <form method="post">
             <div class="table table-bordered">
                 <div class="thead">
                     <div class="tr">
-                        <div class="th span2"></div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Name))</div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Caption))</div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.LinkUrl))</div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.ProtectedUri))</div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Target))</div>
+                        <div class="th span6"></div>
+                        <div class="th span6">@(pageModel.CaptionFor(o => o.Name))</div>
+                        <div class="th span8">@(pageModel.CaptionFor(o => o.Caption))</div>
+                        <div class="th span12">@(pageModel.CaptionFor(o => o.LinkUrl))</div>
+                        <div class="th span8">@(pageModel.CaptionFor(o => o.ProtectedUri))</div>
+                        <div class="th span4">@(pageModel.CaptionFor(o => o.Target))</div>
                         <div class="th"></div>
                     </div>
                 </div>
@@ -317,7 +317,7 @@
                 tr.find('>.tbody').toggle();
             }
             else {
-                var url = '@(UrlHelper.ClientUrl("Api/Menu/Data"))?group=' + vm.SelectedGroup().Name() + '&parentName=' + item.Name();
+                var url = '@(UrlHelper.ClientUrl("Api/Menu/Data"))?siteId=' + vm.SelectedSite().SiteId + '&group=' + vm.SelectedGroup().Name() + '&parentName=' + item.Name();
                 GetJson(url, function (data) {
                     ko.mapping.fromJS(data, null, item.Children);
                     for (var i = 0; i < item.Children().length; i++) {

@@ -40,9 +40,9 @@ namespace DAF.CMS.Site.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<PageTemplate> Templates(string siteId)
+        public IEnumerable<PageTemplate> Templates(string siteId, string parentName = null)
         {
-            return pageProvider.GetTemplates(siteId);
+            return pageProvider.GetTemplates(siteId, parentName);
         }
 
         [HttpGet]

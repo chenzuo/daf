@@ -10,17 +10,18 @@
     @RenderPage(AssetsHelper.ThemePartial("_WindowEnd.cshtml"))
     @RenderSection("end", false)
 }
+<div class="page container">
+    <header class="page-header">
+        @RenderPage(AssetsHelper.ThemePartial("_WindowHeader.cshtml"))
+        @RenderSection("header", false)
+    </header>
 
-<header class="page-header">
-    @RenderPage(AssetsHelper.ThemePartial("_WindowHeader.cshtml"))
-    @RenderSection("header", false)
-</header> 
+    <div class="page-body">
+        @RenderBody()
+    </div>
 
-<div class="page-body">
-    @RenderBody()
+    <footer class="page-footer">
+        @RenderPage(AssetsHelper.ThemePartial("_WindowFooter.cshtml"))
+        @RenderSection("footer", false)
+    </footer>
 </div>
-
-<footer class="page-footer">
-    @RenderPage(AssetsHelper.ThemePartial("_WindowFooter.cshtml"))
-    @RenderSection("footer", false) 
-</footer>

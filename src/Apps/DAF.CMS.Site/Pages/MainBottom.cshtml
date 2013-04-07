@@ -1,0 +1,55 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    Layout = "~/PageTemplates/MainBottom.cshtml";
+    var page = Page.Page as DAF.CMS.Models.WebPage;
+    var template = Page.Template as LinkedListNode<PageTemplate>;
+    Page.Title = page.PageTitle;
+    Page.IsNested = Page.IsNestedPage;
+    bool isFirst = template.Previous == null;
+    bool isLast = template.Next == null;
+}
+
+@section head
+{
+    @if(isFirst){
+        @:@Html.Raw(CmsHelper.GetPageLinks(page, template))
+    <style type="text/css">
+        @Html.Raw(CmsHelper.GetPageCSS(page, template))
+    </style>
+    }
+}
+
+@section end
+{
+    @if(isFirst){
+    <script type="text/javascript">
+        @Html.Raw(CmsHelper.GetPageJS(page, template))
+    </script>
+    }
+}
+
+@section bottom
+{
+    @foreach (var con in CmsHelper.GetControls(page, template.Value, "bottom"))
+    {
+        <div class="container @con.Container" style="@con.Styles">
+            @this.RenderCachedPage(con.CacheKey, con.CachedMunites, con.Path, new { Paras = con.Paras })
+        </div>
+    }
+}
+@if(isLast)
+{
+    foreach (var con in CmsHelper.GetControls(page, template.Value, "body"))
+    {
+        <div class="container @con.Container" style="@con.Styles">
+            @this.RenderCachedPage(con.CacheKey, con.CachedMunites, con.Path, new { Paras = con.Paras })
+        </div>
+    }
+}
+else
+{
+    @RenderPage(template.Next.Value.TemplatePath, new { Page = page, Template = template.Next, IsNestedPage = true })
+}

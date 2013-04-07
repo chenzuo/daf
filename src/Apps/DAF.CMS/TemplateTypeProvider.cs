@@ -17,7 +17,7 @@ namespace DAF.CMS
         public TemplateTypeProvider(IFileSystemProvider fileProvider)
         {
             this.fileProvider = fileProvider;
-            this.fileProvider.SetRootPath("~/Templates".GetPhysicalPath());
+            this.fileProvider.SetRootPath("~/PageTemplates".GetPhysicalPath());
         }
 
         public IEnumerable<TemplateType> LoadTemplateTypes()
@@ -40,7 +40,7 @@ namespace DAF.CMS
             return templateTypes;
         }
 
-        private IEnumerable<PageSection> GetSections(string file)
+        private ICollection<PageSection> GetSections(string file)
         {
             List<PageSection> sections = new List<PageSection>();
             var lines = File.ReadAllLines(file);

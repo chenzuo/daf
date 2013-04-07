@@ -23,11 +23,20 @@ namespace DAF.CMS
             this.repoMenuItem = repoMenuItem;
         }
 
-        public IEnumerable<SiteMenuItem> GetMenu(string siteId, string groupName, string parentName = null)
+        public IEnumerable<SiteMenuItem> GetMenu(string siteId, string groupName)
+        {
+            var query = repoMenuItem.Query(o => o.SiteId == siteId && o.MenuGroupName == groupName);
+            query = query.OrderBy(o => o.ShowOrder);
+            return query.ToArray();
+        }
+
+        public IEnumerable<SiteMenuItem> GetMenu(string siteId, string groupName, string parentName)
         {
             var query = repoMenuItem.Query(o => o.SiteId == siteId && o.MenuGroupName == groupName);
             if (!string.IsNullOrEmpty(parentName))
                 query = query.Where(o => o.ParentName == parentName);
+            else
+                query = query.Where(o => o.ParentName == null);
             query = query.OrderBy(o => o.ShowOrder);
             return query.ToArray();
         }

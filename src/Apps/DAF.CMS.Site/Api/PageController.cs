@@ -46,18 +46,23 @@ namespace DAF.CMS.Site.Controllers
         {
             var templateTypes = templateProvider.LoadTemplateTypes();
             var query = pageTemplateProvider.GetTemplates(siteId);
-            return query.Select(o => new TemplateType
+
+            var ts = HierarchyHelper.Build<PageTemplate, TemplateType>(query.Where(o => o.ParentTemplateName == null),
+                o => new TemplateType
             {
                 Name = o.TemplateName,
                 Path = o.TemplatePath,
+                ParentName = o.ParentTemplateName,
                 Sections = templateTypes.First(t => t.Path.ToLower() == o.TemplatePath.ToLower()).Sections
-            });
+            }, o => query.Where(q => q.ParentTemplateName == o.TemplateName), (p, c) => { p.Children.Add(c); });
+
+            return ts;
         }
 
         [HttpGet]
-        public IEnumerable<WebPage> Pages(string siteId, string parentId = null)
+        public IEnumerable<WebPage> Pages(string siteId)
         {
-            return pageProvider.GetPages(siteId, parentId);
+            return pageProvider.GetPages(siteId);
         }
 
         [HttpGet]

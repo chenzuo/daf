@@ -134,36 +134,6 @@ namespace DAF.Core
             return default(T);
         }
 
-        public static ICollection<TT> Build<TF, TT>(IEnumerable<TF> roots, Func<TF, TT> cast, Func<TF, IEnumerable<TF>> getChildren, Action<TT, TT> addChild)
-        {
-            List<TT> tree = new List<TT>();
-
-            Stack<Tuple<TT, TF>> st = new Stack<Tuple<TT, TF>>();
-            foreach (var item in roots)
-            {
-                TT root = cast(item);
-                tree.Add(root);
-                st.Push(new Tuple<TT, TF>(root, item));
-            }
-
-            while (st.Count() > 0)
-            {
-                var parent = st.Pop();
-                var children = getChildren(parent.Item2);
-                if (children != null)
-                {
-                    foreach (var child in children)
-                    {
-                        TT childNode = cast(child);
-                        addChild(parent.Item1, childNode);
-                        st.Push(new Tuple<TT, TF>(childNode, child));
-                    }
-                }
-            }
-
-            return tree;
-        }
-
         public static void Singlize<T>(IEnumerable<T> tree, Func<T, IEnumerable<T>> getChildren, Func<T, T, bool> isMatch, Action<T, T> addChild, Action<IEnumerable<T>, T> removeChild)
         {
             if (tree == null || tree.Count() <= 0)
@@ -242,7 +212,89 @@ namespace DAF.Core
             return tree;
         }
 
-        public static ICollection<TreeNode<T>> BuildT<T>(IEnumerable<T> roots, Func<T, string> getKey, Func<T, string> getCaption, Func<T, IEnumerable<T>> getChildren)
+        public static ICollection<TT> Build<TF, TT>(IEnumerable<TF> roots, Func<TF, TT> cast, Func<TF, IEnumerable<TF>> getChildren, Action<TT, TT> addChild, int depth = 99)
+        {
+            List<TT> tree = new List<TT>();
+
+            Stack<Tuple<TT, TF>> st = new Stack<Tuple<TT, TF>>();
+            foreach (var item in roots)
+            {
+                TT root = cast(item);
+                tree.Add(root);
+                st.Push(new Tuple<TT, TF>(root, item));
+            }
+
+            while (st.Count() > 0)
+            {
+                if (depth <= 0)
+                    break;
+                var parent = st.Pop();
+                var children = getChildren(parent.Item2);
+                if (children != null)
+                {
+                    foreach (var child in children)
+                    {
+                        TT childNode = cast(child);
+                        addChild(parent.Item1, childNode);
+                        st.Push(new Tuple<TT, TF>(childNode, child));
+                    }
+                }
+                depth--;
+            }
+
+            return tree;
+        }
+
+        public static ICollection<T> Build<T>(IEnumerable<T> roots, Func<T, IEnumerable<T>> getChildren, Action<T, T> addChild, int depth = 99)
+        {
+            Stack<T> st = new Stack<T>();
+            roots.ForEach(o => st.Push(o));
+            while (st.Count() > 0)
+            {
+                if (depth <= 0)
+                    break;
+                var p = st.Pop();
+                var cs = getChildren(p);
+                if (cs.Count() > 0)
+                {
+                    cs.ForEach(o =>
+                    {
+                        addChild(p, o);
+                        st.Push(o);
+                    });
+                }
+                depth--;
+            }
+
+            return roots.ToArray();
+        }
+
+        public static ICollection<T> Build<T>(IEnumerable<T> allEles, Func<T, bool> rootPredicate, Func<T, T, bool> childPredicate, Action<T, T> addChild, int depth = 99)
+        {
+            var roots = allEles.Where(o => rootPredicate(o)).ToArray();
+            Stack<T> st = new Stack<T>();
+            roots.ForEach(o => st.Push(o));
+            while (st.Count() > 0)
+            {
+                if (depth <= 0)
+                    break;
+                var p = st.Pop();
+                var cs = allEles.Where(o => childPredicate(p, o));
+                if (cs.Count() > 0)
+                {
+                    cs.ForEach(o =>
+                        {
+                            addChild(p, o);
+                            st.Push(o);
+                        });
+                }
+                depth--;
+            }
+
+            return roots;
+        }
+
+        public static ICollection<TreeNode<T>> BuildT<T>(IEnumerable<T> roots, Func<T, string> getKey, Func<T, string> getCaption, Func<T, IEnumerable<T>> getChildren, int depth = 99)
         {
             Func<T, TreeNode<T>> cast = o =>
                 {
@@ -252,10 +304,10 @@ namespace DAF.Core
 
             Action<TreeNode<T>, TreeNode<T>> addChild = (p, c) => p.AddNode(c);
 
-            return Build<T, TreeNode<T>>(roots, cast, getChildren, addChild);
+            return Build<T, TreeNode<T>>(roots, cast, getChildren, addChild, depth);
         }
 
-        public static ICollection<TreeNode> Build<T>(IEnumerable<T> roots, Func<T, string> getKey, Func<T, string> getCaption, Func<T, IEnumerable<T>> getChildren)
+        public static ICollection<TreeNode> Build<T>(IEnumerable<T> roots, Func<T, string> getKey, Func<T, string> getCaption, Func<T, IEnumerable<T>> getChildren, int depth = 99)
         {
             Func<T, TreeNode> cast = o =>
             {
@@ -265,7 +317,7 @@ namespace DAF.Core
 
             Action<TreeNode, TreeNode> addChild = (p, c) => p.AddNode(c);
 
-            return Build<T, TreeNode>(roots, cast, getChildren, addChild);
+            return Build<T, TreeNode>(roots, cast, getChildren, addChild, depth);
         }
     }
 }

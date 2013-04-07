@@ -11,8 +11,9 @@ namespace DAF.CMS
 {
     public interface ICategoryProvider
     {
-        IEnumerable<Category> Query(string siteId, string groupName, string code = null, string parentId = null, DataStatus? status = DataStatus.Normal);
-        IEnumerable<Category> GetSubCategories(string siteId, string parentCode, int depth = 1);
+        IEnumerable<Category> Query(string siteId, string code = null, DataStatus? status = DataStatus.Normal);
+        IEnumerable<Category> GetSubCategories(string siteId, string parentId);
+        Category GetCategory(string siteId, string idOrCode);
         bool Save(ChangedData<Category> items);
     }
 }

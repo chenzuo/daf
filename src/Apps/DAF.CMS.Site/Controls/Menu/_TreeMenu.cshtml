@@ -1,0 +1,17 @@
+﻿@*<Parameters>
+[{ Name: 'menu', DefaultValue: '', Description: '请输入菜单名称，该菜单数据取自“菜单管理”中的菜单名称。' }]
+/Parameters>*@
+@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.Web.Menu;
+@{
+    Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
+    var menu = paras["menu"];
+    var menuItems = CmsHelper.GetMenuItems(menu);
+}
+<div id="@CmsHelper.Random("treeMenu")">
+    @Tree.Render(menuItems, o => o.Children, o => o.Name, null,
+    @:<a href="@item.LinkUrl" target="@item.Target">@item.Caption</a>
+)
+</div>

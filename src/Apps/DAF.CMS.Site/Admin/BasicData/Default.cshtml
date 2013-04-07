@@ -8,7 +8,7 @@
 
 <script type="text/html" id="item-template">
     <div class="tr" data-bind="attr:{id:Name, idx:ShowOrder}">
-        <div class="td span2">
+        <div class="td span8">
             <button type="button" class="btn btn-mini indent" data-bind="click:ToggleChildren" title="展开/收缩子项">
                 <i class="icon-plus"></i>
             </button>
@@ -16,22 +16,22 @@
                 <i class="icon-resize-vertical"></i>
             </button>
         </div>
-        <div class="td td-input">
-            <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Name"></span></div>
+        <div class="td span6">
+            <div data-bind="visible:!vm.IsNew($data)"><span class="span6" data-bind="text:Name" style="line-height:28px;"></span></div>
             <div data-bind="visible:vm.IsNew($data)">
                 @pageModel.TextBoxFor(o => o.Name, new { data_bind = "value:Name, event: { blur: CheckExists }" })
             </div>
         </div>
-        <div class="td td-input">
+        <div class="td span6">
             @pageModel.TextBoxFor(o => o.Caption, new { data_bind = "value:Caption" })
         </div>
-        <div class="td td-input">
+        <div class="td span6">
             @pageModel.TextBoxFor(o => o.Value, new { data_bind = "value:Value" })
         </div>
-        <div class="td td-input">
+        <div class="td span6">
             @pageModel.TextBoxFor(o => o.GroupName, new { data_bind = "value:GroupName" })
         </div>
-        <div class="td text-center">
+        <div class="td span2 text-center">
             <button type="button" class="btn btn-mini" data-bind="click: vm.ToggleValid, css: { 'btn-success': IsValid() }" title="设置有效/无效">
                 <i data-bind="css: { 'icon-ok-circle': IsValid(), 'icon-ban-circle': !IsValid() }"></i>
             </button>
@@ -46,11 +46,11 @@
     </div>
 </script>
 
-<div class="row">
-    <div class="span12">
-        @RenderPage("~/Controls/_SelectSites.cshtml")
-    </div>
-    <div class="span3">
+<div class="clear">
+    @RenderPage("~/Controls/_SelectSites.cshtml")
+</div>
+<div class="flex">
+    <div class="flex1">
         <div class="well">
             <h3>
                 <span>基础数据分类</span>
@@ -61,18 +61,18 @@
             </ul>
         </div>
     </div>
-    <div class="data-container span9 tgap1 lgap1" data-bind="visible:SelectedCate">
+    <div class="data-container flex4" data-bind="visible:SelectedCate">
         <h3>当前分类：<span data-bind="text:SelectedCate"></span></h3>
         <form method="post">
             <div class="table table-bordered">
                 <div class="thead">
                     <div class="tr">
-                        <div class="th span2"></div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Name))</div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Caption))</div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.Value))</div>
-                        <div class="th th-input">@(pageModel.CaptionFor(o => o.GroupName))</div>
-                        <div class="th">@(pageModel.CaptionFor(o => o.IsValid))</div>
+                        <div class="th span8"></div>
+                        <div class="th span6">@(pageModel.CaptionFor(o => o.Name))</div>
+                        <div class="th span6">@(pageModel.CaptionFor(o => o.Caption))</div>
+                        <div class="th span6">@(pageModel.CaptionFor(o => o.Value))</div>
+                        <div class="th span6">@(pageModel.CaptionFor(o => o.GroupName))</div>
+                        <div class="th span2">@(pageModel.CaptionFor(o => o.IsValid))</div>
                         <div class="th"></div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                         }
                     });
                 };
-                self.SelectCate = function(cate) {
+                self.SelectCate = function (cate) {
                     vm.SelectedCate(cate);
                     vm.GetData();
                 };

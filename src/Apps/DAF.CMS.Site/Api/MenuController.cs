@@ -35,15 +35,15 @@ namespace DAF.CMS.Site.Controllers
             return provider.GetMenu(siteId, group, parentName);
         }
 
-        [HttpGet]
-        public IEnumerable<SiteMenuItem> Data(string siteId, string group)
-        {
-            var items = provider.GetMenu(siteId, group, null);
-            HierarchyHelper.DoDescendants(items, m => m.Children, m => m.Children == null || m.Children.Count() <= 0,
-                                        m => m.Children = provider.GetMenu(siteId, group, m.Name).ToList());
+        //[HttpGet]
+        //public IEnumerable<SiteMenuItem> Data(string siteId, string group)
+        //{
+        //    var items = provider.GetMenu(siteId, group, null);
+        //    HierarchyHelper.DoDescendants(items, m => m.Children, m => m.Children == null || m.Children.Count() <= 0,
+        //                                m => m.Children = provider.GetMenu(siteId, group, m.Name).ToList());
 
-            return items;
-        }
+        //    return items;
+        //}
 
         [HttpPost]
         public ServerResponse Save([FromBody]ChangedData<SiteMenuItem> items)

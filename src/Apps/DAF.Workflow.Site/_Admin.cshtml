@@ -10,17 +10,8 @@
     @RenderPage(AssetsHelper.ThemePartial("_AdminEnd.cshtml"))
     @RenderSection("end", false)
 }
-
-<header class="page-header">
-    @RenderPage(AssetsHelper.ThemePartial("_AdminHeader.cshtml"))
-    @RenderSection("header", false)
-</header> 
-
-<div class="page-body">
-    @RenderBody()
+<div class="page">
+    <div class="page-body">
+        @RenderBody()
+    </div>
 </div>
-
-<footer class="page-footer">
-    @RenderPage(AssetsHelper.ThemePartial("_AdminFooter.cshtml"))
-    @RenderSection("footer", false) 
-</footer>

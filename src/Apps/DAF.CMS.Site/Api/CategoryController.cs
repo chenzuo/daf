@@ -23,27 +23,23 @@ namespace DAF.CMS.Site.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Category> Data(string siteId, string parentId = null, string code = null)
+        public IEnumerable<Category> Data(string siteId, string parentId = null)
         {
-            return cateProvider.Query(siteId, null, code, parentId);
+            return cateProvider.GetSubCategories(siteId, parentId);
+        }
+
+        [HttpGet]
+        public IEnumerable<Category> Tree(string siteId)
+        {
+            var allEles = cateProvider.Query(siteId);
+            var cates = HierarchyHelper.Build(allEles, o => o.ParentId == null, (p, c) => c.ParentId == p.CategoryId, (p, c) => p.Children.Add(c));
+            return cates;
         }
 
         [HttpPost]
         public ServerResponse Save([FromBody]ChangedData<Category> items)
         {
             return items.Save(o => cateProvider.Save(o));
-        }
-
-        [HttpGet]
-        //[OutputCache(CacheProfile = "common")]
-        public IEnumerable<TreeNode> Tree(string siteId, string parentId = null)
-        {
-            var query = cateProvider.Query(siteId, null, null, parentId);
-
-            var tree = HierarchyHelper.Build(query, o => o.CategoryId, o => o.Name,
-                o => cateProvider.Query(siteId, null, null, o.CategoryId));
-
-            return tree;
         }
     }
 }

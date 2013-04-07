@@ -1,0 +1,176 @@
+﻿@using DAF.Web;
+@{
+    Layout = null;
+}
+<style type="text/css">
+    .nav-pills > li > div {
+        cursor: pointer;
+    }
+    .nav-pills > li > div.selected {
+        background-color: #0094ff;
+    }
+</style>
+<div id="controlTypes" class="hide">
+    <h3>当前控件：<span data-bind="text:EditingControlName"></span></h3>
+    <div id="ctTabs" class="tabs">
+        <ul data-bind="foreach:ControlModules">
+            <li><a data-bind="attr: { href: '#' + Name() }, text: Name"></a></li>
+        </ul>
+        <!-- ko foreach:ControlModules -->
+        <div data-bind="foreach:Categories, attr: { id: Name }">
+            <fieldset>
+                <legend>
+                    <span data-bind="text: Name"></span>
+                </legend>
+                <ul class="nav nav-pills" data-bind="foreach:Controls">
+                    <li>
+                        <div class="well bg-none text-center" data-bind="click:vm.SetItemControl, css: { selected: vm.IsEditingControl($data) }">
+                            <span data-bind="text:Name"></span>
+                        </div>
+                    </li>
+                </ul>
+            </fieldset>
+        </div>
+        <!-- /ko -->
+    </div>
+</div>
+<div id="controlParas" data-bind="with:EditingControl" class="hide">
+    <!-- ko foreach:Parameters -->
+    <table class="table table-bordered spanfull">
+        <tr>
+            <td class="caption span6">参数名称：</td>
+            <td><span data-bind="text:Name"></span></td>
+            <td class="caption span6">默认值：</td>
+            <td><span data-bind="text:DefaultValue"></span></td>
+        </tr>
+        <tr>
+            <td class="caption span6">参数说明：</td>
+            <td colspan="3">
+                <span data-bind="text:Description"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="caption span6">参数值：</td>
+            <td colspan="3">
+                <textarea rows="4" data-bind="value:ParaValue"></textarea>
+            </td>
+        </tr>
+    </table>
+    <!-- /ko -->
+</div>
+
+<script type="text/javascript">
+    function InitControlTypes() {
+        vm.EditingControl = ko.observable(null);
+        vm.ControlModules = ko.observableArray([]);
+        vm.EditingControlName = ko.computed(function () {
+            var con = vm.EditingControl();
+            if (con) {
+                return con.Module() + "/" + con.Category() + "/" + con.Name();
+            }
+            return "";
+        });
+        vm.IsEditingControl = function (item) {
+            var con = vm.EditingControl();
+            if (con) {
+                return con.Path() == item.Path();
+            }
+            return false;
+        };
+        vm.FindControl = function (path) {
+            path = path.toLowerCase();
+            for (var i = 0; i < vm.ControlModules().length; i++) {
+                var mod = vm.ControlModules()[i];
+                for (var j = 0; j < mod.Categories().length; j++) {
+                    var cate = mod.Categories()[j];
+                    for (var k = 0; k < cate.Controls().length; k++) {
+                        if (cate.Controls()[k].Path().toLowerCase() == path) {
+                            return cate.Controls()[k];
+                        }
+                    }
+                }
+            }
+            return null;
+        };
+        vm.SetItemControl = function (con) {
+            vm.EditingControl(con);
+        };
+        vm.ShowItemControl = function (item) {
+            vm.EditingItem(item);
+            vm.EditingControl(vm.FindControl(item.ControlPath()));
+            ShowDialog('#controlTypes', '选择控件', function () {
+                var con = vm.EditingControl();
+                vm.EditingItem().ControlPath(con.Path());
+                vm.EditingControl(null);
+            }, function () {
+                vm.EditingControl(null);
+            }, 600, 500);
+        };
+        vm.EditItemControl = function (item) {
+            var con = vm.FindControl(item.ControlPath());
+            if (con) {
+                if (con.Parameters().length > 0) {
+                    var dic = Str2Dic(item.ControlParas());
+                    $.each(con.Parameters(), function (i, n) {
+                        var vals = $.grep(dic, function (item, idx) { return item.Key == n.Name(); });
+                        n.ParaValue(vals.length > 0 ? vals[0].Value : '');
+                    });
+                }
+                vm.EditingControl(con);
+                vm.EditingItem(item);
+                ShowDialog('#controlParas', '编辑控件参数', function () {
+                    var dic = [];
+                    var con = vm.EditingControl();
+                    var paras = con.Parameters();
+                    for (var i = 0; i < paras.length; i++) {
+                        var val = paras[i].ParaValue();
+                        if (!val || val.length <= 0) {
+                            val = paras[i].DefaultValue();
+                        }
+                        dic.push({ Key: paras[i].Name(), Value: val });
+                    }
+                    vm.EditingItem().ControlParas(Dic2Str(dic));
+                }, null, 660, 500);
+            }
+        };
+        vm.GetControlName = function (item) {
+            if (!item) { item = this.EditingItem(); }
+            if (item) {
+                var con = this.FindControl(item.ControlPath());
+                if (con) {
+                    return con.Module() + "/" + con.Category() + "/" + con.Name();
+                }
+            }
+            return "";
+        };
+
+        GetJson('@(UrlHelper.ClientUrl("Api/Page/ControlTypes"))', function (data) {
+            $.each(data, function (i, n) {
+                if (!n.Module || n.Module.length <= 0)
+                    n.Module = "public";
+                if (!n.Category || n.Category.length <= 0)
+                    n.Category = "others";
+                $.each(n.Parameters, function (ii, nn) { nn.ParaValue = null; });
+            });
+            var mods = [];
+            var mns = data.select(function (item) { return item.Module; }).unique();
+            for (var i = 0; i < mns.length; i++) {
+                var mod = { Name: mns[i], Categories: [] };
+                var cns = $.grep(data, function (n, idx) { return n.Module == mns[i]; })
+                    .select(function (item) { return item.Category; }).unique();
+
+                for (var j = 0; j < cns.length; j++) {
+                    var cate = { Name: cns[j], Controls: [] };
+                    var cs = $.grep(data, function (n, idx) { return n.Module == mns[i] && n.Category == cns[j]; });
+                    cate.Controls = cs;
+
+                    mod.Categories.push(cate);
+                }
+                mods.push(mod);
+            }
+            ko.mapping.fromJS(mods, null, vm.ControlModules);
+            $('.tabs').tabs('destroy').tabs();
+            SelectFirstSite();
+        });
+    };
+</script>

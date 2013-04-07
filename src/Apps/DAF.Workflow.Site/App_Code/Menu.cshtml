@@ -2,7 +2,7 @@
 @using DAF.SSO;
 @using DAF.Web;
 @using DAF.Web.Menu;
-@helper Render(IEnumerable<MenuItem> items, int depth = 99, int currentDepth = 0)
+@helper Render(IEnumerable<MenuItem> items, Func<dynamic, object> itemTemplate = null, int depth = 99, int currentDepth = 0)
 {
     var session = AuthHelper.CurrentSession;
     int total = items == null ? 0 : items.Count();
@@ -13,17 +13,24 @@
         {
             if (session.CanAccess(AuthHelper.CurrentClient.ClientId, item.ProtectedUri, PermissionType.Operation))
             {
-            <li>
-                <a href="@(string.IsNullOrEmpty(item.LinkUrl) ? "javascript:void(0);" : item.LinkUrl)" id="@item.Name" target="@item.Target">
-                    @if (!string.IsNullOrEmpty(item.Icon))
-                    {
-                        <img src="@item.Icon" alt="@item.Caption"/>
-                    }
-                    <span>@item.Caption</span> </a>
-                    @Render(item.Children, depth, currentDepth + 1)
+            <li data-key="@item.Name">
+                @if (itemTemplate == null)
+                {
+                    <a href="@(CommandHelper.AnalysisCommands(item.LinkUrl, HttpContext.Current))" id="@item.Name" target="@item.Target">
+                        @if (!string.IsNullOrEmpty(item.Icon))
+                        {
+                            <img src="@item.Icon" alt="@item.Caption"/>
+                        }
+                        <span>@item.Caption</span> </a>
+                }
+                else
+                {
+                    @itemTemplate(item)
+                }
+                @Render(item.Children, itemTemplate, depth, currentDepth + 1)
             </li>
             }
         }
-        </ul>       
+    </ul>       
     }
 }

@@ -6,80 +6,112 @@
     var pageModel = this.PageModel<SubSite>();
 }
 
-<div class="row">
-    <div class="data-container span12">
-        <h3 class="pull-left" data-bind="with:SelectedWebSite">当前网站：<span data-bind="text:SiteName"></span></h3>
-        <div class="pull-left tgap1"><button class="btn btn-primary btn-mini" type="button" onclick="vm.AddWebSite();" title="新增网站"><i class="icon-plus"></i></button></div>
-        <ul class="nav nav-pills pull-right bgap1" data-bind="foreach:WebSites">
-            <li data-bind="css: { active: vm.IsSelectedWebSite }">
-                <a href="javascript:void(0);" data-bind="click: vm.SelectWebSite"><span data-bind="text:SiteName"></span></a>
-                <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditWebSite" title="编辑网站"><i class="icon-pencil"></i></button>
-                <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveWebSite" title="删除网站"><i class="icon-remove"></i></button>
-            </li>
-        </ul>
-        <form method="post">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>@(pageModel.CaptionFor(o => o.SubSiteName))</th>
-                        <th>@(pageModel.CaptionFor(o => o.Language))</th>
-                        <th>@(pageModel.CaptionFor(o => o.DateTimeFormat))</th>
-                        <th>@(pageModel.CaptionFor(o => o.DateFormat))</th>
-                        <th>@(pageModel.CaptionFor(o => o.TimeFormat))</th>
-                        <th>@(pageModel.CaptionFor(o => o.CurrencyFormat))</th>
-                        <th>@(pageModel.CaptionFor(o => o.NumberFormat))</th>
-                        <th>@(pageModel.CaptionFor(o => o.TimeZone))</th>
-                        <th>@(pageModel.CaptionFor(o => o.DefaultPageTitle))</th>
-                        <th>@(pageModel.CaptionFor(o => o.DefaultMetaKeywords))</th>
-                        <th>@(pageModel.CaptionFor(o => o.DefaultMetaDescription))</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach:Data">
-                    <tr>
-                        <td><input class="span1" type="text" required="required" data-bind="value:SubSiteName" /></td>
-                        <td><input class="span1" type="text" required="required" data-bind="value:Language" /></td>
-                        <td><input type="text" data-bind="value:DateTimeFormat" /></td>
-                        <td><input class="span1" type="text" data-bind="value:DateFormat" /></td>
-                        <td><input class="span1" type="text" data-bind="value:TimeFormat" /></td>
-                        <td><input class="span1" type="text" data-bind="value:CurrencyFormat" /></td>
-                        <td><input class="span1" type="text" data-bind="value:NumberFormat" /></td>
-                        <td><input class="span1" type="text" data-bind="value:TimeZone" /></td>
-                        <td><input type="text" data-bind="value:DefaultPageTitle" /></td>
-                        <td><input class="span2" type="text" data-bind="value:DefaultMetaKeywords" /></td>
-                        <td><input class="span2" type="text" data-bind="value:DefaultMetaDescription" /></td>
-                        <td>
-                           <a href="javascript:;" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="form-actions">
-                <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
-                    <i class="icon-plus"></i><span>新增</span></button>
-                <button class="btn btn-success" type="button" onclick="vm.Save();">
-                    <i class="icon-ok"></i><span>保存</span></button>
-            </div>
-        </form>
+<div class="data-container clear" style="min-height: 500px">
+    <h3 class="pull-left" data-bind="with:SelectedWebSite">当前网站：<span data-bind="text:SiteName"></span></h3>
+    <div class="pull-left tgap1">
+        <button class="btn btn-primary btn-mini" type="button" onclick="vm.AddWebSite();" title="新增网站"><i class="icon-plus"></i></button>
     </div>
-    <div id="newWebSite" class="hide" data-bind="with:EditingWebSite">
-        <table class="table table-bordered">
+    <ul class="nav nav-pills pull-right bgap1" data-bind="foreach:WebSites">
+        <li data-bind="css: { active: vm.IsSelectedWebSite }">
+            <a href="javascript:void(0);" data-bind="click: vm.SelectWebSite"><span data-bind="text:SiteName"></span></a>
+            <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditWebSite" title="编辑网站"><i class="icon-pencil"></i></button>
+            <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveWebSite" title="删除网站"><i class="icon-remove"></i></button>
+        </li>
+    </ul>
+    <table class="table table-bordered spanfull">
+        <thead>
             <tr>
-                <td class="caption">网站名称：</td>
+                <th>@(pageModel.CaptionFor(o => o.SubSiteName))</th>
+                <th>@(pageModel.CaptionFor(o => o.Language))</th>
+                <th>@(pageModel.CaptionFor(o => o.TimeZone))</th>
+                <th>@(pageModel.CaptionFor(o => o.DefaultTheme))</th>
+                <th>@(pageModel.CaptionFor(o => o.DefaultSkin))</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach:Data">
+            <tr>
+                <td><span data-bind="text:SubSiteName"></span></td>
+                <td><span data-bind="text:Language"></span></td>
+                <td><span data-bind="text:TimeZone"></span></td>
+                <td><span data-bind="text:DefaultTheme"></span></td>
+                <td><span data-bind="text:DefaultSkin"></span></td>
                 <td>
-                    <input class="input-medium" required="true" type="text" data-bind="value:SiteName, visible:vm.IsNewWebSite($data)" />
-                    <span data-bind="text:SiteName, visible:!vm.IsNewWebSite($data)"></span>
+                    <button class="btn btn-primary btn-mini" data-bind="click:$root.EditItem" title="编辑"><i class="icon-pencil"></i></button>
+                    <button class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></button>
                 </td>
             </tr>
-             <tr>
-                <td class="caption">网址：</td>
-                <td>
-                    <input id="urlStartWith" name="urlStartWith" class="input-medium" required="true" type="text" data-bind="value:UrlStartWith" />
-
-                </td>
-            </tr>
-       </table>
+        </tbody>
+    </table>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="button" onclick="vm.AddItem();">
+            <i class="icon-plus"></i><span>新增</span></button>
     </div>
+</div>
+<div id="editItem" class="hide" data-bind="with:EditingItem">
+    <form method="post">
+        <table class="table table-bordered">
+        <tr>
+            <td class="caption">@(pageModel.CaptionFor(o => o.SubSiteName))</td>
+            <td>@pageModel.TextBoxFor(m => m.SubSiteName, new { data_bind = "value:SubSiteName, event:{ blur:CheckExists }" })</td>
+            <td class="caption">@(pageModel.CaptionFor(o => o.Language))</td>
+            <td>@pageModel.TextBoxFor(m => m.Language, new { data_bind = "value:Language" })</td>
+        </tr>
+        <tr>
+            <td class="caption">@(pageModel.CaptionFor(o => o.DateTimeFormat))</td>
+            <td>@pageModel.TextBoxFor(m => m.DateTimeFormat, new { data_bind = "value:DateTimeFormat" })</td>
+            <td class="caption">@(pageModel.CaptionFor(o => o.DateFormat))</td>
+            <td>@pageModel.TextBoxFor(m => m.DateFormat, new { data_bind = "value:DateFormat" })</td>
+        </tr>
+        <tr>
+            <td class="caption">@(pageModel.CaptionFor(o => o.TimeFormat))</td>
+            <td>@pageModel.TextBoxFor(m => m.TimeFormat, new { data_bind = "value:TimeFormat" })</td>
+            <td class="caption">@(pageModel.CaptionFor(o => o.CurrencyFormat))</td>
+            <td>@pageModel.TextBoxFor(m => m.CurrencyFormat, new { data_bind = "value:CurrencyFormat" })</td>
+        </tr>
+        <tr>
+            <td class="caption">@(pageModel.CaptionFor(o => o.NumberFormat))</td>
+            <td>@pageModel.TextBoxFor(m => m.NumberFormat, new { data_bind = "value:NumberFormat" })</td>
+            <td class="caption">@(pageModel.CaptionFor(o => o.TimeZone))</td>
+            <td>@pageModel.TextBoxFor(m => m.TimeZone, new { data_bind = "value:TimeZone" })</td>
+        </tr>
+        <tr>
+            <td class="caption">@(pageModel.CaptionFor(o => o.DefaultTheme))</td>
+            <td>@pageModel.TextBoxFor(m => m.DefaultTheme, new { data_bind = "value:DefaultTheme" })</td>
+            <td class="caption">@(pageModel.CaptionFor(o => o.DefaultSkin))</td>
+            <td>@pageModel.TextBoxFor(m => m.DefaultSkin, new { data_bind = "value:DefaultSkin" })</td>
+        </tr>
+        <tr>
+            <td class="caption">@(pageModel.CaptionFor(o => o.DefaultPageTitle))</td>
+            <td colspan="3">@pageModel.TextBoxFor(m => m.DefaultPageTitle, new { data_bind = "value:DefaultPageTitle", @class = "span5" })</td>
+        </tr>
+        <tr>
+            <td class="caption">@(pageModel.CaptionFor(o => o.DefaultMetaKeywords))</td>
+            <td colspan="3">@pageModel.TextBoxFor(m => m.DefaultMetaKeywords, new { data_bind = "value:DefaultMetaKeywords", @class = "span5" })</td>
+        </tr>
+        <tr>
+            <td class="caption">@(pageModel.CaptionFor(o => o.DefaultMetaDescription))</td>
+            <td colspan="3">@pageModel.TextBoxFor(m => m.DefaultMetaDescription, new { data_bind = "value:DefaultMetaDescription", @class = "span5" })</td>
+        </tr>
+    </table>
+    </form>
+</div>
+<div id="newWebSite" class="hide" data-bind="with:EditingWebSite">
+    <table class="table table-bordered">
+        <tr>
+            <td class="caption">网站名称：</td>
+            <td>
+                <input class="span4" required="true" type="text" data-bind="value:SiteName, visible:vm.IsNewWebSite($data)" />
+                <span data-bind="text:SiteName, visible:!vm.IsNewWebSite($data)"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="caption">网址：</td>
+            <td>
+                <input id="urlStartWith" name="urlStartWith" class="span4" required="true" type="text" data-bind="value:UrlStartWith" />
+            </td>
+        </tr>
+    </table>
 </div>
 
 <script type="text/javascript">
@@ -107,10 +139,12 @@
                     DateTimeFormat: ko.observable(null),
                     DateFormat: ko.observable(null),
                     TimeFormat: ko.observable(null),
-                    CurrencyFormat: ko.observable(true),
+                    CurrencyFormat: ko.observable(null),
                     NumberFormat: ko.observable(null),
                     ParentName: ko.observable(null),
                     TimeZone: ko.observable(0),
+                    DefaultTheme: ko.observable('Default'),
+                    DefaultSkin: ko.observable('Default'),
                     DefaultPageTitle: ko.observable(null),
                     DefaultMetaKeywords: ko.observable(null),
                     DefaultMetaDescription: ko.observable(null)
@@ -132,11 +166,11 @@
                     };
                     site.DataState = DataState.New;
                     vm.EditingWebSite(site);
-                    ShowDialog('#newWebSite', '新增网站', vm.SaveWebSite);
+                    ShowDialog('#newWebSite', '新增网站', vm.SaveWebSite, null, 450);
                 };
                 self.EditWebSite = function (item) {
                     vm.EditingWebSite(item);
-                    ShowDialog('#newWebSite', '修改网站', vm.SaveWebSite);
+                    ShowDialog('#newWebSite', '修改网站', vm.SaveWebSite, null, 450);
                 };
                 self.RemoveWebSite = function (item) {
                     ShowConfirm('确认删除', '确认要删除网站' + item.SiteName() + '？', function () {
@@ -186,8 +220,34 @@
                     return false;
                 };
             },
-            validate: function () {
-                return $('.data-container>form').valid();
+            onAdd: function (item) {
+                ShowDialog('#editItem', "新增子站点",
+                    function () {
+                        if ($('#editItem>form').valid()) {
+                            vm.Save();
+                            return false;
+                        }
+                        return true;
+                    }, function () {
+                        vm.UndoAddItem();
+                    }, 600);
+                EnableFormValidation($('#editItem>form'));
+            },
+            onEdit: function (item) {
+                ShowDialog('#editItem', "编辑子站点",
+                    function () {
+                        if ($('#editItem>form').valid()) {
+                            vm.Save();
+                            return false;
+                        }
+                        return true;
+                    }, function () {
+                        vm.UndoEditItem();
+                    }, 600);
+                EnableFormValidation($('#editItem>form'));
+            },
+            onRemove: function (item) {
+                vm.Save();
             }
         });
         ko.applyBindings(vm);
@@ -210,11 +270,8 @@
     }
 
     function CheckExists(item, event) {
-        var tr = $(event.target).closest('.tr');
-        var tbody = tr.closest('.tbody');
-        var ptr = tbody.closest('.tr');
         var it = $.grep(vm.Data(), function (n, i) { return n.SubSiteName() == item.SubSiteName(); });
-        if (it.length > 1) {
+        if (it.length > (item.DataState == DataState.New ? 0 : 1)) {
             ShowMessage("提示信息", "已经存在名称为“" + item.SubSiteName() + "”的子网站。", function () { $(event.target).val('').focus(); });
             return false;
         }

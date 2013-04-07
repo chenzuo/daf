@@ -158,14 +158,16 @@
     <Content Include="Localization\DAF_SSO.js" />
     <Content Include="Localization\DAF_Web.js" />
     <Content Include="Localization\DAF_CMS.js" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner-mask.png" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_1.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_2.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_3.jpg" />
     <Content Include="Themes\Default\Skins\Default\Contents\site.css" />
     <Content Include="Themes\Default\Skins\Default\Contents\content.css" />
+    <Content Include="Themes\Default\Skins\Default\Contents\admin.css" />
     <Content Include="Themes\Default\Skins\Default\Scripts\content.js" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
+    <Content Include="Themes\BXX\Skins\Default\Contents\admin.css" />
+    <Content Include="Themes\BXX\Skins\Default\Contents\content.css" />
+    <Content Include="Themes\BXX\Skins\Default\Contents\site.css" />
+    <Content Include="Themes\BXX\Skins\Default\Scripts\content.js" />
+    <Content Include="Themes\BXX\Skins\Default\Scripts\overrides.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -196,7 +198,6 @@
     <Content Include="Themes\Default\_AdminFooter.cshtml" />
     <Content Include="Themes\Default\_AdminHead.cshtml" />
     <Content Include="Themes\Default\_AdminHeader.cshtml" />
-    <Content Include="Themes\Default\_Banner.cshtml" />
     <Content Include="Themes\Default\_DialogEnd.cshtml" />
     <Content Include="Themes\Default\_DialogHead.cshtml" />
     <Content Include="Themes\Default\_HtmlEnd.cshtml" />
@@ -220,7 +221,7 @@
       <SubType>
       </SubType>
     </Content>
-    <Content Include="Controls\_Paging.cshtml" />
+    <Content Include="Themes\Default\_Paging.cshtml" />
     <Content Include="CrossSite\Get.cshtml" />
     <Content Include="CrossSite\Post.cshtml" />
     <Content Include="Admin\AppSettings\Default.cshtml" />
@@ -247,23 +248,16 @@
     <Content Include="Controls\Content\_ContentDetail.cshtml" />
     <Content Include="Controls\Content\_ContentBrief.cshtml" />
     <Content Include="Controls\Content\_ContentList.cshtml" />
-    <Content Include="Controls\Content\_ContentSlide.cshtml" />
-    <Content Include="Controls\Content\_ContentGallary.cshtml" />
-    <Content Include="Controls\Content\_ContentButtonList.cshtml" />
-    <Content Include="Controls\Content\_ContentTopList.cshtml" />
-    <Content Include="Controls\Content\_ContentTabList.cshtml" />
     <Content Include="Admin\WebSite\Default.cshtml" />
     <Content Include="Controls\_SelectSites.cshtml" />
     <Content Include="Admin\PageTemplate\Default.cshtml" />
-    <Content Include="Templates\TopMainBottom.cshtml" />
-    <Content Include="Templates\LeftMainRight.cshtml" />
-    <Content Include="Templates\Full.cshtml" />
+    <Content Include="PageTemplates\TopMainBottom.cshtml" />
+    <Content Include="PageTemplates\LeftMainRight.cshtml" />
     <Content Include="Admin\Page\Default.cshtml" />
-    <Content Include="Pages\Full.cshtml" />
     <Content Include="Pages\LeftMainRight.cshtml" />
     <Content Include="Pages\TopMainBottom.cshtml" />
     <Content Include="Account\_AccountInfo.cshtml" />
-    <Content Include="Templates\Web.config" />
+    <Content Include="PageTemplates\Web.config" />
     <Content Include="Pages\Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -274,9 +268,36 @@
     <Content Include="Modules\ECommerce\Controls\Menu\menu.cshtml" />
     <Content Include="Controls\Menu\_CascadeHorzMenu.cshtml" />
     <Content Include="Controls\Menu\_FooterMenu.cshtml" />
-    <Content Include="Controls\Logo\_SiteLogo.cshtml" />
+    <Content Include="Controls\Site\_SiteLogo.cshtml" />
     <Content Include="Controls\Category\_SubCategories.cshtml" />
-    <Content Include="category\Default.cshtml" />
+    <Content Include="Themes\BXX\_AdminBody.cshtml" />
+    <Content Include="Themes\BXX\_AdminEnd.cshtml" />
+    <Content Include="Themes\BXX\_AdminFooter.cshtml" />
+    <Content Include="Themes\BXX\_AdminHead.cshtml" />
+    <Content Include="Themes\BXX\_AdminHeader.cshtml" />
+    <Content Include="Themes\BXX\_DialogEnd.cshtml" />
+    <Content Include="Themes\BXX\_DialogHead.cshtml" />
+    <Content Include="Themes\BXX\_HtmlEnd.cshtml" />
+    <Content Include="Themes\BXX\_HtmlHead.cshtml" />
+    <Content Include="Themes\BXX\_WindowEnd.cshtml" />
+    <Content Include="Themes\BXX\_WindowHead.cshtml" />
+    <Content Include="Controls\Content\_ContentSlideShow.cshtml" />
+    <Content Include="Modules\BXX\Controls\_Header1.cshtml" />
+    <Content Include="Modules\BXX\Controls\_Footer1.cshtml" />
+    <Content Include="Controls\Menu\_TreeMenu.cshtml" />
+    <Content Include="Admin\_SelectControlType.cshtml" />
+    <Content Include="Admin\_SetPageProperties.cshtml" />
+    <Content Include="Controls\Site\_SiteFooter.cshtml" />
+    <Content Include="PageTemplates\LeftMain.cshtml" />
+    <Content Include="PageTemplates\TopMain.cshtml" />
+    <Content Include="Pages\LeftMain.cshtml" />
+    <Content Include="Pages\TopMain.cshtml" />
+    <Content Include="Pages\MainRight.cshtml" />
+    <Content Include="Pages\MainBottom.cshtml" />
+    <Content Include="PageTemplates\MainRight.cshtml" />
+    <Content Include="PageTemplates\MainBottom.cshtml" />
+    <Content Include="Controls\Content\_ContentTopList.cshtml" />
+    <Content Include="Themes\BXX\_Paging.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -288,9 +309,13 @@
     <Content Include="_Dialog.cshtml" />
     <Content Include="_Html.cshtml" />
     <Content Include="_Window.cshtml" />
+    <Content Include="_AdminFull.cshtml" />
+    <Content Include="_Null.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Admin\Content\Display\" />
+    <Folder Include="Themes\BXX\Skins\Default\Contents\Images\" />
+    <Folder Include="Themes\Default\Skins\Default\Contents\Images\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAF.CMS\DAF.CMS.csproj">

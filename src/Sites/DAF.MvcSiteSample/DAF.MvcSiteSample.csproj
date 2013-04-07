@@ -191,11 +191,7 @@
     <Content Include="App_Data\languages.js" />
     <Content Include="Localization\DAF_Web.js" />
     <Content Include="packages.config" />
-    <Content Include="App_Code\Form.cshtml" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner-mask.png" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_1.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_2.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_3.jpg" />
+    <Content Include="Themes\Default\Skins\Default\Contents\site.css" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -224,14 +220,17 @@
     <Content Include="Views\Shared\_Admin.cshtml" />
     <Content Include="Themes\Default\_AdminHeader.cshtml" />
     <Content Include="Themes\Default\_AdminHead.cshtml" />
-    <Content Include="Themes\Default\_AdminFooter.cshtml" />
+    <Content Include="Themes\Default\_AdminFooter.cshtml">
+      <SubType>
+      </SubType>
+    </Content>
     <Content Include="Themes\Default\_AdminEnd.cshtml" />
-    <Content Include="Themes\Default\_Banner.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Themes\Default\_AdminBody.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\" />
+    <Folder Include="Themes\Default\Skins\Default\Contents\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_AccountInfo.cshtml" />
@@ -254,6 +253,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configurations\appSettings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Themes\Default\_Paging.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

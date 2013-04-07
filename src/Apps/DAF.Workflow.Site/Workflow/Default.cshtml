@@ -3,8 +3,8 @@
 @{
     Page.Title = "工作流管理";
 }
-<div class="row">
-    <div class="data-filter span3">
+<div class="flex">
+    <div class="data-filter flex1">
         <div id="clients-container"></div>
         <div data-bind="visible:SelectedClient">
             <button class="btn btn-primary" type="button" onclick="NewBiz();">
@@ -19,29 +19,7 @@
             </div>
         </div>
     </div>
-    <div id="newBiz" style="display: none;">
-        <table class="table table-bordered">
-            <tr>
-                <td class="caption">应  用</td>
-                <td data-bind="with:SelectedClient">
-                    <span data-bind="text:ClientName"></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="caption">所有者</td>
-                <td>
-                    <input id="owner" name="owner" type="text" required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td class="caption">业务组</td>
-                <td>
-                    <input id="group" name="group" type="text" required="true" />
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div class="data-list span9 lgap1" data-bind="visible:SelectedGroup">
+    <div class="data-list flex4" data-bind="visible:SelectedGroup">
         <h3 class="pull-left" data-bind="with:SelectedOwner">
             <span>所有者：</span><span class="info" data-bind="text:Name"></span><br />
         </h3>
@@ -95,6 +73,28 @@
                 <i class="icon-ok"></i><span>保存</span></button>
         </div>
     </div>
+</div>
+<div id="newBiz" style="display: none;">
+    <table class="table table-bordered">
+        <tr>
+            <td class="caption">应  用</td>
+            <td data-bind="with:SelectedClient">
+                <span data-bind="text:ClientName"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="caption">所有者</td>
+            <td>
+                <input id="owner" name="owner" type="text" required="true" />
+            </td>
+        </tr>
+        <tr>
+            <td class="caption">业务组</td>
+            <td>
+                <input id="group" name="group" type="text" required="true" />
+            </td>
+        </tr>
+    </table>
 </div>
 
 <script type="text/javascript">

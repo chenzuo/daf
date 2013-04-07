@@ -3,70 +3,63 @@
 @using DAF.CMS;
 @using DAF.CMS.Models;
 @{
-    Layout = "~/Templates/LeftMainRight.cshtml";
-    var pageData = Page.PageData as DAF.CMS.Models.WebPage;
-    Page.Title = pageData.PageTitle;
+    Layout = "~/PageTemplates/LeftMainRight.cshtml";
+    var page = Page.Page as DAF.CMS.Models.WebPage;
+    var template = Page.Template as LinkedListNode<PageTemplate>;
+    Page.Title = page.PageTitle;
+    Page.IsNested = Page.IsNestedPage;
+    bool isFirst = template.Previous == null;
+    bool isLast = template.Next == null;
 }
 
 @section head
 {
-    @if (!string.IsNullOrEmpty(pageData.Template.PageLinks))
-    {
-        @pageData.Template.PageLinks
-    }
-    @if (!string.IsNullOrEmpty(pageData.PageLinks))
-    {
-        @pageData.PageLinks
-    }
+    @if(isFirst){
+        @:@Html.Raw(CmsHelper.GetPageLinks(page, template))
     <style type="text/css">
-    @if (!string.IsNullOrEmpty(pageData.Template.PageCSS))
-    {
-        @pageData.Template.PageCSS
-    }
-    @if (!string.IsNullOrEmpty(pageData.PageCSS))
-    {
-        @pageData.PageCSS
-    }
+        @Html.Raw(CmsHelper.GetPageCSS(page, template))
     </style>
+    }
 }
 
 @section end
 {
+    @if(isFirst){
     <script type="text/javascript">
-    @if (!string.IsNullOrEmpty(pageData.Template.PageJS))
-    {
-        @pageData.Template.PageJS
-    }
-    @if (!string.IsNullOrEmpty(pageData.PageJS))
-    {
-        @pageData.PageJS
-    }
+        @Html.Raw(CmsHelper.GetPageJS(page, template))
     </script>
+    }
 }
 
 @section left
 {
-    @foreach (var con in pageData.OrderedControls("left"))
+    @foreach (var con in CmsHelper.GetControls(page, template.Value, "left"))
     {
-        <div class="container @con.Container">
-            @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras })
+        <div class="container @con.Container" style="@con.Styles">
+            @this.RenderCachedPage(con.CacheKey, con.CachedMunites, con.Path, new { Paras = con.Paras })
         </div>
     }
 }
 
 @section right
 {
-    @foreach (var con in pageData.OrderedControls("right"))
+    @foreach (var con in CmsHelper.GetControls(page, template.Value, "right"))
     {
-        <div class="container @con.Container">
-            @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras })
+        <div class="container @con.Container" style="@con.Styles">
+            @this.RenderCachedPage(con.CacheKey, con.CachedMunites, con.Path, new { Paras = con.Paras })
         </div>
     }
 }
-
-@foreach (var con in pageData.OrderedControls("body"))
+@if(isLast)
 {
-    <div class="container @con.Container">
-        @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras })
-    </div>
+    foreach (var con in CmsHelper.GetControls(page, template.Value, "body"))
+    {
+        <div class="container @con.Container" style="@con.Styles">
+            @this.RenderCachedPage(con.CacheKey, con.CachedMunites, con.Path, new { Paras = con.Paras })
+        </div>
+    }
+}
+else
+{
+    @RenderPage(template.Next.Value.TemplatePath, new { Page = page, Template = template.Next, IsNestedPage = true })
 }

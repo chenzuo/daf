@@ -14,23 +14,29 @@ namespace DAF.Web.Localization
 {
     public class JsonLocalizer : ILocalizer
     {
-        private List<JsonResource> jsonResources;
-        private IJsonSerializer jsonSerializer;
-        private IFileSystemProvider fileProvider;
+        protected List<JsonResource> jsonResources;
+        protected IJsonSerializer jsonSerializer;
+        protected IFileSystemProvider fileProvider;
 
-        public JsonLocalizer(IFileSystemProvider fileProvider, IJsonSerializer jsonSerializer)
+        public JsonLocalizer(string paths, IFileSystemProvider fileProvider, IJsonSerializer jsonSerializer)
         {
             jsonResources = new List<JsonResource>();
             this.fileProvider = fileProvider;
             this.fileProvider.SetRootPath("~/".GetPhysicalPath());
             this.jsonSerializer = jsonSerializer;
-            LoadResources();
+            LoadResources(paths.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
         }
 
-        private void LoadResources()
+        protected virtual void LoadResources(string[] paths)
         {
-            var dirs = fileProvider.GetPaths("Localization", false)
-                .Union(fileProvider.GetPaths("/Areas/*/Localization", false));
+            if (paths == null || paths.Length <= 0)
+                return;
+
+            List<DirectoryInfo> dirs = new List<DirectoryInfo>();
+            foreach (var p in paths)
+            {
+                dirs.AddRange(fileProvider.GetPaths(p, false));
+            }
             dirs.GetFiles("*.js", false)
             .ForEach(o =>
             {
@@ -59,17 +65,17 @@ namespace DAF.Web.Localization
             });
         }
 
-        private string NormalizeName(string name)
+        protected virtual string NormalizeName(string name)
         {
             return name.Replace(".", "_");
         }
 
-        public string GetCurrentCultureInfo()
+        public virtual string GetCurrentCultureInfo()
         {
             return System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
         }
 
-        public void SetCurrentCultureInfo(string culture)
+        public virtual void SetCurrentCultureInfo(string culture)
         {
             try
             {
@@ -82,7 +88,7 @@ namespace DAF.Web.Localization
             }
         }
 
-        public string Get(string resourceName, string nameSpace = "DAF.Core", string cultureInfo = null)
+        public virtual string Get(string resourceName, string nameSpace = "DAF.Core", string cultureInfo = null)
         {
             if (string.IsNullOrWhiteSpace(resourceName))
                 return string.Empty;
@@ -104,7 +110,7 @@ namespace DAF.Web.Localization
             return resourceName;
         }
 
-        public void Set(string resourceName, string value, string nameSpace = "DAF.Core", string cultureInfo = null)
+        public virtual void Set(string resourceName, string value, string nameSpace = "DAF.Core", string cultureInfo = null)
         {
             if (string.IsNullOrWhiteSpace(resourceName))
                 return;
@@ -139,7 +145,7 @@ namespace DAF.Web.Localization
             }
         }
 
-        public void Flush()
+        public virtual void Flush()
         {
             foreach (var res in jsonResources)
             {

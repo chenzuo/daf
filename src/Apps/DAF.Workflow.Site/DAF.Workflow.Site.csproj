@@ -162,11 +162,10 @@
     <Content Include="Localization\DAF_Workflow.js" />
     <Content Include="Scripts\workflow.js" />
     <Content Include="Services\StateFlowService.svc" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner-mask.png" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_1.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_2.jpg" />
-    <Content Include="Themes\Default\Skins\Default\Contents\Images\banner_3.jpg" />
+    <Content Include="Themes\Default\Skins\Default\Contents\admin.css" />
+    <Content Include="Themes\Default\Skins\Default\Contents\content.css" />
     <Content Include="Themes\Default\Skins\Default\Contents\site.css" />
+    <Content Include="Themes\Default\Skins\Default\Scripts\content.js" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -201,7 +200,6 @@
     <Content Include="Themes\Default\_WindowFooter.cshtml" />
     <Content Include="Themes\Default\_WindowHead.cshtml" />
     <Content Include="Themes\Default\_WindowHeader.cshtml" />
-    <Content Include="App_Code\Form.cshtml" />
     <Content Include="App_Code\Menu.cshtml" />
     <Content Include="App_Code\Tree.cshtml" />
     <Content Include="Account\ChangePassword.cshtml" />
@@ -214,9 +212,7 @@
     <Content Include="Account\Captcha.cshtml" />
     <Content Include="Account\_AccountInfo.cshtml" />
     <Content Include="Account\SignOff.cshtml" />
-    <Content Include="Controls\_ImageSlideShow.cshtml" />
-    <Content Include="Controls\_Paging.cshtml" />
-    <Content Include="Controls\_SelectLanguages.cshtml" />
+    <Content Include="Controls\SelectLanguages.cshtml" />
     <Content Include="Audit\Default.cshtml" />
     <Content Include="Audit\Next.cshtml" />
     <Content Include="Audit\Start.cshtml" />
@@ -225,6 +221,7 @@
     <Content Include="CrossSite\Post.cshtml" />
     <Content Include="Account\ResetPassword.cshtml" />
     <Content Include="Account\ResetPasswordSuccess.cshtml" />
+    <Content Include="Themes\Default\_Paging.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -243,6 +240,7 @@
     <Content Include="Workflow\Table.cshtml" />
     <Content Include="Workflow\Tables.cshtml" />
     <Content Include="Workflow\TableNode.cshtml" />
+    <Content Include="_AdminFull.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAF.Workflow.WcfProviders\DAF.Workflow.WcfProviders.csproj">
@@ -253,6 +251,9 @@
       <Project>{d4964ea0-4b09-4780-aeb1-505dcdf5f869}</Project>
       <Name>DAF.Workflow</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Themes\Default\Skins\Default\Contents\Images\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

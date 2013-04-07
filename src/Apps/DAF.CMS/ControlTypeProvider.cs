@@ -66,7 +66,7 @@ namespace DAF.CMS
             {
                 if (started)
                 {
-                    if (line.Trim() == "/Parameters>-->")
+                    if (line.Trim() == "/Parameters>*@")
                     {
                         started = false;
                         break;
@@ -75,7 +75,7 @@ namespace DAF.CMS
                 }
                 else
                 {
-                    if (line.Trim() == "<!--<Parameters>")
+                    if (line.Trim() == "@*<Parameters>")
                     {
                         started = true;
                     }

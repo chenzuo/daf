@@ -353,14 +353,22 @@ namespace DAF.Web
                     if (defaultSession != null)
                         return defaultSession;
 
-                    defaultSession = new Session
+                    var defaultSessionProvider = IOC.Current.ResolveOptional<IDefaultSessionProvider>();
+                    if (defaultSessionProvider == null)
                     {
-                        Theme = "Default",
-                        Skin = "Default",
-                        Locale = Thread.CurrentThread.CurrentCulture.Name,
-                        TimeZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).TotalHours,
-                        SessionId = HttpContext.Current.Session.SessionID
-                    };
+                        defaultSession = new Session
+                        {
+                            Theme = "Default",
+                            Skin = "Default",
+                            Locale = Thread.CurrentThread.CurrentCulture.Name,
+                            TimeZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).TotalHours,
+                            SessionId = HttpContext.Current.Session.SessionID
+                        };
+                    }
+                    else
+                    {
+                        defaultSession = defaultSessionProvider.NewSession();
+                    }
 
                     HttpContext.Current.Session["DefaultUserSession"] = defaultSession;
                     return defaultSession;

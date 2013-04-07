@@ -36,6 +36,8 @@ namespace DAF.CMS.Migrations
                         CurrencyFormat = c.String(maxLength: 50),
                         NumberFormat = c.String(maxLength: 50),
                         TimeZone = c.Double(nullable: false),
+                        DefaultTheme = c.String(maxLength: 50),
+                        DefaultSkin = c.String(maxLength: 50),
                         DefaultPageTitle = c.String(maxLength: 50),
                         DefaultMetaKeywords = c.String(maxLength: 500),
                         DefaultMetaDescription = c.String(maxLength: 500),
@@ -110,8 +112,10 @@ namespace DAF.CMS.Migrations
                         ControlPath = c.String(nullable: false, maxLength: 200),
                         ControlParas = c.String(),
                         Container = c.String(maxLength: 50),
+                        CssStyle = c.String(),
                         ShowOrder = c.Int(nullable: false),
                         Cached = c.Boolean(nullable: false),
+                        CacheKey = c.String(maxLength: 50),
                         CacheMunites = c.Int(),
                     })
                 .PrimaryKey(t => t.TemplateControlId)
@@ -126,12 +130,15 @@ namespace DAF.CMS.Migrations
                     {
                         ControlId = c.String(nullable: false, maxLength: 50),
                         PageId = c.String(nullable: false, maxLength: 50),
+                        TemplateName = c.String(nullable: false, maxLength: 50),
                         Section = c.String(nullable: false, maxLength: 50),
                         ControlPath = c.String(nullable: false, maxLength: 200),
                         ControlParas = c.String(),
                         Container = c.String(maxLength: 50),
+                        CssStyle = c.String(),
                         ShowOrder = c.Int(nullable: false),
                         Cached = c.Boolean(nullable: false),
+                        CacheKey = c.String(maxLength: 50),
                         CacheMunites = c.Int(),
                     })
                 .PrimaryKey(t => t.ControlId)

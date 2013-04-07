@@ -16,7 +16,7 @@
 }
 
 <form id="uploadForm@(suffix)" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))" method="POST" enctype="multipart/form-data" onload="InitForm">
-<div class="alert alert-block">
+<div class="alert alert-block spanfull flex">
     <h5 class="alert-heading">注：</h5>
     <ol>
         @if (!string.IsNullOrEmpty(fileTypes) && fileTypes != ".+$")
@@ -33,7 +33,7 @@
         }
     </ol>
 </div>
-<div>
+<div class="clear" style="line-height:35px;">
     <button type="button" class="btn btn-primary" onclick="OpenDialog('选择现有文件', '@(UrlHelper.ClientUrl("File"))?fileTypes=@(fileTypes)&owner=@(owner)');" dialog-width="800" dialog-height="600" data-bind="enable: $root.CanAddFile()">
         <i class="icon-picture"></i>
         <span>选择现有文件</span>

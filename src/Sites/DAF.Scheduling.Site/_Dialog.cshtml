@@ -11,9 +11,11 @@
     @RenderPage(AssetsHelper.ThemePartial("_DialogEnd.cshtml"))
     @RenderSection("end", false)
 }
-<header class="container page-hader">
-    @RenderSection("header", false)
-</header> 
-<div class="page-body">    
-    @RenderBody()
+<div class="page">
+    <header class="page-header">
+        @RenderSection("header", false)
+    </header>
+    <div class="page-body">
+        @RenderBody()
+    </div>
 </div>

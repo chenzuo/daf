@@ -31,9 +31,13 @@ namespace DAF.CMS.Models
         public string ControlParas { get; set; }
         [StringLength(50)]
         public string Container { get; set; }
+        [MaxLength]
+        public string CssStyle { get; set; }
         public int ShowOrder { get; set; }
 
         public bool Cached { get; set; }
+        [StringLength(50)]
+        public string CacheKey { get; set; }
         public int? CacheMunites { get; set; }
 
         [ForeignKey("SiteId")]

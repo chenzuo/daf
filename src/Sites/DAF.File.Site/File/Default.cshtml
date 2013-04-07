@@ -144,8 +144,8 @@
         }
     </script>
 }
-<div class="row">
-    <div class="span3">
+<div class="flex">
+    <div class="flex1">
         <form id="uploadForm" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))" method="POST" enctype="multipart/form-data" onload="InitForm">
         <div>
             <button type="button" class="btn btn-primary" onclick="$('#fileSelector').trigger('click');" data-bind="enable: $root.CanAddFile()">
@@ -183,7 +183,7 @@
             </ul>
         </div>
     </div>
-    <div id="fileTypes" class="span9 lgap1">
+    <div id="fileTypes" class="flex4">
         <ul>
             @foreach (var ft in fts)
             {

@@ -36,6 +36,10 @@ namespace DAF.CMS.Models
         public double TimeZone { get; set; }
 
         [StringLength(50)]
+        public string DefaultTheme { get; set; }
+        [StringLength(50)]
+        public string DefaultSkin { get; set; }
+        [StringLength(50)]
         public string DefaultPageTitle { get; set; }
         [StringLength(500)]
         public string DefaultMetaKeywords { get; set; }

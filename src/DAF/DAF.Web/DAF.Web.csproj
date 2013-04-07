@@ -87,9 +87,9 @@
     <Compile Include="Commands\QueryStringCommand.cs" />
     <Compile Include="Commands\SessionCommand.cs" />
     <Compile Include="Commands\CacheCommand.cs" />
+    <Compile Include="Commands\UrlCommand.cs" />
     <Compile Include="ContentItem.cs" />
     <Compile Include="Extensions\HtmlStringExtensions.cs" />
-    <Compile Include="Extensions\StringExtentension.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="Helpers\AssetsHelper.cs" />
     <Compile Include="Helpers\AuthHelper.cs" />

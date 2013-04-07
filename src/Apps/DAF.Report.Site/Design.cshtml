@@ -14,8 +14,8 @@
 @AssetsHelper.CDNScript("colorpicker.js")
 @AssetsHelper.Script("/Scripts/report_design.js")
 
-<div class="row">
-    <div id="left-bar" class="span3">
+<div class="flex">
+    <div id="left-bar" class="flex1">
         <div id="clients-container"></div>
         <button class="btn btn-primary" type="button" onclick="NewReport();">
             <i class="icon-plus"></i><span>新增报表</span></button>
@@ -46,7 +46,7 @@
             </div>
         </div>
     </div>
-    <div id="designArea" class="span9">
+    <div id="designArea" class="flex4">
         <div id="title-bar" data-bind="with:SelectedReport">
             <div>
                 <div>

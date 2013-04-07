@@ -72,6 +72,8 @@ function ResizeIFrame(frmId, width, height) {
     }
     if (!height) {
         height = $('body').height() + 22;
+    } else if (height <= $('body').height() + 22) {
+        return false;
     }
 
     PostMessage("resizeiframe", { frmId: frmId, width: width, height: height }, window.top);
@@ -566,13 +568,13 @@ function PostMessage(event, msg, target, targetOrgin) {
             }
         }
         if (!target) {
-            target = window.top;
+            target = window.parent || window.top;
         }
+        $(window.self).trigger(event, [msg]);
     }
     if (target.postMessage && !(target == window.self)) {
         target.postMessage(JSON.stringify({ event: event, msg: msg }), targetOrgin);
-    }
-    else {
+    } else {
         $(target).trigger(event, [msg]);
     }
 }
@@ -751,6 +753,14 @@ Guid.NewGuid = function () {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // prototype extensions
+Array.prototype.select = function (funcSelect) {
+    var arr = this;
+    var selectedArr = [];
+    for (var i = arr.length; i--;) {
+        selectedArr.unshift(funcSelect(arr[i]));
+    }
+    return selectedArr;
+}
 Array.prototype.unique = function (funcCompare) {
     var arr = this;
     var uniqueArr = [];
@@ -763,12 +773,17 @@ Array.prototype.unique = function (funcCompare) {
             }
         }
         else {
-            if ($.inArray(val, uniqueArr) === -1) {
+            if ($.inArray(item, uniqueArr) === -1) {
                 uniqueArr.unshift(item);
             }
         }
     }
     return uniqueArr;
+}
+
+function StopEvent(e) {
+    e.preventDefault();
+    e.stopPropagation();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

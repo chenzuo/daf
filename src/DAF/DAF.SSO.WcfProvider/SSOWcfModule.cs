@@ -33,6 +33,7 @@ namespace DAF.SSO.WcfProvider
 
             builder.RegisterType<DefaultSSOConfiguration>().As<ISSOConfiguration>().SingleInstance();
             builder.RegisterType<SSOClientProvider>().As<Client.ISSOClientProvider>().SingleInstance();
+            builder.RegisterType<Client.DefaultSessionProvider>().As<Client.IDefaultSessionProvider>().SingleInstance();
         }
     }
 }

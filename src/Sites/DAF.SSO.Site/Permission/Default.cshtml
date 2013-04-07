@@ -5,78 +5,76 @@
     var pageModel = this.PageModel<Permission>();
 }
 
-<div class="row">
-    <div class="span12">
-        @RenderPage("~/Controls/SelectClients.cshtml")
-        <div class="data-container tabs clear" data-bind="visible:SelectedClient">
-            <ul>
-                @foreach (var it in EnumHelper.GetObjectsFromEnum(typeof(DAF.SSO.PermissionType), LocaleHelper.Localizer))
-                {
-                    <li><a href="#data-list-container" onclick="vm.SelectPermissionType(@(it.Item2));">@it.Item1</a></li>
-                }
-            </ul>
-            <div id="data-list-container">
-                <form method="post">
-                    <button class="btn btn-primary" type="button" data-bind="click:vm.AddGroup">
-                        <i class="icon-plus"></i><span>新增分组</span></button>
-                    <!-- ko foreach:vm.GetGroups() -->
-                    <fieldset>
-                        <legend>
-                            <a href="javascript:void(0);" data-bind="text:GroupName,click:vm.EditGroup"></a>
-                            <button class="btn btn-primary btn-mini" type="button" data-bind="click:vm.AddGroupItem">
-                                <i class="icon-plus"></i>
-                            </button>
-                        </legend>
-                        <table id="data-list" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>@(pageModel.CaptionFor(o => o.PermissionName))</th>
-                                    <th>@(pageModel.CaptionFor(o => o.Uri))</th>
-                                    <th>@(pageModel.CaptionFor(o => o.Position))</th>
-                                    <th>&nbsp;</th>
-                                </tr>
-                            </thead>
-                            <tbody data-bind="foreach:{ data:vm.GetGroupItems($data), afterRender: AfterRender }">
-                                <tr data-bind="attr:{key:PermissionName, id:PermissionName, idx:Position}">
-                                    <td>
-                                        <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:PermissionName"></span></div>
-                                        <div data-bind="visible:vm.IsNew($data)">
-                                            @(pageModel.TextBoxFor(o => o.PermissionName, new { data_bind = "value:PermissionName, event: { blur: CheckNameExists }" }))
-                                        </div>
-                                    </td>
-                                    <td>
-                                    @(pageModel.TextBoxFor(o => o.Uri, new { @data_bind = "value:Uri" }))
-                                    <td>
-                                        <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Position"></span></div>
-                                        <div data-bind="visible:vm.IsNew($data)">
-                                            @pageModel.TextBoxFor(o => o.Position, new { data_bind = "value:Position, event: { blur: CheckPositionExists }" })
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </fieldset>
-                    <!-- /ko -->
-                </form>
-            </div>
+<div class="clear">
+    @RenderPage("~/Controls/SelectClients.cshtml")
+    <div class="data-container tabs clear" data-bind="visible:SelectedClient">
+        <ul>
+            @foreach (var it in EnumHelper.GetObjectsFromEnum(typeof(DAF.SSO.PermissionType), LocaleHelper.Localizer))
+            {
+                <li><a href="#data-list-container" onclick="vm.SelectPermissionType('@((int)it.Item2)');">@it.Item1</a></li>
+            }
+        </ul>
+        <div id="data-list-container">
+            <form method="post">
+                <button class="btn btn-primary" type="button" data-bind="click:vm.AddGroup">
+                    <i class="icon-plus"></i><span>新增分组</span></button>
+                <!-- ko foreach:vm.GetGroups() -->
+                <fieldset>
+                    <legend>
+                        <a href="javascript:void(0);" data-bind="text:GroupName,click:vm.EditGroup"></a>
+                        <button class="btn btn-primary btn-mini" type="button" data-bind="click:vm.AddGroupItem">
+                            <i class="icon-plus"></i>
+                        </button>
+                    </legend>
+                    <table id="data-list" class="table table-bordered spanfull">
+                        <thead>
+                            <tr>
+                                <th>@(pageModel.CaptionFor(o => o.PermissionName))</th>
+                                <th>@(pageModel.CaptionFor(o => o.Uri))</th>
+                                <th>@(pageModel.CaptionFor(o => o.Position))</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach:{ data:vm.GetGroupItems($data), afterRender: AfterRender }">
+                            <tr data-bind="attr:{key:PermissionName, id:PermissionName, idx:Position}">
+                                <td>
+                                    <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:PermissionName"></span></div>
+                                    <div data-bind="visible:vm.IsNew($data)">
+                                        @(pageModel.TextBoxFor(o => o.PermissionName, new { data_bind = "value:PermissionName, event: { blur: CheckNameExists }" }))
+                                    </div>
+                                </td>
+                                <td>
+                                @(pageModel.TextBoxFor(o => o.Uri, new { @data_bind = "value:Uri" }))
+                                <td>
+                                    <div data-bind="visible:!vm.IsNew($data)"><span data-bind="text:Position"></span></div>
+                                    <div data-bind="visible:vm.IsNew($data)">
+                                        @pageModel.TextBoxFor(o => o.Position, new { data_bind = "value:Position, event: { blur: CheckPositionExists }" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveItem" title="删除"><i class="icon-remove"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+                <!-- /ko -->
+            </form>
         </div>
-        <div class="form-actions">
-            <button class="btn btn-success" type="button" onclick="vm.Save();">
-                <i class="icon-ok"></i><span>保存</span></button>
-        </div>
-        <div id="editGroup" class="hide">
-            <table class="table table-bordered">
-                <tr>
-                    <td class="caption">分组名称：</td>
-                    <td>
-                        <input id="editGroupName" name="editGroupName" type="text" />
-                    </td>
-                </tr>
-            </table>
-        </div>
+    </div>
+    <div class="form-actions">
+        <button class="btn btn-success" type="button" onclick="vm.Save();">
+            <i class="icon-ok"></i><span>保存</span></button>
+    </div>
+    <div id="editGroup" class="hide">
+        <table class="table table-bordered">
+            <tr>
+                <td class="caption">分组名称：</td>
+                <td>
+                    <input id="editGroupName" name="editGroupName" type="text" />
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 

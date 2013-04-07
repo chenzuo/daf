@@ -5,21 +5,21 @@
     Page.Title = "工作流管理";
     var flowId = Request.QueryString["id"];
 }
-<div class="row">
-    <div class="data-container span12">
-        <div>
-            <h3 data-bind="with:Data"><span data-bind="text:Owner"></span>-- <span data-bind="text:BizGroup"></span>工作流：<span data-bind="text:Name"></span>[<span data-bind="text:Code"></span>]</h3>
-        </div>
-        <div id="flowDetail">
-            <ul>
-                <li><a href="#states">状态</a></li>
-                <li><a href="#operations">操作</a></li>
-                <li><a href="#incomes">输入材料</a></li>
-                <li><a href="#outcomes">输出产物</a></li>
-                <li><a href="#nextflows">后续工作流</a></li>
-            </ul>
-            <div id="states" data-bind="with:Data">
-                <div class="span3">
+<div class="data-container">
+    <div>
+        <h3 data-bind="with:Data"><span data-bind="text:Owner"></span>-- <span data-bind="text:BizGroup"></span>工作流：<span data-bind="text:Name"></span>[<span data-bind="text:Code"></span>]</h3>
+    </div>
+    <div id="flowDetail">
+        <ul>
+            <li><a href="#states">状态</a></li>
+            <li><a href="#operations">操作</a></li>
+            <li><a href="#incomes">输入材料</a></li>
+            <li><a href="#outcomes">输出产物</a></li>
+            <li><a href="#nextflows">后续工作流</a></li>
+        </ul>
+        <div id="states" data-bind="with:Data">
+            <div class="flex">
+                <div class="flex1">
                     <ul data-bind="foreach:States">
                         <li>
                             <a href="#" data-bind="click:vm.SelectState"><span data-bind="text:Name"></span></a>
@@ -35,7 +35,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="stateDetail" class="span8 lgap1">
+                <div id="stateDetail" class="flex4 lgap1">
                     <div class="span8">
                         <table class="table table-bordered" data-bind="with:vm.SelectedState">
                             <tr>
@@ -93,7 +93,7 @@
                                     <input type="number" class="span1" data-bind="value:ResponseIntervalValue" /></td>
                                 <td class="caption">处理期限：</td>
                                 <td>
-                                    <input type="number" class="span1"  data-bind="value:TreatIntervalValue" /></td>
+                                    <input type="number" class="span1" data-bind="value:TreatIntervalValue" /></td>
                             </tr>
                             <tr>
                                 <td class="caption">状态说明：</td>
@@ -187,8 +187,10 @@
                     </div>
                 </div>
             </div>
-            <div id="operations" data-bind="with:Data">
-                <div class="span3">
+        </div>
+        <div id="operations" class="flex" data-bind="with:Data">
+            <div class="flex">
+                <div class="flex1">
                     <ul data-bind="foreach:Operations">
                         <li>
                             <a href="#" data-bind="click:vm.SelectOperation"><span data-bind="text:Name"></span></a>
@@ -204,7 +206,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="opDetail" class="span8">
+                <div id="opDetail" class="flex4">
                     <table data-bind="with:vm.SelectedOperation" class="table table-bordered">
                         <tr>
                             <td class="caption">操作编码：</td>
@@ -230,7 +232,7 @@
                             </td>
                             <td colspan="2">
                                 <input type="checkbox" data-bind="checked:CanPlanned" /><span>可计划</span>&nbsp;&nbsp;
-                                <input type="checkbox" data-bind="checked:CanCancelled" /><span>可撤销</span>
+                            <input type="checkbox" data-bind="checked:CanCancelled" /><span>可撤销</span>
                             </td>
                         </tr>
                         <tr>
@@ -241,8 +243,10 @@
                     </table>
                 </div>
             </div>
-            <div id="incomes" data-bind="with:Data">
-                <div class="span3">
+        </div>
+        <div id="incomes" class="flex" data-bind="with:Data">
+            <div class="flex">
+                <div class="flex1">
                     <ul data-bind="foreach:Incomes">
                         <li>
                             <a href="#" data-bind="click:vm.SelectIncome"><span data-bind="text:Name"></span></a>
@@ -258,7 +262,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="incomeDetail" class="span8">
+                <div id="incomeDetail" class="flex4">
                     <table data-bind="with:vm.SelectedIncome" class="table table-bordered">
                         <tr>
                             <td class="caption">材料编码：</td>
@@ -288,8 +292,10 @@
                     </table>
                 </div>
             </div>
-            <div id="outcomes" data-bind="with:Data">
-                <div class="span3">
+        </div>
+        <div id="outcomes" class="flex" data-bind="with:Data">
+            <div class="flex">
+                <div class="flex1">
                     <ul data-bind="foreach:Outcomes">
                         <li>
                             <a href="#" data-bind="click:vm.SelectOutcome"><span data-bind="text:Name"></span></a>
@@ -305,7 +311,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="outcomeDetail" class="span8">
+                <div id="outcomeDetail" class="flex4">
                     <table data-bind="with:vm.SelectedOutcome" class="table table-bordered">
                         <tr>
                             <td class="caption">产物编码：</td>
@@ -335,18 +341,18 @@
                     </table>
                 </div>
             </div>
-            <div id="nextflows" data-bind="with:Data">
-                <p>选择该工作流结束后的后续可能进行的工作流</p>
-                <!-- ko foreach: vm.OtherFlows -->
-                <input type="checkbox" data-bind="checkChange: { data: FlowId, checkChanged: CheckNextFlow, isChecked: SelectNextFlow }" />
-                <span data-bind="text:Name"></span>
-                <!-- /ko -->
-            </div>
         </div>
-        <div class="form-actions clear">
-            <button class="btn btn-primary" type="button" onclick="vm.Save();">
-                <i class="icon-ok"></i><span>保存</span></button>
+        <div id="nextflows" data-bind="with:Data">
+            <p>选择该工作流结束后的后续可能进行的工作流</p>
+            <!-- ko foreach: vm.OtherFlows -->
+            <input type="checkbox" data-bind="checkChange: { data: FlowId, checkChanged: CheckNextFlow, isChecked: SelectNextFlow }" />
+            <span data-bind="text:Name"></span>
+            <!-- /ko -->
         </div>
+    </div>
+    <div class="form-actions clear">
+        <button class="btn btn-primary" type="button" onclick="vm.Save();">
+            <i class="icon-ok"></i><span>保存</span></button>
     </div>
 </div>
 

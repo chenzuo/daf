@@ -1,16 +1,17 @@
-﻿@using DAF.Core;
+﻿@*<Parameters>
+[ { Name:'contentId', DefaultValue:'cmd(qs name:cid)', Description:'内容Id，一般取自query string，可输入：cmd(qs name:cid)。' }
+]
+/Parameters>*@
+@using DAF.Core;
 @using DAF.Web;
 @using DAF.CMS;
 @using DAF.CMS.Models;
 @{
-    Content obj = Page.Data as Content;
-    if(obj == null) {
-        string contentIdOrShortUrl = Page.ContentId.DefaultIfNull(Request.Path);
-        obj = CmsHelper.GetContent(contentIdOrShortUrl);
-    }
+    Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
+    Content obj = CmsHelper.GetContent(paras["contentId"]);
 }
-<article>
-    <h3>@obj.Title</h3>
-    <section class=""></section>
-    <section class="cms-content">@Html.Raw(obj.HtmlBody)</section>
+<article id="@obj.ContentId" class="content-detail">
+    <h3 class="content-title">@obj.Title</h3>
+    <section class="content-info"></section>
+    <section class="content-body">@Html.Raw(obj.HtmlBody)</section>
 </article>

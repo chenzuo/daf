@@ -67,6 +67,7 @@ ul li select
     position: relative;
     float: right;
     z-index: 10;
+    right: 120px;
 }
 
 #tb-tab ul

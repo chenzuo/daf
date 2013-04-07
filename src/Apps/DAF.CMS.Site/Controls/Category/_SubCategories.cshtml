@@ -1,13 +1,17 @@
-﻿<!--<Parameters>
-[ { Name:'parent', DefaultValue:'', Description:'栏目编码，一般取自query string，可输入：cmd(qs name:parent)。如果为空，则表示取第一层' }
-    , { Name:'depth', DefaultValue:'1', Description:'获取栏目的层数' }
+﻿@*<Parameters>
+[ { Name:'parent', DefaultValue:'cmd(qs name:cate)', Description:'栏目编码，一般取自query string，可输入：cmd(qs name:parent)。如果为空，则表示取第一层' }
+    , { Name:'depth', DefaultValue:'99', Description:'获取栏目的层数' }
 ]
-/Parameters>-->
+/Parameters>*@
 @using DAF.Core;
 @using DAF.Web;
 @using DAF.CMS;
 @{
+    var id = CmsHelper.Random("cate");
     Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
-    var cates = CmsHelper.GetSubCategories(paras["parent"], Convert.ToInt32(paras["depth"]));
+    int depth = paras["depth"].ConvertTo<int>(2);
+    var cates = CmsHelper.GetSubCategories(paras["parent"], depth);
 }
-@Tree.Render(cates, o => o.Children, @<a href="/@item.Code">@item.Name</a>, 2);
+<div id="@id">
+    @Tree.Render(cates, o => o.Children, o => o.CategoryId, null, @<a href="/@item.Code">@item.Name</a>, depth);
+</div>
