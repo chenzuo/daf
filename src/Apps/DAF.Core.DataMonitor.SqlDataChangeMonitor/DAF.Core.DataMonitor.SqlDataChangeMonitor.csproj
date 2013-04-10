@@ -126,9 +126,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cmd.txt" />
-    <Content Include="versions.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SqlDataLuceneChange\SqlDataLuceneChange.csproj">
