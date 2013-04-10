@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="BLToolkitDataEventHandler.cs" />
     <Compile Include="BLToolkitModule.cs" />
     <Compile Include="DataAnnotationMetadataProvider.cs" />

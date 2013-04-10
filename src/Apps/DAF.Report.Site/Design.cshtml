@@ -33,7 +33,7 @@
                 <div>
                     <ul data-bind="foreach:Reports">
                         <li>
-                            <a href="javascript:void(0);" data-bind="click:$root.SelectReport.bind($data, $parent)"><span data-bind="text:Report"></span></a>
+                            <a href="javascript:;" data-bind="click:$root.SelectReport.bind($data, $parent)"><span data-bind="text:Report"></span></a>
                             <button type="button" class="btn btn-mini btn-circle btn-danger" title="删除报表" data-bind="click:$root.DeleteReport.bind($data, $parent)">
                                 <i class="icon-remove"></i>
                             </button>
@@ -50,8 +50,8 @@
         <div id="title-bar" data-bind="with:SelectedReport">
             <div>
                 <div>
-                    <a href="javascript:void(0);" onclick="$('#left-bar').toggle();$(window).trigger('resizeWindow');">显示/隐藏左侧栏</a>
-                    <a href="javascript:void(0);" onclick="$('#tb-eles').toggle();$(window).trigger('resizeWindow');">显示/隐藏设计栏</a>
+                    <a href="javascript:;" onclick="$('#left-bar').toggle();$(window).trigger('resizeWindow');">显示/隐藏左侧栏</a>
+                    <a href="javascript:;" onclick="$('#tb-eles').toggle();$(window).trigger('resizeWindow');">显示/隐藏设计栏</a>
                 </div>
                 <div>
                     <h3>报表分组：<span data-bind="text:vm.SelectedGroup"></span></h3>
@@ -59,7 +59,7 @@
                     <h3>报表页面：</h3>
                     <ul data-bind="foreach:Pages">
                         <li data-bind="css: { selected:$root.IsSelectedPage($data) }">
-                            <a href="javascript:void(0);" data-bind="click:$root.SelectPage"><span data-bind="text:Page"></span></a>
+                            <a href="javascript:;" data-bind="click:$root.SelectPage"><span data-bind="text:Page"></span></a>
                         </li>
                     </ul>
                 </div>
@@ -72,20 +72,20 @@
                                 <option value="">普通元素</option>
                                 <option value="page-title">页面标题</option>
                             </select>
-                            <a href="javascript:void(0);" onclick="AddElement($('#eleType').val());">添加元素</a>
+                            <a href="javascript:;" onclick="AddElement($('#eleType').val());">添加元素</a>
                             <input id="ele-info" style="width: 60px;" value="" />
-                            <a href="javascript:void(0);" onclick="SetId($('#ele-info').val());">设置id</a>
-                            <a href="javascript:void(0);" onclick="AddClass($('#ele-info').val());">添加class</a>
-                            <a href="javascript:void(0);" onclick="RemoveClass($('#ele-info').val());">移除class</a>
+                            <a href="javascript:;" onclick="SetId($('#ele-info').val());">设置id</a>
+                            <a href="javascript:;" onclick="AddClass($('#ele-info').val());">添加class</a>
+                            <a href="javascript:;" onclick="RemoveClass($('#ele-info').val());">移除class</a>
                         </li>
                         <li>
-                            <a href="javascript:void(0);" onclick="ShowDialog('#props-tbl', '添加表格', function() { AddTable($('#rows').val(), $('#cols').val(), $('#hrows').val(),$('#ch').val(), $('#cw').val(), $('#hh').val()); });">添加表格</a>
+                            <a href="javascript:;" onclick="ShowDialog('#props-tbl', '添加表格', function() { AddTable($('#rows').val(), $('#cols').val(), $('#hrows').val(),$('#ch').val(), $('#cw').val(), $('#hh').val()); });">添加表格</a>
                         </li>
                         <li>高度：<input id="row-height" style="width: 30px;" value="6" />mm
-                    <a href="javascript:void(0);" onclick="SetRowHeight($('#row-height').val());">设置行高</a>
+                    <a href="javascript:;" onclick="SetRowHeight($('#row-height').val());">设置行高</a>
                         </li>
                         <li>宽度：<input id="col-width" style="width: 30px;" value="30" />mm
-                    <a href="javascript:void(0);" onclick="SetColumnWidth($('#col-width').val());">设置列宽</a>
+                    <a href="javascript:;" onclick="SetColumnWidth($('#col-width').val());">设置列宽</a>
                         </li>
                     </ul>
                     <ul>
@@ -94,17 +94,17 @@
                     <input id="cb_bt" type="checkbox" />上
                     <input id="cb_br" type="checkbox" />右
                     <input id="cb_bb" type="checkbox" />下
-                    <a href="javascript:void(0);" onclick="SetBorder($('#cb_bl').get(0).checked,$('#cb_bt').get(0).checked,$('#cb_br').get(0).checked,$('#cb_bb').get(0).checked);">设置边框</a>
+                    <a href="javascript:;" onclick="SetBorder($('#cb_bl').get(0).checked,$('#cb_bt').get(0).checked,$('#cb_br').get(0).checked,$('#cb_bb').get(0).checked);">设置边框</a>
                         </li>
                         <li>
                             <input id="border-w" style="width: 30px;" value="1" />px
-                    <a href="javascript:void(0);" onclick="SetBorderWidth($('#border-w').val());">设置边框厚宽</a>
+                    <a href="javascript:;" onclick="SetBorderWidth($('#border-w').val());">设置边框厚宽</a>
                         </li>
                         <li>
-                            <div class="colorpicker-holder" func="SetBorderColor"><a href="javascript:void(0);">设置边框颜色</a></div>
+                            <div class="colorpicker-holder" func="SetBorderColor"><a href="javascript:;">设置边框颜色</a></div>
                         </li>
                         <li>
-                            <div class="colorpicker-holder" func="SetBackgroundColor"><a href="javascript:void(0);">设置背景颜色</a></div>
+                            <div class="colorpicker-holder" func="SetBackgroundColor"><a href="javascript:;">设置背景颜色</a></div>
                         </li>
                     </ul>
                     <ul>
@@ -141,31 +141,31 @@
                             </select>
                         </li>
                         <li>
-                            <div class="colorpicker-holder" func="SetColor"><a href="javascript:void(0);">设置字体颜色</a></div>
+                            <div class="colorpicker-holder" func="SetColor"><a href="javascript:;">设置字体颜色</a></div>
                         </li>
                         <li>
-                            <a href="javascript:void(0);" onclick="$('#dbbind').val(GetDbBind()); ShowDialog('#props-dbbind', '设置数据绑定', function() { SetDbBind($('#dbbind').val()); $('#dbbind').val(''); });">设置数据绑定</a>
+                            <a href="javascript:;" onclick="$('#dbbind').val(GetDbBind()); ShowDialog('#props-dbbind', '设置数据绑定', function() { SetDbBind($('#dbbind').val()); $('#dbbind').val(''); });">设置数据绑定</a>
                         </li>
                     </ul>
                 </div>
                 <ul>
                     <li>
-                        <a href="javascript:void(0);" onclick="vm.SetPage();">新增/设置页面</a>
+                        <a href="javascript:;" onclick="vm.SetPage();">新增/设置页面</a>
                     </li>
-                    <li><a href="javascript:void(0);" onclick="vm.RenamePage();">重命名本页</a></li>
-                    <li><a href="javascript:void(0);" onclick="vm.DeletePage();">删除本页</a></li>
-                    <li><a href="javascript:void(0);" onclick="DeleteSelectedElements();">删除元素</a></li>
-                    <li><a href="javascript:void(0);" onclick="DeleteAllElements();">删除所有元素</a></li>
-                    <li><a href="javascript:void(0);" onclick="ToggleBorder();">显示/隐藏辅助边框</a></li>
-                    <li><a href="javascript:void(0);" onclick="TogglePrint();">仅显示，不打印</a></li>
+                    <li><a href="javascript:;" onclick="vm.RenamePage();">重命名本页</a></li>
+                    <li><a href="javascript:;" onclick="vm.DeletePage();">删除本页</a></li>
+                    <li><a href="javascript:;" onclick="DeleteSelectedElements();">删除元素</a></li>
+                    <li><a href="javascript:;" onclick="DeleteAllElements();">删除所有元素</a></li>
+                    <li><a href="javascript:;" onclick="ToggleBorder();">显示/隐藏辅助边框</a></li>
+                    <li><a href="javascript:;" onclick="TogglePrint();">仅显示，不打印</a></li>
                 </ul>
             </div>
         </div>
         <div data-bind="with:SelectedReport">
             <div id="tb-tab" class="toolbar">
                 <ul>
-                    <li><a href="javascript:void(0);" onclick="Preview();">预览</a></li>
-                    <li><a href="javascript:void(0);" onclick="vm.SavePage();">保存</a></li>
+                    <li><a href="javascript:;" onclick="Preview();">预览</a></li>
+                    <li><a href="javascript:;" onclick="vm.SavePage();">保存</a></li>
                 </ul>
             </div>
             <div class="tabs">

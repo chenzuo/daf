@@ -1,7 +1,7 @@
 ﻿@*<Parameters>
 [ 
-    { Name:'cate', DefaultValue:'cmd(qs name:cate1)', Description:'栏目编码，一般取自query string，可输入：cmd(qs name:cate)。' }
-    ,{ Name:'pi', DefaultValue:'0', Description:'当前页码，一般取自query string，可输入：cmd(qs name:pi)。' }
+    { Name:'cate', DefaultValue:'{cmd=qs name:cate1}', Description:'栏目编码，一般取自query string，可输入：{cmd=qs name:cate1}。' }
+    ,{ Name:'pi', DefaultValue:'0', Description:'当前页码，一般取自query string，可输入：{cmd=qs name:pi}。' }
     ,{ Name:'ps', DefaultValue:'50', Description:'每页页数。' }
 ]
 /Parameters>*@
@@ -11,9 +11,11 @@
 @using DAF.CMS.Models;
 @{
     Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
-    var cate = CmsHelper.GetCategory(paras["cate"]);
+    string cateId = CommandHelper.AnalysisCommands(paras["cate"], Context);
+    string pi = CommandHelper.AnalysisCommands(paras["pi"], Context).DefaultIfNull("0");
+    var cate = CmsHelper.GetCategory(cateId);
     int total = 0;
-    IEnumerable<Content> objs = CmsHelper.GetContents(paras["cate"], out total, Convert.ToInt32(paras["pi"]), Convert.ToInt32(paras["ps"]));
+    IEnumerable<Content> objs = CmsHelper.GetContents(cateId, out total, Convert.ToInt32(pi), Convert.ToInt32(paras["ps"]));
 }
 <div id="contents_@(cate.Code)" class="content-list">
     <h3>@cate.Name</h3>

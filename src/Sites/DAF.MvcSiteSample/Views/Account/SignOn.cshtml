@@ -59,7 +59,7 @@
                         <td>
                             <input id="Captcha" name="Captcha" type="text" />
                             <img id="imgCaptcha" src="/Captcha/Get?v=@DateTime.Now.Ticks" />
-                            <a href="javascript:void(0);" onclick="$('#imgCaptcha').attr('src', '/Captcha/Get?v=' + (new Date().getTime()));">@LocaleHelper.Localizer.Get("RefreshCaptcha", "DAF.SSO")</a>
+                            <a href="javascript:;" onclick="$('#imgCaptcha').attr('src', '/Captcha/Get?v=' + (new Date().getTime()));">@LocaleHelper.Localizer.Get("RefreshCaptcha", "DAF.SSO")</a>
                         </td>
                     </tr>        
                 }

@@ -167,7 +167,7 @@ namespace DAF.CMS
                 node = node.Next;
             }
             sb.AppendLine(page.PageLinks);
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
 
         public static string GetPageCSS(WebPage page, LinkedListNode<PageTemplate> template)
@@ -180,7 +180,7 @@ namespace DAF.CMS
                 node = node.Next;
             }
             sb.AppendLine(page.PageCSS);
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
 
         public static string GetPageJS(WebPage page, LinkedListNode<PageTemplate> template)
@@ -193,7 +193,7 @@ namespace DAF.CMS
                 node = node.Next;
             }
             sb.AppendLine(page.PageJS);
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
 
         public static Dictionary<string, string> GetControlParas(string paras)

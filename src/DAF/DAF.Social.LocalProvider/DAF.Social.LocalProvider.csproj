@@ -47,6 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="DB\BT\SocialDB.cs" />
     <Compile Include="DB\EF\SocialDB.cs" />
     <Compile Include="Migrations\201211150736224_Init.cs" />

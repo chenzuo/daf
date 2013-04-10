@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="EmailHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

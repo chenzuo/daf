@@ -8,6 +8,7 @@
     int limitSize = Request.QueryString["limitSize"].ConvertTo<int>(50 * 1024 * 1024); // 50MB
     string autoStart = Request.QueryString["autoStart"].DefaultIfNull("false");
     string owner = Request.QueryString["owner"].DefaultIfNull("");
+    string property = Request.QueryString["property"].DefaultIfNull("");
     string suffix = Request.QueryString["suffix"].DefaultIfNull(DateTime.Now.Ticks.ToString());
     bool showPreview = Request.QueryString["showPreview"].ConvertTo<bool>(false);
     
@@ -15,7 +16,7 @@
     var fileTypes = ft == null ? ".+$" : ft.RegexPattern;
 }
 
-<form id="uploadForm@(suffix)" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))" method="POST" enctype="multipart/form-data" onload="InitForm">
+<form id="uploadForm@(suffix)" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))?owner=@owner" method="POST" enctype="multipart/form-data" onload="InitForm">
 <div class="alert alert-block spanfull flex">
     <h5 class="alert-heading">注：</h5>
     <ol>
@@ -34,7 +35,7 @@
     </ol>
 </div>
 <div class="clear" style="line-height:35px;">
-    <button type="button" class="btn btn-primary" onclick="OpenDialog('选择现有文件', '@(UrlHelper.ClientUrl("File"))?fileTypes=@(fileTypes)&owner=@(owner)');" dialog-width="800" dialog-height="600" data-bind="enable: $root.CanAddFile()">
+    <button type="button" class="btn btn-primary" onclick="OpenDialog('选择现有文件', '@(UrlHelper.ClientUrl("File"))?fileTypes=@(fileTypes)&owner=@(owner)&property=@(property)');" dialog-width="800" dialog-height="600" data-bind="enable: $root.CanAddFile()">
         <i class="icon-picture"></i>
         <span>选择现有文件</span>
     </button>
@@ -80,7 +81,8 @@
             acceptFileTypes: /@(fileTypes)/i,
             maxFiles: @(maxFiles),
             autoStart: @(autoStart),
-            owner: '@(owner)'
+            owner: '@(owner)',
+            property: '@(property)'
         });
         ko.applyBindings(vfm@(suffix), document.getElementById('uploadForm@(suffix)'));
     });

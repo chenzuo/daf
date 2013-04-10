@@ -60,6 +60,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="NBus.cs" />
     <Compile Include="NBusModule.cs" />
     <Compile Include="NBusSender.cs" />

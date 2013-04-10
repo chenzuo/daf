@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="MongoDbModule.cs" />
     <Compile Include="CollectionRepository.cs" />
     <Compile Include="CollectionMapRepository.cs" />

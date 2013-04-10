@@ -13,7 +13,7 @@
     </div>
     <ul class="nav nav-pills pull-right bgap1" data-bind="foreach:WebSites">
         <li data-bind="css: { active: vm.IsSelectedWebSite }">
-            <a href="javascript:void(0);" data-bind="click: vm.SelectWebSite"><span data-bind="text:SiteName"></span></a>
+            <a href="javascript:;" data-bind="click: vm.SelectWebSite"><span data-bind="text:SiteName"></span></a>
             <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditWebSite" title="编辑网站"><i class="icon-pencil"></i></button>
             <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveWebSite" title="删除网站"><i class="icon-remove"></i></button>
         </li>

@@ -113,7 +113,7 @@
                     var dic = Str2Dic(item.ControlParas());
                     $.each(con.Parameters(), function (i, n) {
                         var vals = $.grep(dic, function (item, idx) { return item.Key == n.Name(); });
-                        n.ParaValue(vals.length > 0 ? vals[0].Value : '');
+                        n.ParaValue(vals.length > 0 ? vals[0].Value : n.DefaultValue());
                     });
                 }
                 vm.EditingControl(con);

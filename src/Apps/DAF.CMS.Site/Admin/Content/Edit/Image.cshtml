@@ -29,7 +29,7 @@
 @section bodyEnd {
     <script type="text/javascript">
         $(document).on('bindedData', function (event, bindedData) {
-            LoadHtml('#imageContenHolder', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?fileType=images&owner=link_url")');
+            LoadHtml('#imageContenHolder', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=cms&property=content.image&fileType=images")');
         });
 
         function RemoveImage() {
@@ -40,7 +40,7 @@
 
         $(function () {
             OnReceiveMessage('fileselected', function (data) {
-                if (data.owner == "link_url") {
+                if (data.owner == "cms" && data.property == "content.image") {
                     var file = data.file || (data.files && data.files.length > 0 ? data.files[0] : null);
                     if (file) {
                         vm.Data().Description(file.name);
@@ -50,7 +50,7 @@
             });
 
             OnReceiveMessage('fileuploaded', function (data) {
-                if (data.owner == "link_url") {
+                if (data.owner == "cms" && data.property == "content.image") {
                     var file = data.file || (data.files && data.files.length > 0 ? data.files[0] : null);
                     if (file) {
                         vm.Data().Description(file.name);
@@ -60,7 +60,7 @@
             });
 
             OnReceiveMessage('fileremoved', function (data) {
-                if (data.owner == "link_url") {
+                if (data.owner == "cms" && data.property == "content.image") {
                     vm.Data().Description("");
                     vm.Data().ContentUrl(null);
                 }

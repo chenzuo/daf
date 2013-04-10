@@ -28,7 +28,7 @@
             @pageModel.TextBoxFor(o => o.GroupName, new { data_bind = "value:GroupName" })
         </div>
         <div class="td text-center span4">
-            <button class="btn btn-mini dropdown-toggle" type="button" data-popup="#states" data-without-click="true" data-bind="click: ToggleStates, attr: { title: $root.GetState.bind($data, 'name') }, cls: $root.GetState.bind($data, 'btn')">
+            <button class="btn btn-mini dropdown-toggle" type="button" data-toggle="#states" data-without-click="true" data-bind="click: ToggleStates, attr: { title: $root.GetState.bind($data, 'name') }, cls: $root.GetState.bind($data, 'btn')">
                 <i data-bind="cls: $root.GetState.bind($data, 'icon')"></i>
                 <span class="caret"></span>
             </button>

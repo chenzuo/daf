@@ -13,7 +13,7 @@ using DAF.Web.Api;
 
 namespace DAF.CMS.Site
 {
-    public class Global : DAF.Web.Api.WebApiGlobal
+    public class Global : CmsWebGlobal
     {
         protected override void Application_Start(object sender, EventArgs e)
         {

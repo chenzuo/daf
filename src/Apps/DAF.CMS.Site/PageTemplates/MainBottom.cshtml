@@ -1,5 +1,6 @@
 ﻿@{
     Layout = Page.IsNested == true ? "~/_Null.cshtml" : "~/_Window.cshtml";
+    string cssPrefix = Page.IsNested == true ? "section" : "page";
 }
 @section head {
     @RenderSection("head", false)
@@ -7,9 +8,9 @@
 @section end {
     @RenderSection("end", false)
 }
-<div class="page-body">
+<div class="@(cssPrefix)-body">
     @RenderBody()
 </div>
-<footer class="page-footer">
+<footer class="@(cssPrefix)-footer">
     @RenderSection("bottom")
 </footer>

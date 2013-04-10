@@ -21,6 +21,8 @@ namespace DAF.Core
         /// <returns>解析后的字符串</returns>
         public static string AnalysisCommands(string input, object context)
         {
+            if (string.IsNullOrEmpty(input))
+                return null;
             input = input.Trim();
             if (CommandRegex.IsMatch(input))
             {
@@ -34,7 +36,7 @@ namespace DAF.Core
                             return obj.ToString();
                         return m.Value;
                     });
-                return output;
+                return output == input ? null : output;
             }
             return input;
         }

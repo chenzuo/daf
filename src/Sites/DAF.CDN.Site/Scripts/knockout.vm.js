@@ -35,13 +35,13 @@ var DataState = {
 
 function KVM(options) {
     var self = this;
-    self.options = $.extend({
+    self.options = $.extend({}, {
         pageIndex: 0,
         pageSize: 50,
         appendPagingData: false,
         trackDataChange: true,
         clearChangesWhenBindData: true
-    }, options || {});
+    }, options);
 
     self.PagingInfo = ko.observable({
         PageIndex: ko.observable(self.options.pageIndex),

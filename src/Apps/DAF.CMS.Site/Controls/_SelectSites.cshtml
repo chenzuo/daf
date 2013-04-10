@@ -12,7 +12,7 @@
     <ul class="nav nav-pills">
         @foreach (var site in sites)
         {
-            <li data-key="@site.SiteId"><a href="javascript:void(0);" onclick="SelectSite({ SiteId:'@site.SiteId', Language: '@site.Language', HomePageId: '@site.HomePageId' });">@site.SubSiteName</a></li>
+            <li data-key="@site.SiteId"><a href="javascript:;" onclick="SelectSite({ SiteId:'@site.SiteId', Language: '@site.Language', HomePageId: '@site.HomePageId' });">@site.SubSiteName</a></li>
         }
     </ul>
 </div>

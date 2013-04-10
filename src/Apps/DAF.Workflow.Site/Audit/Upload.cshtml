@@ -123,10 +123,10 @@
     <script type="text/javascript">
 
         $(function () {
-            LoadHtml('#fileuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=wf")');
+            LoadHtml('#fileuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=workflow&property=file")');
 
             OnReceiveMessage('fileselected', function (data) {
-                if (data.owner.indexOf('wf') >= 0) {
+                if (data.owner == "workflow" && data.property == "file") {
                     $.each(data.files, function (i, n) {
                         $('#FileUrl').val(file.url);
                     });
@@ -135,14 +135,14 @@
 
             OnReceiveMessage('fileremoved', function (data) {
                 var file = data.file;
-                if (data.owner.indexOf('wf') >= 0) {
+                if (data.owner == "workflow" && data.property == "file") {
                     $('#FileUrl').val(file.url);
                 }
             });
 
             OnReceiveMessage('fileuploaded', function (data) {
                 var file = data.file;
-                if (data.owner.indexOf('wf') >= 0) {
+                if (data.owner == "workflow" && data.property == "file") {
                     $('#FileUrl').val(file.url);
                 }
             });

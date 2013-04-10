@@ -1,7 +1,7 @@
 ﻿@*<Parameters>
 [ 
-    { Name:'cate', DefaultValue:'cmd(qs name:cate1)', Description:'栏目编码，一般取自query string，可输入：cmd(qs name:cate)。' }
-    ,{ Name:'moreUrl', DefaultValue:'', Description:'更多链接地址，可包含命令，一般取自query string，可输入：cmd(qs name:cate)。' }
+    { Name:'cate', DefaultValue:'{cmd=qs name:cate1}', Description:'栏目编码，一般取自query string，可输入：{cmd=qs name:cate1}。' }
+    ,{ Name:'moreUrl', DefaultValue:'', Description:'更多链接地址，可包含命令，一般取自query string，可输入：/cate-list?cate1={cmd=qs name:cate1}。' }
     ,{ Name:'count', DefaultValue:'20', Description:'记录数。' }
 ]
 /Parameters>*@
@@ -11,8 +11,10 @@
 @using DAF.CMS.Models;
 @{
     Dictionary<string, string> paras = CmsHelper.GetControlParas(Page.Paras);
-    var cate = CmsHelper.GetCategory(paras["cate"]);
-    IEnumerable<Content> objs = CmsHelper.GetContents(paras["cate"], 0, Convert.ToInt32(paras["ps"]));
+    string cateId = CommandHelper.AnalysisCommands(paras["cate"], Context);
+    var cate = CmsHelper.GetCategory(cateId);
+    int total = 0;
+    IEnumerable<Content> objs = CmsHelper.GetContents(cateId, out total, 0, Convert.ToInt32(paras["count"]));
     string moreUrl = CommandHelper.AnalysisCommands(paras["moreUrl"], Context);
 }
 <div id="contents_@(cate.Code)" class="content-top-list">

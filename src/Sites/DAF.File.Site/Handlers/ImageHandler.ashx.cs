@@ -23,18 +23,18 @@ namespace DAF.File.Site.Handlers
                 context.Response.End();
                 return;
             }
-            fi = new FileInfo(Path.Combine(fi.Directory.FullName, "resize-" + fi.Name.Replace(fi.Extension, "") + ".jpg"));
+            int width = 400;
+            int height = 300;
+            if (context.Request.QueryString["w"] != null)
+                int.TryParse(context.Request.QueryString["w"], out width);
+            if (context.Request.QueryString["h"] != null)
+                int.TryParse(context.Request.QueryString["h"], out height);
+            fi = new FileInfo(Path.Combine(fi.Directory.FullName, string.Format("{0}_{1}_{2}.jpg", fi.FileNameWithoutExtension(), width, height)));
             if (!fi.Exists)
             {
                 Image img = Image.FromFile(context.Request.PhysicalPath);
-                int width = 400;
-                int height = 300;
                 float scale = 1.0f;
                 ResizeMode mode = ResizeMode.MaxWidthOrHeight;
-                if (context.Request.QueryString["w"] != null)
-                    int.TryParse(context.Request.QueryString["w"], out width);
-                if (context.Request.QueryString["h"] != null)
-                    int.TryParse(context.Request.QueryString["h"], out height);
                 if (context.Request.QueryString["s"] != null)
                     float.TryParse(context.Request.QueryString["s"], out scale);
                 if (context.Request.QueryString["m"] != null)

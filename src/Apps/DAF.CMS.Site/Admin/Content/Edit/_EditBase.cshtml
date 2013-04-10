@@ -316,10 +316,12 @@
                             SiteId: ko.observable(obj.SiteId()),
                             ContentId: ko.observable(obj.ContentId()),
                             RelatedContentId: ko.observable(),
-                            RelationType: ko.observable(rtype)
+                            RelationType: ko.observable(rtype),
+                            RelatedContent: ko.observable(null)
                         };
                         if (data) {
                             r.RelatedContentId = ko.observable(data.ContentId);
+                            ko.mapping.fromJS(data, null, r.RelatedContent);
                         }
                         else {
                             var rc = {
@@ -354,16 +356,17 @@
                             r.RelatedContent = rc;
                         }
                         obj.RelatedContents.push(r);
+
                     });
                 };
             }
         });
         ko.applyBindings(vm);
 
-        LoadHtml('#imageuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?fileType=images&owner=attach_image")');
-        LoadHtml('#fileuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=attach_file")');
-        LoadHtml('#audiouploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?fileType=audio&owner=attach_audio")');
-        LoadHtml('#videouploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?fileType=video&owner=attach_video")');
+        LoadHtml('#imageuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=cms&property=related.image&fileType=images")');
+        LoadHtml('#fileuploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=cms&property=related.file")');
+        LoadHtml('#audiouploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=cms&property=related.audio&fileType=audio")');
+        LoadHtml('#videouploader', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=cms&property=related.videofileType=video")');
 
         var url = '@(UrlHelper.ClientUrl("Api/Category/Tree"))?siteId=@(siteId)';
         GetJson(url, function (data) {
@@ -374,7 +377,7 @@
         vm.GetData();
 
         OnReceiveMessage('fileselected', function (data) {
-            if (data.owner.indexOf('attach_') >= 0) {
+            if (data.owner == "cms" && data.property && data.property.indexOf("related") >= 0) {
                 $.each(data.files, function (i, n) {
                     vm.AddRelatedContent(n.name, n.url);
                 });
@@ -383,14 +386,14 @@
 
         OnReceiveMessage('fileremoved', function (data) {
             var file = data.file;
-            if (data.owner.indexOf('attach_') >= 0) {
+            if (data.owner == "cms" && data.property && data.property.indexOf("related") >= 0) {
                 vm.AddRelatedContent(file.name, file.url);
             }
         });
 
         OnReceiveMessage('fileuploaded', function (data) {
             var file = data.file;
-            if (data.owner.indexOf('attach_') >= 0) {
+            if (data.owner == "cms" && data.property && data.property.indexOf("related") >= 0) {
                 vm.AddRelatedContent(file.name, file.url);
             }
         });

@@ -55,7 +55,7 @@
             </h3>
             <ul id="groups" class="nav nav-pills nav-stacked" data-bind="foreach:Groups">
                 <li data-bind="attr:{id:Name}">
-                    <a href="javascript:void(0);" data-bind="click:$root.SelectGroup"><span data-bind="text:Caption"></span></a>
+                    <a href="javascript:;" data-bind="click:$root.SelectGroup"><span data-bind="text:Caption"></span></a>
                     <button class="btn btn-primary btn-mini" type="button" data-bind="click:$root.EditGroup" title="编辑菜单"><i class="icon-pencil"></i></button>
                     <button class="btn btn-danger btn-mini" type="button" data-bind="click:$root.RemoveGroup" title="删除菜单"><i class="icon-remove"></i></button>
                 </li>

@@ -10,27 +10,39 @@
     Page.IsNested = Page.IsNestedPage;
     bool isFirst = template.Previous == null;
     bool isLast = template.Next == null;
+    string links = string.Empty;
+    string css = string.Empty;
+    string js = string.Empty;
+    if (isFirst)
+    {
+        links = CmsHelper.GetPageLinks(page, template);
+        css = CmsHelper.GetPageCSS(page, template);
+        js = CmsHelper.GetPageJS(page, template);
+    }
 }
-
 @section head
 {
-    @if(isFirst){
-        @:@Html.Raw(CmsHelper.GetPageLinks(page, template))
+    @if (isFirst)
+    {
+    @:@Html.Raw(links)
+        if (!string.IsNullOrEmpty(css))
+        {
     <style type="text/css">
-        @Html.Raw(CmsHelper.GetPageCSS(page, template))
+        @Html.Raw(css)
     </style>
+        }
     }
 }
 
 @section end
 {
-    @if(isFirst){
+    @if (!string.IsNullOrEmpty(js))
+    {
     <script type="text/javascript">
-        @Html.Raw(CmsHelper.GetPageJS(page, template))
+        @Html.Raw(js)
     </script>
     }
 }
-
 @section left
 {
     @foreach (var con in CmsHelper.GetControls(page, template.Value, "left"))

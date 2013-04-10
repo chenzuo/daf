@@ -1,9 +1,0 @@
-﻿<div class="pagination clear">
-    <ul>
-    <li data-bind="css: { disabled: vm.IsFirstPage() }"><a href="javascript: vm.GotoPage({ offset: -1});">«</a></li>
-    <!-- ko foreach:vm.GetPages(10) -->
-    <li data-bind="css: { active: vm.IsCurrentPage($data) }"><a data-bind="attr: { href: 'javascript:vm.GotoPage(' + $data + ')'}, text:($data+1)"></a></li>
-    <!-- /ko -->
-    <li data-bind="css: { disabled: vm.IsLastPage() }"><a href="javascript: vm.GotoPage({ offset: 1});;">»</a></li>
-    </ul>
-</div>

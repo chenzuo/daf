@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="Client\ConfigurableSessionProvider.cs" />
     <Compile Include="Client\DefaultSessionProvider.cs" />
     <Compile Include="Client\IDefaultSessionProvider.cs" />

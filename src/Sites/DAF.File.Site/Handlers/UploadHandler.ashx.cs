@@ -111,11 +111,13 @@ namespace DAF.File.Site.Handlers
             if (context.Request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
             var inputStream = context.Request.Files[0].InputStream;
 
-            string uploadPath = GetUploadPath(fileName);
+            string uploadPath = GetUploadPath(fileName, context);
             var file = GetRenamedFileIfExists(uploadPath + fileName);
 
             if (file != null)
             {
+                if (!file.Directory.Exists)
+                    file.Directory.Create();
                 using (var fs = new FileStream(file.FullName, FileMode.Append, FileAccess.Write))
                 {
                     var buffer = new byte[1024];
@@ -140,9 +142,10 @@ namespace DAF.File.Site.Handlers
             {
                 var file = context.Request.Files[i];
 
-                string uploadPath = GetUploadPath(file.FileName);
+                string uploadPath = GetUploadPath(file.FileName, context);
                 var sfile = GetRenamedFileIfExists(uploadPath + file.FileName);
-
+                if (!sfile.Directory.Exists)
+                    sfile.Directory.Create();
                 file.SaveAs(sfile.FullName);
 
                 statuses.Add(new FilesStatus(handlerPath, uploadPath, file.FileName, sfile.Name, file.ContentLength, sfile.FullName));
@@ -176,7 +179,7 @@ namespace DAF.File.Site.Handlers
         private void DeliverFile(HttpContext context)
         {
             var filename = context.Request["f"];
-            string uploadPath = GetUploadPath(filename);
+            string uploadPath = GetUploadPath(filename, context);
             var file = FileProvider.GetFile(uploadPath + filename);
 
             if (file.Exists)
@@ -218,14 +221,17 @@ namespace DAF.File.Site.Handlers
             return file;
         }
 
-        public string GetUploadPath(string fileName)
+        public string GetUploadPath(string fileName, HttpContext context)
         {
             if (fileName.StartsWith(UploadPath))
                 return string.Empty;
             string fileExtension = fileName.Substring(fileName.LastIndexOf('.'));
             FileType ft = FileType.CommonTypes.GetFileTypeByExtension(fileExtension.ToLower());
             string subPath = ft == null ? "files" : ft.TypeCode;
-            return string.Concat(UploadPath, subPath, "/");
+            string owner = context.Request.QueryString["owner"];
+            if (string.IsNullOrEmpty(owner))
+                owner = "public";
+            return string.Concat(UploadPath, owner, "/", subPath, "/");
         }
 
         private static string uploadPath;

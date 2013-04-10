@@ -18,10 +18,10 @@
         </button>
     </div>
     <div id="alpha" class="pull-left tgap1 lgap2">
-        <a id='all' href="javascript:void(0);" onclick="GetUsers('');">所有</a>
+        <a id='all' href="javascript:;" onclick="GetUsers('');">所有</a>
         @for (var a = 'A'; a <= 'Z'; a++)
         {
-            <a id='@a' href="javascript:void(0);" onclick="GetUsers('@a');">@a</a>
+            <a id='@a' href="javascript:;" onclick="GetUsers('@a');">@a</a>
         }
     </div>
 </div>
@@ -29,7 +29,7 @@
     <ul class="nav nav-pills" data-bind="foreach:Data">
         <li>
             <div class="well bg-none text-center">
-                <img class="img-none rect-small ui-corner-all dialog" data-bind="attr: { id: UserId, src: Avatar, href: '@(UrlHelper.ClientUrl("Image/Crop", "DAF.File.Site"))?file=' + $data.Avatar() + '&width=90&height=110&args=' + $data.UserId() }" dialog-width="810" dialog-height="500" title="选择用户的图像" />
+                <img class="img-none rect-small ui-corner-all dialog" data-bind="attr: { id: UserId, src: Avatar, href: '@(UrlHelper.ClientUrl("Image/Crop", "DAF.File.Site"))?owner=sso&property=user.photo&file=' + $data.Avatar() + '&width=90&height=110&args=' + $data.UserId() }" dialog-width="810" dialog-height="500" title="选择用户的图像" />
                 <h5 data-bind="text:Account"></h5>
                 <div class="btn-group pull-left">
                     <button class="btn btn-info btn-mini" type="button" data-bind="click: $root.EditItem" title="编辑该用户">
@@ -41,7 +41,7 @@
                     <button class="btn btn-info btn-mini dialog" type="button" data-bind="click: $root.GetUserRoles" title="设置角色">
                         <i class="icon-user"></i>
                     </button>
-                    <button class="btn btn-mini dropdown-toggle" type="button" data-popup="#states" data-without-click="true" data-bind="click:ToggleStates, attr: { atitle: $root.GetState.bind($data, 'name') }, cls: $root.GetState.bind($data, 'btn')">
+                    <button class="btn btn-mini dropdown-toggle" type="button" data-toggle="#states" data-without-click="true" data-bind="click:ToggleStates, attr: { atitle: $root.GetState.bind($data, 'name') }, cls: $root.GetState.bind($data, 'btn')">
                         <i data-bind="cls: $root.GetState.bind($data, 'icon')"></i>
                         <span class="caret"></span>
                     </button>
@@ -56,7 +56,7 @@
                         }
                         else
                         {
-                        <button class="btn btn-mini dropdown-toggle" type="button" data-popup="#userExtraActions" data-without-click="true" data-bind="click:ToggleUserActions" title="设置用户相关属性">
+                        <button class="btn btn-mini dropdown-toggle" type="button" data-toggle="#userExtraActions" data-without-click="true" data-bind="click:ToggleUserActions" title="设置用户相关属性">
                             <i class="icon-th"></i>
                             <span class="caret"></span>
                         </button>
@@ -68,7 +68,7 @@
     </ul>
 </div>
 
-<ul id="states" class="dropdown-menu hide" data-bind="foreach: States">
+<ul id="states" class="dropdown-menu" data-bind="foreach: States">
     <li>
         <button class="btn btn-mini" type="button" data-bind="click: ChangeState, attr: { title: name }, cls: btn">
             <i data-bind="cls: icon"></i>
@@ -78,7 +78,7 @@
 
 @if (userExtraActions != null && userExtraActions.Count() > 1)
 {
-    <ul id="userExtraActions" class="dropdown-menu hide">
+    <ul id="userExtraActions" class="dropdown-menu">
         @foreach (var mi in userExtraActions)
         {
             <li>
@@ -253,13 +253,15 @@
         GetUsers('');
 
         OnReceiveMessage("cropimage", function (msg) {
-            if (msg.dialogId) {
-                CloseDialog(msg.dialogId);
-            }
-            $('#' + msg.args).prop('src', msg.url);
-            var item = ko.dataFor(document.getElementById(msg.args));
-            if (item) {
-                item.Avatar(msg.url);
+            if (msg.owner == 'sso' && msg.property == 'user.photo') {
+                if (msg.dialogId) {
+                    CloseDialog(msg.dialogId);
+                }
+                $('#' + msg.args).prop('src', msg.url);
+                var item = ko.dataFor(document.getElementById(msg.args));
+                if (item) {
+                    item.Avatar(msg.url);
+                }
             }
         });
     });

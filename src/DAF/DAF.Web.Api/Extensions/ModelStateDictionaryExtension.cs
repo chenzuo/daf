@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.ModelBinding;
 
-namespace DAF.Web.Appi
+namespace DAF.Web.Api
 {
     public static class ModelStateDictionaryExtension
     {

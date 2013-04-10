@@ -52,6 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="DB\BT\SSODB.cs" />
     <Compile Include="DB\EF\SSODB.cs" />
     <Compile Include="Migrations\201212101427116_Init.cs" />

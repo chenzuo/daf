@@ -4,7 +4,8 @@
 @{
     Layout = "~/_Dialog.cshtml";
     string fileTypes = Request.QueryString["fileTypes"];
-    string owner = Request.QueryString["owner"].DefaultIfNull("");
+    string owner = Request.QueryString["owner"].DefaultIfNull("public");
+    string property = Request.QueryString["property"].DefaultIfNull("");
     string dialogId = Request.QueryString["dialogId"];
     IEnumerable<FileType> fts = null;
     if (!string.IsNullOrEmpty(fileTypes))
@@ -30,9 +31,10 @@
             width: 135px;
             overflow: hidden;
         }
-        .nav > li > span, .nav > li > a {
-            display: inline;
-        }
+
+            .nav > li > span, .nav > li > a {
+                display: inline;
+            }
     </style>
 }
 @section end {
@@ -55,7 +57,7 @@
             vfm = new FUVM('uploadForm', {
                 baseUrl: "@(AuthHelper.CurrentClient.BaseUrl.TrimEnd('/'))",
                 acceptFileTypes: /@(regex)/i
-            });
+                });
             ko.applyBindings(vfm, document.getElementById('uploadForm'));
 
             sfvm = new SelectedFileVM();
@@ -79,7 +81,7 @@
 
         function GetFiles(ele){
             var vm = $(ele).data('viewmodel');
-            var url = '/Api/File/Files?path=' + $(ele).prop('id');
+            var url = '/Api/File/Files?owner=@(owner)&path=' + $(ele).prop('id');
             if (!vm) {
                 GetJson(url,
                     function (data) {
@@ -135,7 +137,7 @@
         }
 
         function OK() {
-            PostMessage('fileselected', { owner: '@(owner)', files: ko.toJS(sfvm.SelectedFiles) });
+            PostMessage('fileselected', { owner: '@(owner)', property: '@property', files: ko.toJS(sfvm.SelectedFiles) });
             CloseDialog(dlgId);
         }
 
@@ -144,101 +146,105 @@
         }
     </script>
 }
-<div class="flex">
-    <div class="flex1">
-        <form id="uploadForm" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))" method="POST" enctype="multipart/form-data" onload="InitForm">
-        <div>
-            <button type="button" class="btn btn-primary" onclick="$('#fileSelector').trigger('click');" data-bind="enable: $root.CanAddFile()">
-                <i class="icon-plus"></i>
-                <span>选择文件</span>
-            </button>
-            <button type="button" class="btn btn-primary" onclick="vfm.StartUpload();">
-                <i class="icon-upload"></i>
-                <span>上传</span>
-            </button>
-        </div>
-        <div data-bind="foreach:Files">
-            <div class="panel ui-corner-all lgap0">
+<div>
+    <div class="flex">
+        <div class="flex1">
+            <form id="uploadForm" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))?owner=@owner" method="POST" enctype="multipart/form-data" onload="InitForm">
                 <div>
-                    <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text:name"></span></a>
-                    (<span data-bind="text:$root.formatFileSize(size())"></span>)
+                    <button type="button" class="btn btn-primary" onclick="$('#fileSelector').trigger('click');" data-bind="enable: $root.CanAddFile()">
+                        <i class="icon-plus"></i>
+                        <span>选择文件</span>
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="vfm.StartUpload();">
+                        <i class="icon-upload"></i>
+                        <span>上传</span>
+                    </button>
+                </div>
+                <div data-bind="foreach:Files">
+                    <div class="panel ui-corner-all lgap0">
+                        <div>
+                            <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text:name"></span></a>
+                            (<span data-bind="text:$root.formatFileSize(size())"></span>)
                         <button type="button" class="btn btn-warning btn-circle btn-mini" data-bind="visible: $root.Uploading($data), click: $root.CancelFile" title="取消上传">
                             <i class="icon-ban-circle"></i>
                         </button>
+                        </div>
+                        <div class="progress progress-striped active" style="height: 8px; margin-bottom: 0px; margin-top: 6px;">
+                            <div class="bar" data-bind="style:{ width: $data.progress() + '%'}, attr: { title: $data.progress() + '%'} " style="height: 8px;"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="progress progress-striped active" style="height: 8px; margin-bottom: 0px; margin-top: 6px;">
-                    <div class="bar" data-bind="style:{ width: $data.progress() + '%'}, attr: { title: $data.progress() + '%'} " style="height: 8px;"></div>
-                </div>
+                <input id="fileSelector" type="file" name="files[]" style="display: none;">
+            </form>
+            <div id="selectedFiles" class="well">
+                <h3>已选中的文件</h3>
+                <ul class="nav" data-bind="foreach: SelectedFiles">
+                    <li>
+                        <button type="button" class="btn btn-danger btn-mini btn-circle" data-bind="click:$root.UnSelectedFile"><i class="icon-remove"></i></button>
+                        <span data-bind="text:name"></span>
+                    </li>
+                </ul>
             </div>
         </div>
-        <input id="fileSelector" type="file" name="files[]" style="display: none;">
-        </form>
-        <div id="selectedFiles" class="well">
-            <h3>已选中的文件</h3>
-            <ul class="nav" data-bind="foreach: SelectedFiles">
-                <li>
-                    <button type="button" class="btn btn-danger btn-mini btn-circle" data-bind="click:$root.UnSelectedFile"><i class="icon-remove"></i></button>
-                    <span data-bind="text:name"></span>
-                </li>
+        <div id="fileTypes" class="flex4">
+            <ul>
+                @foreach (var ft in fts)
+                {
+                    <li><a href="#@(ft.TypeCode)">@ft.TypeName</a></li>
+                }
             </ul>
-        </div>
-    </div>
-    <div id="fileTypes" class="flex4">
-        <ul>
             @foreach (var ft in fts)
             {
-                <li><a href="#@(ft.TypeCode)">@ft.TypeName</a></li>
-            }
-        </ul>
-        @foreach (var ft in fts)
-        {
-            <div  id="@ft.TypeCode" data-regex="@ft.RegexPattern" data-size="@ft.LimitFileSize" data-preview="@ft.ShowPreview">
-                @if (ft.ShowPreview)
-                {
-                    <ul class="nav nav-pills" data-bind="foreach:Files">
-                        <li>
-                            <div class="well bg-none text-center" data-bind="attr: { title: name }">
-                                <img class="img-none rect-small ui-corner-all" data-bind="attr: { src: url }" />
-                                <span data-bind="text:name"></span><br />
-                                <button type="button" class="btn btn-success btn-mini" data-bind="click:sfvm.SelectFile" title="选择文件"><i class="icon-ok"></i></button>
-                                <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.DeleteItem" title="删除文件"><i class="icon-remove"></i></button>
-                            </div>
-                        </li>
-                    </ul>
-                }
-                else
-                {
-                    <div class="table table-bordered">
-                        <div class="thead">
-                            <div class="tr">
-                                <div class="th span4">文件名</div>
-                                <div class="th span1">大小</div>
-                                <div class="th span2">创建日期</div>
-                                <div class="th">&nbsp;</div>
-                            </div>
-                        </div>
-                        <div class="tbody" data-bind="foreach:Files">
-                            <div class="tr">
-                                <div class="td span5"><span data-bind="text:name"></span></div>
-                                <div class="td span1"><span data-bind="text:size"></span></div>
-                                <div class="td span2"><span data-bind="text:creationTime"></span></div>
-                                <div class="td">
+                <div  id="@ft.TypeCode" data-regex="@ft.RegexPattern" data-size="@ft.LimitFileSize" data-preview="@ft.ShowPreview">
+                    @if (ft.ShowPreview)
+                    {
+                        <ul class="nav nav-pills" data-bind="foreach:Files">
+                            <li>
+                                <div class="well bg-none text-center" data-bind="attr: { title: name }">
+                                    <img class="img-none rect-small ui-corner-all" data-bind="attr: { src: url }" />
+                                    <span data-bind="text:name"></span>
+                                    <br />
                                     <button type="button" class="btn btn-success btn-mini" data-bind="click:sfvm.SelectFile" title="选择文件"><i class="icon-ok"></i></button>
                                     <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.DeleteItem" title="删除文件"><i class="icon-remove"></i></button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        }
+                            </li>
+                        </ul>
+                    }
+                    else
+                    {
+                        <table class="table table-bordered spanfull">
+                            <thead>
+                                <tr>
+                                    <th>文件名</th>
+                                    <th>大小</th>
+                                    <th>创建日期</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach:Files">
+                                <tr>
+                                    <td><span data-bind="text:name"></span></td>
+                                    <td><span data-bind="text:size"></span></td>
+                                    <td><span data-bind="text:creationTime"></span></td>
+                                    <td>
+                                        <button type="button" class="btn btn-success btn-mini" data-bind="click:sfvm.SelectFile" title="选择文件"><i class="icon-ok"></i></button>
+                                        <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.DeleteItem" title="删除文件"><i class="icon-remove"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            }
+        </div>
     </div>
-    @if(!string.IsNullOrEmpty(dialogId)){
-    <div class="span12 form-actions">
-        <button class="btn btn-success" type="button" onclick="OK();">
-            <i class="icon-ok"></i><span>确定</span></button>
-        <button class="btn" type="button" onclick="Cancel();">
-            <i class="icon-remove"></i><span>取消</span></button>
-    </div>
+    @if (!string.IsNullOrEmpty(dialogId))
+    {
+        <div class="form-actions">
+            <button class="btn btn-success" type="button" onclick="OK();">
+                <i class="icon-ok"></i><span>确定</span></button>
+            <button class="btn" type="button" onclick="Cancel();">
+                <i class="icon-remove"></i><span>取消</span></button>
+        </div>
     }
 </div>

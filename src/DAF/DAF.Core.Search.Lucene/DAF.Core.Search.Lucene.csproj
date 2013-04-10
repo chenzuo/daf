@@ -80,6 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="SqlLuceneLoader.cs" />
     <Compile Include="IBatchIndexWriter.cs" />
     <Compile Include="LuceneAnalyzers.cs" />

@@ -7,7 +7,7 @@
     <ul class="nav nav-pills">
         @foreach (var lang in LocaleHelper.GetSupportLanguages())
         {
-            <li data-key="@lang.Code"><a href="javascript:void(0);" onclick="SelectLanguage({ Code: '@lang.Code', Name: '@lang.Name' });">@lang.Name</a></li>
+            <li data-key="@lang.Code"><a href="javascript:;" onclick="SelectLanguage({ Code: '@lang.Code', Name: '@lang.Name' });">@lang.Name</a></li>
         }
     </ul>
 </div>

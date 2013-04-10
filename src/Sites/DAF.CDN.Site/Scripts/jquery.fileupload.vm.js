@@ -5,6 +5,8 @@ options = {
         maxFiles: -1,
         autoStart: false,
         baseUrl: '',
+        owner:'',
+        property:''
 
         add: function(file) {},
         uploaded: function(file){},
@@ -17,12 +19,12 @@ options = {
 
 function FUVM(uploadFormId, options) {
     var self = this;
-    self.options = $.extend({
+    self.options = $.extend({}, {
         maxFileSize: 5 * 1024 * 1024,
         acceptFileTypes: /.+$/i,
         maxFiles: -1,
         autoStart: false
-    }, options || {});
+    }, options);
 
     self.UploadForm = null;
     self.Files = ko.observableArray([]);
@@ -107,7 +109,7 @@ function FUVM(uploadFormId, options) {
         self.Files.remove(item);
         if (typeof PostMessage == "function") {
             delete item.data;
-            PostMessage("fileremoved", { owner: self.options.owner, file: ko.toJS(item) });
+            PostMessage("fileremoved", { owner: self.options.owner, property: self.options.property, file: ko.toJS(item) });
         }
     };
 
@@ -173,7 +175,7 @@ function FUVM(uploadFormId, options) {
                     }
                     if (typeof PostMessage == "function") {
                         delete f.data;
-                        PostMessage("fileuploaded", { owner: self.options.owner, file: ko.toJS(f) });
+                        PostMessage("fileuploaded", { owner: self.options.owner, property: self.options.property, file: ko.toJS(f) });
                     }
                 }
             },

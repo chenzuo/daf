@@ -30,8 +30,11 @@ namespace DAF.File.Site.Api
         }
 
         [HttpGet]
-        public dynamic Files(string path, int orderBy = 0, int pi = 0, int ps = 50)
+        public dynamic Files(string owner, string path, int orderBy = 0, int pi = 0, int ps = 50)
         {
+            if (string.IsNullOrEmpty(owner))
+                owner = "public";
+            path = string.Concat(owner, "/", path);
             var files = fileProvider.GetFiles(path, "*.*");
 
             switch (orderBy)

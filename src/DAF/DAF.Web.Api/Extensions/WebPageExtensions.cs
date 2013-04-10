@@ -9,7 +9,7 @@ using DAF.Core;
 using DAF.Web.Api.Metadata.Providers;
 using DAF.Web.Api.Metadata;
 
-namespace DAF.Web
+namespace DAF.Web.Api
 {
     public static class WebPageExtensions
     {

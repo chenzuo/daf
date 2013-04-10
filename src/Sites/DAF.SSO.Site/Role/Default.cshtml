@@ -9,7 +9,7 @@
 
 <script type="text/html" id="role-template">
     <li data-bind="attr:{id:RoleName}">
-        <a href="javascript:void(0);" data-bind="click:$root.SelectRole"><span data-bind="text:RoleName"></span></a>
+        <a href="javascript:;" data-bind="click:$root.SelectRole"><span data-bind="text:RoleName"></span></a>
         <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.AddRole" title="新增下级角色"><i class="icon-plus"></i></button>
         <button type="button" class="btn btn-primary btn-mini" data-bind="click:$root.EditItem" title="编辑角色"><i class="icon-pencil"></i></button>
         <button type="button" class="btn btn-danger btn-mini" data-bind="click:$root.RemoveRole.bind($data, $parent)" title="删除角色"><i class="icon-remove"></i></button>

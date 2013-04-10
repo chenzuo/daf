@@ -15,7 +15,7 @@ $.fn.base = function (name, widget, options, funcNewInstance, funcApplyOptions) 
 
     if (isMethodCall) {
         widget.each(function () {
-            var instance = $(this).data(name);
+            var instance = $(this).data('widget_' + name);
             var methodValue = instance && $.isFunction(instance[options]) ?
                     instance[options].apply(instance, args) :
                     instance;
@@ -26,13 +26,13 @@ $.fn.base = function (name, widget, options, funcNewInstance, funcApplyOptions) 
         });
     } else {
         widget.each(function () {
-            var instance = $(this).data(name);
+            var instance = $(this).data('widget_' + name);
             if (instance) {
                 if (funcApplyOptions) {
                     funcApplyOptions(instance, options || {});
                 }
             } else {
-                $(this).data(name, funcNewInstance(this, options));
+                $(this).data('widget_' + name, funcNewInstance(this, options));
             }
         });
     }

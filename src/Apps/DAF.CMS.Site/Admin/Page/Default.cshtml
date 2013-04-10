@@ -111,17 +111,17 @@
         <tr>
             <td class="caption">模板：</td>
             <td>
-                <button class="btn dropdown-toggle" data-popup="#templateDiv">
+                <button class="btn dropdown-toggle" data-toggle="#templateDiv">
                     <span data-bind="text:TemplateName"></span>
                     <span class="caret"></span>
                 </button>
             </td>
         </tr>
     </table>
-    <div id="templateDiv" class="well span2 hide">
-        <ul id="templateTree" data-bind="template:{ name:'temp-template', foreach:$root.Templates }">
-        </ul>
-    </div>
+</div>
+<div id="templateDiv" class="dropdown-menu">
+    <ul id="templateTree" data-bind="template:{ name:'temp-template', foreach:$root.Templates }">
+    </ul>
 </div>
 <div id="styleDiv" class="hide">
     <textarea id="styleEditor" style="width: 98%; height: 96%;"></textarea>
@@ -304,7 +304,7 @@
                 self.SelectTemplate = function (item, e) {
                     StopEvent(e);
                     vm.EditingPage().TemplateName(item.Name());
-                    $('body').trigger('click');
+                    $('.dropdown-toggle').dropdown('hide');
                 };
             },
             validate: function () {

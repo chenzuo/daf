@@ -8,6 +8,7 @@
     int limitSize = Request.QueryString["limitSize"].ConvertTo<int>(50 * 1024 * 1024); // 50MB
     string autoStart = Request.QueryString["autoStart"].DefaultIfNull("false");
     string owner = Request.QueryString["owner"].DefaultIfNull("");
+    string property = Request.QueryString["property"].DefaultIfNull("");
 
     var ft = FileType.CommonTypes.FirstOrDefault(o => o.TypeCode == fileType);
     var fileTypes = ft == null ? ".+$" : ft.RegexPattern; 
@@ -25,6 +26,7 @@
             vfm = new FUVM('uploadForm', {
                 baseUrl: "@(AuthHelper.CurrentClient.BaseUrl.TrimEnd('/'))",
                 owner: '@(owner)',
+                property: '@(property)',
                 acceptFileTypes: /'@(fileTypes)'/i,
                 maxFiles: @(maxFiles),
                 autoStart: @(autoStart)
@@ -34,7 +36,7 @@
 
     </script>
 }
-<form id="uploadForm" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))" method="POST" enctype="multipart/form-data" onload="InitForm">
+<form id="uploadForm" action="@(UrlHelper.ClientUrl("Handlers/UploadHandler.ashx"))?owner=@owner" method="POST" enctype="multipart/form-data" onload="InitForm">
 <div class="alert alert-block">
     <h5 class="alert-heading">注：</h5>
     <ol>

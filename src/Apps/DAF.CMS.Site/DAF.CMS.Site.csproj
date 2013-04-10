@@ -163,11 +163,6 @@
     <Content Include="Themes\Default\Skins\Default\Contents\admin.css" />
     <Content Include="Themes\Default\Skins\Default\Scripts\content.js" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
-    <Content Include="Themes\BXX\Skins\Default\Contents\admin.css" />
-    <Content Include="Themes\BXX\Skins\Default\Contents\content.css" />
-    <Content Include="Themes\BXX\Skins\Default\Contents\site.css" />
-    <Content Include="Themes\BXX\Skins\Default\Scripts\content.js" />
-    <Content Include="Themes\BXX\Skins\Default\Scripts\overrides.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -270,20 +265,7 @@
     <Content Include="Controls\Menu\_FooterMenu.cshtml" />
     <Content Include="Controls\Site\_SiteLogo.cshtml" />
     <Content Include="Controls\Category\_SubCategories.cshtml" />
-    <Content Include="Themes\BXX\_AdminBody.cshtml" />
-    <Content Include="Themes\BXX\_AdminEnd.cshtml" />
-    <Content Include="Themes\BXX\_AdminFooter.cshtml" />
-    <Content Include="Themes\BXX\_AdminHead.cshtml" />
-    <Content Include="Themes\BXX\_AdminHeader.cshtml" />
-    <Content Include="Themes\BXX\_DialogEnd.cshtml" />
-    <Content Include="Themes\BXX\_DialogHead.cshtml" />
-    <Content Include="Themes\BXX\_HtmlEnd.cshtml" />
-    <Content Include="Themes\BXX\_HtmlHead.cshtml" />
-    <Content Include="Themes\BXX\_WindowEnd.cshtml" />
-    <Content Include="Themes\BXX\_WindowHead.cshtml" />
     <Content Include="Controls\Content\_ContentSlideShow.cshtml" />
-    <Content Include="Modules\BXX\Controls\_Header1.cshtml" />
-    <Content Include="Modules\BXX\Controls\_Footer1.cshtml" />
     <Content Include="Controls\Menu\_TreeMenu.cshtml" />
     <Content Include="Admin\_SelectControlType.cshtml" />
     <Content Include="Admin\_SetPageProperties.cshtml" />
@@ -297,7 +279,9 @@
     <Content Include="PageTemplates\MainRight.cshtml" />
     <Content Include="PageTemplates\MainBottom.cshtml" />
     <Content Include="Controls\Content\_ContentTopList.cshtml" />
-    <Content Include="Themes\BXX\_Paging.cshtml" />
+    <Content Include="Modules\ECommerce\Configurations\appSettings.config" />
+    <Content Include="Modules\ECommerce\Configurations\autofac.config" />
+    <Content Include="Modules\ECommerce\Configurations\connectionStrings.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -314,7 +298,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Admin\Content\Display\" />
-    <Folder Include="Themes\BXX\Skins\Default\Contents\Images\" />
     <Folder Include="Themes\Default\Skins\Default\Contents\Images\" />
   </ItemGroup>
   <ItemGroup>

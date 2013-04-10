@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using System.Web.Http.ModelBinding;
-using DAF.Web.Appi;
 
 namespace DAF.Web.Api.Filters
 {

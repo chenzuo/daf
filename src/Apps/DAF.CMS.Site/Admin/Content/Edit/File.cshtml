@@ -22,12 +22,12 @@
 @section bodyEnd {
     <script type="text/javascript">
         $(document).on('bindedData', function (event, bindedData) {
-            LoadHtml('#fileContenHolder', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=link_url")');
+            LoadHtml('#fileContenHolder', '@Html.Raw(UrlHelper.ClientUrl("File/InlineUpload", "DAF.File.Site") + "?owner=cms&property=content.file")');
         });
 
         $(function () {
             OnReceiveMessage('fileselected', function (data) {
-                if (data.owner == "link_url") {
+                if (data.owner == "cms" && data.property == "content.file") {
                     if (data.files && data.files.length > 0) {
                         var file = data.files[0];
                         vm.Data().Title(file.name);
@@ -37,7 +37,7 @@
             });
 
             OnReceiveMessage('fileuploaded', function (data) {
-                if (data.owner == "link_url") {
+                if (data.owner == "cms" && data.property == "content.file") {
                     $.each(data.files, function () {
                         var file = $(this);
                         vm.Data().Title(file.name);
@@ -48,7 +48,7 @@
 
             OnReceiveMessage('fileremoved', function (data) {
                 var file = data.file;
-                if (data.owner == "link_url") {
+                if (data.owner == "cms" && data.property == "content.file") {
                     vm.Data().Title("");
                     vm.Data().ContentUrl(null);
                 }

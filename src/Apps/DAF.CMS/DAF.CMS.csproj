@@ -33,6 +33,10 @@
     <Reference Include="Autofac">
       <HintPath>..\..\libs\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Autofac.Configuration, Version=2.6.3.862, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\libs\Autofac.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="DAF.Core">
       <HintPath>..\..\outputs\DAF.Core.dll</HintPath>
     </Reference>
@@ -44,6 +48,10 @@
     </Reference>
     <Reference Include="DAF.Web">
       <HintPath>..\..\outputs\DAF.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Web.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\outputs\DAF.Web.Api.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\..\libs\EntityFramework.dll</HintPath>
@@ -85,6 +93,7 @@
     <Compile Include="CmsHelper.cs" />
     <Compile Include="CmsMessageHandler.cs" />
     <Compile Include="CmsModule.cs" />
+    <Compile Include="CmsWebGlobal.cs" />
     <Compile Include="Configurations\ModuleConfigurationProvider.cs" />
     <Compile Include="ContentProvider.cs" />
     <Compile Include="ControlTypeProvider.cs" />

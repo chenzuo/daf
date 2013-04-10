@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="EFContractResolver.cs" />
     <Compile Include="JsonNetSerializer.cs" />
     <Compile Include="JsonNetModule.cs" />

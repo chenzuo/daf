@@ -10,6 +10,8 @@
     }
     int width = Request.QueryString["width"].ConvertTo<int>(120);
     int height = Request.QueryString["height"].ConvertTo<int>(120);
+    string owner = Request.QueryString["owner"].DefaultIfNull("");
+    string property = Request.QueryString["property"].DefaultIfNull("");
     string args = Request.QueryString["args"];
 }
 @section head {
@@ -121,7 +123,7 @@
                 if(typeof window.OnCroppedImage == "function"){
                     window.OnCroppedImage(data, '@args', '@dialogId');
                 }
-                PostMessage("cropimage", { url: '@(AuthHelper.CurrentClient.BaseUrl.TrimEnd('/'))' + data, args:'@args', dialogId:'@dialogId' });
+                PostMessage("cropimage", { url: '@(AuthHelper.CurrentClient.BaseUrl.TrimEnd('/'))' + data, owner: '@owner', property: '@property', args:'@args', dialogId:'@dialogId' });
                 CloseDialog('@dialogId');
             });
         }
@@ -131,7 +133,7 @@
             if(typeof window.OnCroppedImage == "function"){
                 window.OnCroppedImage(src, '@args', '@dialogId');
             }
-            PostMessage("cropimage", { url: '@(AuthHelper.CurrentClient.BaseUrl.TrimEnd('/'))' + src, args:'@args', dialogId:'@dialogId' });
+            PostMessage("cropimage", { url: '@(AuthHelper.CurrentClient.BaseUrl.TrimEnd('/'))' + src, owner: '@owner', property: '@property', args:'@args', dialogId:'@dialogId' });
             CloseDialog('@dialogId');
         }
 
@@ -155,7 +157,7 @@
             <img id="cropImg" class="img-none" src="" style="display: inline-block;" />
         </div>
         <div class="tgap3">
-            <form id="uploadForm" action="/Handlers/UploadHandler.ashx" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="/Handlers/UploadHandler.ashx?owner=@(owner)" method="POST" enctype="multipart/form-data">
             <div class="alert alert-block">
                 <h5 class="alert-heading">注：</h5>
                 <ol>

@@ -57,7 +57,7 @@
                 <button class="btn btn-primary btn-mini" type="button" onclick="NewCate();" title="新增分类"><i class="icon-plus"></i></button>
             </h3>
             <ul class="nav nav-pills nav-stacked" data-bind="foreach:Categories">
-                <li data-bind="css: { selected: $data == vm.SelectedCate() }"><a href="javascript:void(0);" data-bind="click: vm.SelectCate"><span data-bind="text:$data"></span></a></li>
+                <li data-bind="css: { selected: $data == vm.SelectedCate() }"><a href="javascript:;" data-bind="click: vm.SelectCate"><span data-bind="text:$data"></span></a></li>
             </ul>
         </div>
     </div>

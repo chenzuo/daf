@@ -38,7 +38,7 @@ namespace DAF.CMS
             if (string.IsNullOrEmpty(parentId))
                 query = query.Where(o => o.ParentId == null);
             else
-                query = query.Where(o => o.ParentId == parentId);
+                query = query.Where(o => (o.ParentId == parentId || o.Parent.Code == parentId));
             query = query.OrderBy(o => o.ShowOrder);
             return query.ToArray();
         }

@@ -67,6 +67,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalVersionInfo.cs">
+      <Link>GlobalVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="Content\CompressedContent.cs" />
     <Compile Include="Extensions\ModelStateDictionaryExtension.cs" />
     <Compile Include="Extensions\WebPageExtensions.cs" />
