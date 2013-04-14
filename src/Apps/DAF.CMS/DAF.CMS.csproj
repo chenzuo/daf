@@ -120,7 +120,6 @@
     <Compile Include="Models\BasicDataItem.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\CategoryContent.cs" />
-    <Compile Include="Models\CategoryType.cs" />
     <Compile Include="Models\CategoryUserGroup.cs" />
     <Compile Include="Models\ContentProperties\ContactProperty.cs" />
     <Compile Include="Models\Content.cs" />

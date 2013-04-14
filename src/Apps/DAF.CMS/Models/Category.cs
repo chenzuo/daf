@@ -31,7 +31,6 @@ namespace DAF.CMS.Models
 
         [StringLength(50)]
         public string Name { get; set; }
-        public CategoryType CategoryType { get; set; }
 
         [StringLength(50)]
         public string GroupName { get; set; }
@@ -41,6 +40,9 @@ namespace DAF.CMS.Models
         public DataStatus Status { get; set; }
         [StringLength(50)]
         public string ParentId { get; set; }
+
+        [StringLength(500)]
+        public string FlatId { get; set; }
 
         [ForeignKey("SiteId")]
         public virtual SubSite Site { get; set; }

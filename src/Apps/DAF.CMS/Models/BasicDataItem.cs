@@ -41,6 +41,9 @@ namespace DAF.CMS.Models
         [StringLength(50)]
         public string ParentId { get; set; }
 
+        [StringLength(500)]
+        public string FlatId { get; set; }
+
         [ForeignKey("SiteId")]
         public virtual SubSite Site { get; set; }
         [ForeignKey("ParentId")]

@@ -65,6 +65,7 @@
       <Link>GlobalVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Assert.cs" />
+    <Compile Include="AuditStatus.cs" />
     <Compile Include="AutoRegisterStartup.cs" />
     <Compile Include="AutoWireModule.cs" />
     <Compile Include="Caching\CacheScope.cs">

@@ -9,7 +9,7 @@ using DAF.Core.Security;
 using DAF.Web.Mvc;
 using DAF.Web.Mvc.Results;
 
-namespace DAF.Web.Mvc
+namespace DAF.Web
 {
     public static class ControllerExtensions
     {

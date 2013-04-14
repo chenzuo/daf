@@ -32,7 +32,7 @@ namespace DAF.CMS.Site.Controllers
             if (contentType != null)
                 contentTypes = new ContentType[] { contentType.Value };
             int total = 0;
-            var query = provider.GetContents(siteId, cate, out total, null, contentTypes, null, null, pi, ps);
+            var query = provider.GetContents(siteId, cate, out total, false, null, contentTypes, null, null, pi, ps);
 
             PagingInfo paging = new PagingInfo()
             {

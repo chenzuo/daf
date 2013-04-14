@@ -159,6 +159,7 @@ namespace DAF.CMS.Migrations
                         ShowOrder = c.Int(nullable: false),
                         IsValid = c.Boolean(nullable: false),
                         ParentId = c.String(maxLength: 50),
+                        FlatId = c.String(maxLength: 500),
                     })
                 .PrimaryKey(t => t.ItemId)
                 .ForeignKey("dbo.cms_SubSite", t => t.SiteId, cascadeDelete: true)
@@ -174,11 +175,11 @@ namespace DAF.CMS.Migrations
                         SiteId = c.String(nullable: false, maxLength: 50),
                         Code = c.String(nullable: false, maxLength: 50),
                         Name = c.String(maxLength: 50),
-                        CategoryType = c.Int(nullable: false),
                         GroupName = c.String(maxLength: 50),
                         ShowOrder = c.Int(nullable: false),
                         Status = c.Int(nullable: false),
                         ParentId = c.String(maxLength: 50),
+                        FlatId = c.String(maxLength: 500),
                     })
                 .PrimaryKey(t => t.CategoryId)
                 .ForeignKey("dbo.cms_SubSite", t => t.SiteId, cascadeDelete: true)

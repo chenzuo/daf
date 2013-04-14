@@ -110,6 +110,7 @@ CREATE TABLE [dbo].[cms_BasicData] (
     [ShowOrder] [int] NOT NULL,
     [IsValid] [bit] NOT NULL,
     [ParentId] [nvarchar](50),
+    [FlatId] [nvarchar](500),
     CONSTRAINT [PK_dbo.cms_BasicData] PRIMARY KEY ([ItemId])
 )
 CREATE INDEX [IX_SiteId] ON [dbo].[cms_BasicData]([SiteId])
@@ -119,11 +120,11 @@ CREATE TABLE [dbo].[cms_Category] (
     [SiteId] [nvarchar](50) NOT NULL,
     [Code] [nvarchar](50) NOT NULL,
     [Name] [nvarchar](50),
-    [CategoryType] [int] NOT NULL,
     [GroupName] [nvarchar](50),
     [ShowOrder] [int] NOT NULL,
     [Status] [int] NOT NULL,
     [ParentId] [nvarchar](50),
+    [FlatId] [nvarchar](500),
     CONSTRAINT [PK_dbo.cms_Category] PRIMARY KEY ([CategoryId])
 )
 CREATE INDEX [IX_SiteId] ON [dbo].[cms_Category]([SiteId])

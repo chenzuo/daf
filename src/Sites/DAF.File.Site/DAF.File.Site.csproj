@@ -158,12 +158,6 @@
     <Content Include="Localization\DAF_Web.js" />
     <Content Include="Themes\Default\Skins\Default\Contents\site.css" />
     <Content Include="Themes\Default\Skins\Default\Scripts\overrides.js" />
-    <Content Include="Uploads\audio\_placehoder.txt" />
-    <Content Include="Uploads\files\_placehoder.txt" />
-    <Content Include="Uploads\flash\_placehoder.txt" />
-    <Content Include="Uploads\images\_placehoder.txt" />
-    <Content Include="Uploads\vedio\_placehoder.txt" />
-    <Content Include="Uploads\_thumbs\_placehoder.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

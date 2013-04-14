@@ -34,20 +34,25 @@ namespace DAF.CMS
         }
 
         public IEnumerable<Content> GetContents(string siteId, string category, out int total
+            , bool includeSubCategories = false
             , bool? published = null, ContentType[] contentTypes = null, DateTime? startDate = null, DateTime? endDate = null
             , int pi = 0, int ps = 0)
         {
-            DateTime today = DateTime.Today;
             IQueryable<Content> query = null;
-            if (string.IsNullOrEmpty(category))
+            total = 0;
+            if (includeSubCategories)
             {
-                query = from o in repoContent.Query(null)
-                        join cc in repoContentCategory.Query(null)
-                            on o.ContentId equals cc.ContentId
-                        join c in repoCategory.Query(null)
-                            on cc.CategoryId equals c.CategoryId
-                        where o.SiteId == siteId && o.CreateAsRelated == false && c.Code == null
-                        select o;
+                var obj = repoCategory.Query(o => o.SiteId == siteId && o.Code == category).FirstOrDefault();
+                if (obj != null)
+                {
+                    query = from o in repoContent.Query(null)
+                            join cc in repoContentCategory.Query(null)
+                                on o.ContentId equals cc.ContentId
+                            join c in repoCategory.Query(null)
+                                on cc.CategoryId equals c.CategoryId
+                            where o.SiteId == siteId && o.CreateAsRelated == false && c.FlatId.StartsWith(obj.CategoryId)
+                            select o;
+                }
             }
             else
             {
@@ -58,6 +63,11 @@ namespace DAF.CMS
                             on cc.CategoryId equals c.CategoryId
                         where o.SiteId == siteId && o.CreateAsRelated == false && c.Code == category
                         select o;
+            }
+
+            if (query == null)
+            {
+                return Enumerable.Empty<Content>();
             }
 
             if (published.HasValue)
@@ -88,7 +98,6 @@ namespace DAF.CMS
 
             if (contentTypes != null && contentTypes.Length > 0)
                 query = query.Where(o => contentTypes.Contains(o.ContentType));
-
             query = query.OrderBy(o => o.ShowOrder).ThenByDescending(o => o.PublishTime).ThenByDescending(o => o.CreateTime);
 
             total = query.Count();

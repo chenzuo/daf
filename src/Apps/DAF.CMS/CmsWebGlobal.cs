@@ -15,6 +15,7 @@ namespace DAF.CMS
     {
         protected override void BuildContainer(ContainerBuilder builder)
         {
+            base.BuildContainer(builder);
             DirectoryInfo dir = new DirectoryInfo(Server.MapPath("~/Modules"));
             var files = dir.GetFiles("autofac.config", true);
             if (files != null && files.Count() > 0)

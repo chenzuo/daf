@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
-namespace DAF.Web.Mvc
+namespace DAF.Web
 {
     public static class ViewDataDictionaryExtensions
     {

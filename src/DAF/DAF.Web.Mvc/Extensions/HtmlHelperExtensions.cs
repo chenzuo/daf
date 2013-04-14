@@ -13,8 +13,9 @@ using System.Web.Helpers;
 using System.Web.Routing;
 using DAF.Core;
 using DAF.Core.Caching;
+using DAF.Web.Mvc;
 
-namespace DAF.Web.Mvc
+namespace DAF.Web
 {
     public static class HtmlHelperExtensions
     {

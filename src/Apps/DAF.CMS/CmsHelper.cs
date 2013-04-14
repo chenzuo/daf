@@ -79,15 +79,15 @@ namespace DAF.CMS
             return cate;
         }
 
-        public static IEnumerable<Content> GetContents(string category)
+        public static IEnumerable<Content> GetContents(string category, bool includeSubCategories = false)
         {
             int total = 0;
-            return GetContents(category, out total, 0, 0);
+            return GetContents(category, out total, includeSubCategories, 0, 0);
         }
 
-        public static IEnumerable<Content> GetContents(string category, out int total, int pi = 0, int ps = 20)
+        public static IEnumerable<Content> GetContents(string category, out int total, bool includeSubCategories = false, int pi = 0, int ps = 20)
         {
-            var query = ContentProvider.GetContents(CurrentSite.SiteId, category, out total, true, null, null, null, pi, ps);
+            var query = ContentProvider.GetContents(CurrentSite.SiteId, category, out total, includeSubCategories, true, null, null, null, pi, ps);
             return query.ToArray();
         }
 

@@ -89,16 +89,17 @@
             onQuerySuccess: function (data) { InitEditors(); EnableItemSortable(); },
             getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/Category/Save"))'; },
             createItem: function () {
+                var id = IdGenerator.NewId();
                 return {
-                    CategoryId: ko.observable(IdGenerator.NewId()),
+                    CategoryId: ko.observable(id),
                     SiteId: ko.observable(vm.SelectedSite().SiteId),
                     Code: ko.observable(""),
                     Name: ko.observable(""),
-                    CategoryType: ko.observable(2),
                     GroupName: ko.observable(""),
                     ShowOrder: ko.observable(vm.Data().length),
                     Status: ko.observable(1),
                     ParentId: ko.observable(null),
+                    FlatId: ko.observable(id),
                     Children: ko.observableArray([])
                 };
             },
@@ -113,6 +114,7 @@
                     var ci = vm.options.createItem();
                     ci.ShowOrder(item.Children().length);
                     ci.ParentId(item.CategoryId());
+                    ci.FlatId(item.FlatId() + '.' + ci.CategoryId());
                     ci.DataState = DataState.New;
 
                     item.Children.push(ci);

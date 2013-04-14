@@ -112,8 +112,9 @@
             onQuerySuccess: function (data) { EnableItemSortable(); },
             getSaveUrl: function () { return '@(UrlHelper.ClientUrl("Api/BasicData/Save"))'; },
             createItem: function () {
+                var id = IdGenerator.NewId();
                 return {
-                    ItemId: ko.observable(IdGenerator.NewId()),
+                    ItemId: ko.observable(id),
                     SiteId: ko.observable(vm.SelectedSite().SiteId),
                     Category: ko.observable(vm.SelectedCate()),
                     Name: ko.observable(""),
@@ -123,6 +124,7 @@
                     IsValid: ko.observable(true),
                     ShowOrder: ko.observable(vm.Data().length),
                     ParentId: ko.observable(null),
+                    FlatId: ko.observable(id),
                     Children: ko.observableArray([])
                 };
             },
@@ -153,6 +155,7 @@
                     var ci = vm.options.createItem();
                     ci.ShowOrder(item.Children().length);
                     ci.ParentId(item.ItemId());
+                    ci.FlatId(item.FlatId() + '.' + ci.ItemId());
                     ci.DataState = DataState.New;
 
                     item.Children.push(ci);
