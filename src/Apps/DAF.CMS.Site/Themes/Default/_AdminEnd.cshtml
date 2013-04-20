@@ -2,7 +2,7 @@
     $(function () {
         $('#admin-menu ul:first a[href]').each(function () {
             var href = $(this).attr('href');
-            if (href.indexOf('://') > 0) {
+            if (href.length > 0) {
                 $(this).attr('href', 'javascript:OpenIFrame("admin-body","' + href + '");');
             }
         });

@@ -1,6 +1,6 @@
 	127.0.0.1   www.mycdn.com
 	127.0.0.1	www.sso.com	
-	127.0.0.1	www.samplesite.com
-	127.0.0.1	www.sampleapp.com
+	127.0.0.1	www.apisite.com
+	127.0.0.1	www.mvcsite.com
 	127.0.0.1	www.file.com
 	127.0.0.1	www.schedule.com
