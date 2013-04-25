@@ -8,7 +8,9 @@ using System.Web.Routing;
 using System.Web.Http;
 using System.Web.Http.Validation;
 using System.Web.Http.Validation.Providers;
+using DAF.Core.IOC;
 using DAF.Web.Api;
+using NServiceBus;
 
 namespace DAF.SSO.Site
 {
@@ -28,7 +30,12 @@ namespace DAF.SSO.Site
                 routeTemplate: "api/{controller}"
                 );
 
-            DAF.Core.ServiceBus.NBus.Msmq();
+            DAF.Core.ServiceBus.NBus.Msmq(config => config.AutofacBuilder(((DAF.Core.IOC.Autofac.AutofacContainer)IocInstance.Container).Container));
+        }
+
+        protected override IIocBuilder CreateIocBuilder()
+        {
+            return new DAF.Core.IOC.AutofacForApi.AutofacBuilderForApi();
         }
     }
 }

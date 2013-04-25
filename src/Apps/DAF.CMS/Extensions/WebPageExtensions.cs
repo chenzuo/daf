@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.WebPages;
 using System.Web.WebPages.Html;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Caching;
 
 namespace DAF.CMS
@@ -16,7 +17,7 @@ namespace DAF.CMS
         {
             if (!string.IsNullOrEmpty(cacheKey) && cacheMunites > 0)
             {
-                var cm = IOC.Current.GetService<ICacheManager>();
+                var cm = IocInstance.Container.Resolve<ICacheManager>();
                 var cp = cm.CreateCacheProvider(CacheScope.Global);
                 var html = cp.GetData(cacheKey) as IHtmlString;
                 if (html == null)

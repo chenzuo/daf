@@ -4,22 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Web.Http;
 using System.Web.Http.Metadata;
-using Autofac;
-using Autofac.Core;
-using Autofac.Integration.WebApi;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.SSO;
 using DAF.Core.Caching;
 using DAF.Web.Api.Metadata.Providers;
 
 namespace DAF.Web.Api
 {
-    public class WebApiModule : Autofac.Module
+    public class WebApiModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<DataAnnotationsModelMetadataProvider2>().As<ModelMetadataProvider>().SingleInstance();
-            builder.RegisterType<WebApiAppEventHandler>().As<IAppEventHandler>();
+            builder.RegisterType<ModelMetadataProvider, DataAnnotationsModelMetadataProvider2>(LiftTimeScope.Singleton);
+            builder.RegisterType<IAppEventHandler, WebApiAppEventHandler>();
         }
     }
 }

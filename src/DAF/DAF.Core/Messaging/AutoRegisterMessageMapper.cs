@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Messaging
 {
-    public class AutoRegisterMessageMapper : IAutoRegisterContainerWithType
+    public class AutoRegisterMessageMapper : IAutoRegister
     {
-        public void Register(ContainerBuilder builder, Type type)
+        public void Register(IIocBuilder builder, Type type)
         {
             if (!type.IsAbstract && type.IsClass)
             {
@@ -18,7 +18,7 @@ namespace DAF.Core.Messaging
                     var itype = type.GetInterfaces()[0];
                     if (itype.IsGenericType && itype.GetGenericTypeDefinition().Equals(typeof(IMessageMapper<>)))
                     {
-                        builder.RegisterType(type).As(itype).Named(type.FullName, itype);
+                        builder.RegisterType(itype, type, LiftTimeScope.Transiant, type.FullName);
                     }
                 }
             }

@@ -26,6 +26,7 @@
     ConfirmPasswordIsNotSameToPassword: "确认密码必须与密码一致",
     ChangePasswordSuccessfully: "密码修改成功，请使用新密码。",
     ResetPasswordSuccessfully: "密码重置成功，请注意查收Email或手机短信，使用新密码。",
+    ForgetPassword: "忘记密码",
     RememberMe: "记住我的帐号信息",
     Captcha: "验证码",
     EmailOrMobileNotFound: "未查到相应的Emial或者电话",

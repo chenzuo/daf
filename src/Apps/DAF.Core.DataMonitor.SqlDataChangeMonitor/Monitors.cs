@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DAF.Core.IOC;
 
 namespace DAF.Core.DataMonitor.SqlDataChangeMonitor
 {
@@ -29,12 +30,12 @@ namespace DAF.Core.DataMonitor.SqlDataChangeMonitor
                 }
             }
 
-            IOC.Current.Stop();
+            IocInstance.Stop();
         }
 
         public static IEnumerable<IDataMonitor> DataMonitors
         {
-            get { return IOC.Current.GetService<IEnumerable<IDataMonitor>>(); }
+            get { return IocInstance.Container.Resolve<IEnumerable<IDataMonitor>>(); }
         }
     }
 }

@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
-using Autofac;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using MongoDB.Driver.Builders;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Data;
 using DAF.Core.Caching;
 
@@ -24,7 +24,7 @@ namespace DAF.Core.Data.MongoDb
             this.entitySets = entitySets;
         }
 
-        public MongoDatabase Create(Type type, IComponentContext container)
+        public MongoDatabase Create(Type type, IIocContext context)
         {
             Type entityType = type;
             if (type.IsGenericType)

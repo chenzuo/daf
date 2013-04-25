@@ -30,18 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\libs\Autofac.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Autofac.Configuration">
-      <HintPath>..\..\libs\Autofac.Configuration.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Autofac.Integration.Mvc">
-      <HintPath>..\..\libs\Autofac.Integration.Mvc.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -80,6 +68,8 @@
     <Compile Include="Extensions\ModelStateDictionaryExtension.cs" />
     <Compile Include="Extensions\ViewDataDictionaryExtensions.cs" />
     <Compile Include="Fakes\FakeViewDataContainer.cs" />
+    <Compile Include="IOC\IIocBuilderForMvc.cs" />
+    <Compile Include="IOC\IIocContainerForMvc.cs" />
     <Compile Include="OAuthorizeAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Results\ExceptionResult.cs" />

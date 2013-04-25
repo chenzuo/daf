@@ -4,6 +4,7 @@ using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Serialization;
 
 namespace DAF.CMS.Models
@@ -94,7 +95,7 @@ namespace DAF.CMS.Models
             if (obj == null || string.IsNullOrEmpty(obj.Properties))
                 return default(T);
 
-            IJsonSerializer json = IOC.Current.GetService<IJsonSerializer>();
+            IJsonSerializer json = IocInstance.Container.Resolve<IJsonSerializer>();
             return json.Deserialize<T>(obj.Properties);
         }
 
@@ -102,7 +103,7 @@ namespace DAF.CMS.Models
         {
             if (obj == null)
                 return;
-            IJsonSerializer json = IOC.Current.GetService<IJsonSerializer>();
+            IJsonSerializer json = IocInstance.Container.Resolve<IJsonSerializer>();
             obj.Properties = json.Serialize(props);
         }
     }

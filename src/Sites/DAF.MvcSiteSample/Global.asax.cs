@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
+using DAF.Core.IOC;
 
 namespace DAF.MvcSiteSample
 {
@@ -19,6 +20,11 @@ namespace DAF.MvcSiteSample
 
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+        }
+
+        protected override IIocBuilder CreateIocBuilder()
+        {
+            return new DAF.Core.IOC.AutofacForMvc.AutofacBuilderForMvc();
         }
     }
 }

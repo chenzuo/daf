@@ -41,9 +41,6 @@
     <Reference Include="Autofac">
       <HintPath>..\..\libs\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac.Configuration">
-      <HintPath>..\..\libs\Autofac.Configuration.dll</HintPath>
-    </Reference>
     <Reference Include="Autofac.Integration.WebApi">
       <HintPath>..\..\libs\Autofac.Integration.WebApi.dll</HintPath>
     </Reference>
@@ -57,6 +54,12 @@
     <Reference Include="DAF.Core.Data.BLToolkit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\outputs\DAF.Core.Data.BLToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.IOC.Autofac">
+      <HintPath>..\..\outputs\DAF.Core.IOC.Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.IOC.AutofacForApi">
+      <HintPath>..\..\outputs\DAF.Core.IOC.AutofacForApi.dll</HintPath>
     </Reference>
     <Reference Include="DAF.Core.Serialization.JsonNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -180,7 +183,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Configurations\autofac.config" />
+    <Content Include="Configurations\ioc.config" />
     <Content Include="Configurations\connectionStrings.config" />
     <Content Include="Configurations\appSettings.config" />
     <Content Include="Default.cshtml" />

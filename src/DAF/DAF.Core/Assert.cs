@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using Autofac;
+using DAF.Core.IOC;
 using DAF.Core.Localization;
 
 namespace DAF.Core

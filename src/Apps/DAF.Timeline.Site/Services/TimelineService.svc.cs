@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Timeline;
 using DAF.Timeline.Models;
 using DAF.Timeline.Info;
@@ -20,7 +21,7 @@ namespace DAF.Timeline.Site.Services
 
         public TimelineService()
         {
-            this.provider = IOC.Current.GetService<ITimelineProvider>();
+            this.provider = IocInstance.Container.Resolve<ITimelineProvider>();
         }
 
         public IEnumerable<TimelineItem> LoadItems(string client, string userId, DateTime beginTime, int count = 20, string eventTypes = null)

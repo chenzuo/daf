@@ -2,53 +2,53 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
-using Autofac.Core;
 using DAF.Core;
+using DAF.Core.IOC;
 
 namespace DAF.Web
 {
-    public class WebModule : Autofac.Module
+    public class WebModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            //builder.RegisterType<Configurations.AreaConfigurationProvider>().As<Core.Configurations.IConfigurationProvider>();
-            builder.RegisterType<Core.FileSystem.LocalFileProvider>().As<Core.FileSystem.IFileSystemProvider>().Named<Core.FileSystem.IFileSystemProvider>("LocalFileSystem");
-            builder.RegisterType<Caching.WebCacheManager>().As<Core.Caching.ICacheManager>();
-            builder.RegisterType<Core.Security.HashEncryptionProvider>().As<Core.Security.IPasswordEncryptionProvider>().SingleInstance();
-            builder.RegisterType<Core.Generators.RNGRandomTextGenerator>().As<Core.Generators.IRandomTextGenerator>().SingleInstance();
-            builder.RegisterType<Core.Generators.TicksIdGenerator>().As<Core.Generators.IIdGenerator>().SingleInstance();
+            builder.RegisterType<Core.FileSystem.IFileSystemProvider, Core.FileSystem.LocalFileProvider>(name: "LocalFileSystem");
+            builder.RegisterType<Core.Caching.ICacheManager, Caching.WebCacheManager>();
+            builder.RegisterType<Core.Security.IPasswordEncryptionProvider, Core.Security.HashEncryptionProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<Core.Generators.IRandomTextGenerator, Core.Generators.RNGRandomTextGenerator>(LiftTimeScope.Singleton);
+            builder.RegisterType<Core.Generators.IIdGenerator, Core.Generators.TicksIdGenerator>(LiftTimeScope.Singleton);
 #if DEBUG
-            builder.RegisterType<Core.Data.NullTransactionManager>().As<Core.Data.ITransactionManager>();
+            builder.RegisterType<Core.Data.ITransactionManager, Core.Data.NullTransactionManager>();
 #else
-            builder.RegisterType<Core.Data.DefaultTransactionManager>().As<Core.Data.ITransactionManager>();
+            builder.RegisterType<Core.Data.ITransactionManager, Core.Data.DefaultTransactionManager>();
 #endif
-            builder.RegisterType<Security.DefaultCaptchaGenerator>().As<Security.ICaptchaGenerator>().SingleInstance();
-            builder.RegisterType<Serialization.JavascriptConvert>().As<Core.Serialization.IJsonSerializer>().SingleInstance();
+            builder.RegisterType<Security.ICaptchaGenerator, Security.DefaultCaptchaGenerator>(LiftTimeScope.Singleton);
+            builder.RegisterType<Core.Serialization.IJsonSerializer, Serialization.JavascriptConvert>(LiftTimeScope.Singleton);
 
-            builder.RegisterType<WebJsonFileObjectProvider<IEnumerable<DAF.Core.Localization.LocalizationInfo>>>().OnPreparing(pe =>
-            {
-                NamedParameter np = new NamedParameter("jsonFile", "~/App_Data/languages.js");
-                pe.Parameters = new Parameter[] { np };
-            }).As<IObjectProvider<IEnumerable<DAF.Core.Localization.LocalizationInfo>>>().SingleInstance();
+            builder.RegisterType<IObjectProvider<IEnumerable<DAF.Core.Localization.LocalizationInfo>>, WebJsonFileObjectProvider<IEnumerable<DAF.Core.Localization.LocalizationInfo>>>(LiftTimeScope.Singleton,
+                getConstructorParameters: (ctx) =>
+                    {
+                        Dictionary<string, object> paras = new Dictionary<string, object>();
+                        paras.Add("jsonFile", "~/App_Data/languages.js");
+                        return paras;
+                    });
 
-            builder.RegisterType<WebJsonFileObjectProvider<IEnumerable<Menu.MenuGroup>>>().OnPreparing(pe =>
-            {
-                NamedParameter np = new NamedParameter("jsonFile", "~/App_Data/menu.js");
-                pe.Parameters = new Parameter[] { np };
-            }).As<IObjectProvider<IEnumerable<Menu.MenuGroup>>>().SingleInstance();
+            builder.RegisterType<IObjectProvider<IEnumerable<Menu.MenuGroup>>, WebJsonFileObjectProvider<IEnumerable<Menu.MenuGroup>>>(LiftTimeScope.Singleton,
+                getConstructorParameters: (ctx) =>
+                    {
+                        Dictionary<string, object> paras = new Dictionary<string, object>();
+                        paras.Add("jsonFile", "~/App_Data/menu.js");
+                        return paras;
+                    });
 
-            builder.RegisterModule(new AutoWireModule<Core.Localization.ILocalizer>(
-                o => o.RegisterType<Localization.JsonLocalizer>().OnPreparing(pe =>
-            {
-                NamedParameter np = new NamedParameter("paths", "Localization");
-                pe.Parameters = new Parameter[] { np };
-            }).As<Core.Localization.ILocalizer>().SingleInstance()));
+            builder.RegisterType<Core.Localization.ILocalizer, Localization.JsonLocalizer>(LiftTimeScope.Singleton, autoWire: true,
+                getConstructorParameters: (ctx) =>
+                    {
+                        Dictionary<string, object> paras = new Dictionary<string, object>();
+                        paras.Add("paths", "Localization");
+                        return paras;
+                    });
 
-            //builder.RegisterModule(new AutoWireModule<Core.Logging.ILogger>(
-            //    o => o.RegisterType<Core.Logging.ILogger>().As<Core.Logging.ILogger>()));
-
-            //builder.RegisterType<WebAppEventHandler>().As<IAppEventHandler>();
+            //builder.RegisterType<Core.Logging.ILogger, Core.Logging.NullLogger>(LiftTimeScope.Singleton, autoWire: true);
         }
     }
 }

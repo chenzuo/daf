@@ -1,9 +1,10 @@
-﻿@using DAF.SSO;
+﻿@using DAF.Core.IOC;
+@using DAF.SSO;
 @using DAF.SSO.Client;
 @model DAF.SSO.Client.SignOnInfo
 @{
     Layout = "~/Views/Shared/_Html.cshtml";
-    var clientProvider = IOC.Current.GetService<IObjectProvider<SSOClient>>();
+    var clientProvider = IocInstance.Container.Resolve<IObjectProvider<SSOClient>>();
     var client = clientProvider.GetObject();
 }
 @section head {
@@ -49,13 +50,13 @@
                 <tr>
                     <td colspan="2">
                         <input id="RememberMe" name="RememberMe" type="checkbox" />
-                        <span>@(LocaleHelper.Localizer.GetProperty<SignOnInfo>("RememberMe"))</span>
+                        <span>@(LocaleHelper.Localizer.Get<SignOnInfo>("RememberMe"))</span>
                     </td>
                 </tr>
                 @if (ViewBag.HasTriedLogin)
                 { 
                     <tr>
-                        <td>@(LocaleHelper.Localizer.GetProperty<SignOnInfo>("Captcha"))</td>
+                        <td>@(LocaleHelper.Localizer.Get<SignOnInfo>("Captcha"))</td>
                         <td>
                             <input id="Captcha" name="Captcha" type="text" />
                             <img id="imgCaptcha" src="/Captcha/Get?v=@DateTime.Now.Ticks" />

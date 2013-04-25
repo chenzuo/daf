@@ -41,9 +41,6 @@
     <Reference Include="Autofac">
       <HintPath>..\..\libs\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac.Configuration">
-      <HintPath>..\..\libs\Autofac.Configuration.dll</HintPath>
-    </Reference>
     <Reference Include="Autofac.Integration.WebApi">
       <HintPath>..\..\libs\Autofac.Integration.WebApi.dll</HintPath>
     </Reference>
@@ -60,6 +57,12 @@
     </Reference>
     <Reference Include="DAF.Core.Data.MongoDb">
       <HintPath>..\..\outputs\DAF.Core.Data.MongoDb.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.IOC.Autofac">
+      <HintPath>..\..\outputs\DAF.Core.IOC.Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.IOC.AutofacForApi">
+      <HintPath>..\..\outputs\DAF.Core.IOC.AutofacForApi.dll</HintPath>
     </Reference>
     <Reference Include="DAF.Core.Search.Lucene">
       <HintPath>..\..\outputs\DAF.Core.Search.Lucene.dll</HintPath>
@@ -254,7 +257,7 @@
     <Compile Include="ViewModels\UserRoleInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Configurations\autofac.config">
+    <Content Include="Configurations\ioc.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Configurations\connectionStrings.config" />

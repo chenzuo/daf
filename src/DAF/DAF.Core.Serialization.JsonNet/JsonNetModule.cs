@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
-using Autofac.Core;
 using Newtonsoft.Json;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Serialization.JsonNet
 {
-    public class JsonNetModule : Autofac.Module
+    public class JsonNetModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<JsonNetSerializer>().As<IJsonSerializer>().OnPreparing(pe =>
+            builder.RegisterType<IJsonSerializer, JsonNetSerializer>(
+                getConstructorParameters: (ctx) =>
                 {
-                    NamedParameter np = new NamedParameter("preserveReferencesHandling", PreserveReferencesHandling.None);
-                    pe.Parameters = new Parameter[] { np };
+                    Dictionary<string, object> paras = new Dictionary<string, object>();
+                    paras.Add("preserveReferencesHandling", PreserveReferencesHandling.None);
+                    return paras;
                 });
         }
     }

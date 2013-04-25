@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Security;
 using DAF.Web.Mvc;
 using DAF.Web.Mvc.Results;
@@ -40,7 +41,7 @@ namespace DAF.Web
                 case "json":
                 default:
                     //return new JsonResult() { Data = data, ContentType = contentType, ContentEncoding = encoding, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-                    var jsonSerializer = IOC.Current.GetService<Core.Serialization.IJsonSerializer>();
+                    var jsonSerializer = IocInstance.Container.Resolve<Core.Serialization.IJsonSerializer>();
                     return new DAF.Web.Mvc.Results.JsonResult(jsonSerializer, encryptor) { Data = data, ContentType = contentType, ContentEncoding = encoding };
                 case "xml":
                     return new XmlResult() { Data = data, ContentType = contentType, ContentEncoding = encoding };

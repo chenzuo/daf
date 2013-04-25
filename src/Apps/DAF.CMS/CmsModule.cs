@@ -2,46 +2,48 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
-using Autofac.Core;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Web.Localization;
 
 namespace DAF.CMS
 {
-    public class CmsModule : Autofac.Module
+    public class CmsModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<Configurations.ModuleConfigurationProvider>().As<Core.Configurations.IConfigurationProvider>();
-            builder.RegisterModule(new AutoWireModule<Core.Localization.ILocalizer>(
-             o => o.RegisterType<JsonLocalizer>().OnPreparing(pe =>
-             {
-                 NamedParameter np = new NamedParameter("paths", "Localization, Modules/*/Localization");
-                 pe.Parameters = new Parameter[] { np };
-             }).As<Core.Localization.ILocalizer>().SingleInstance()));
+            builder.RegisterType<Core.Configurations.IConfigurationProvider, Configurations.ModuleConfigurationProvider>();
+            builder.RegisterType<Core.Localization.ILocalizer, JsonLocalizer>(LiftTimeScope.Singleton, autoWire: true,
+                getConstructorParameters: (ctx) =>
+                    {
+                        Dictionary<string, object> paras = new Dictionary<string, object>();
+                        paras.Add("paths", "Localization, Modules/*/Localization");
+                        return paras;
+                    });
 
-            builder.RegisterType<ModuleMenuGroupProvider>().OnPreparing(pe =>
-            {
-                NamedParameter p1 = new NamedParameter("paths", "App_Data, Modules/*/App_Data");
-                NamedParameter p2 = new NamedParameter("fileName", "menu.js");
-                pe.Parameters = new Parameter[] { p1, p2 };
-            }).As<IObjectProvider<IEnumerable<DAF.Web.Menu.MenuGroup>>>().SingleInstance();
-        
-            builder.RegisterType<AppSettingProvider>().As<IAppSettingProvider>().SingleInstance();
-            builder.RegisterType<BasicDataProvider>().As<IBasicDataProvider>().SingleInstance();
-            builder.RegisterType<CategoryProvider>().As<ICategoryProvider>().SingleInstance();
-            builder.RegisterType<ContentProvider>().As<IContentProvider>().SingleInstance();
-            builder.RegisterType<WebSiteProvider>().As<IWebSiteProvider>().SingleInstance();
-            builder.RegisterType<PageTemplateProvider>().As<IPageTemplateProvider>().SingleInstance();
-            builder.RegisterType<MenuProvider>().As<IMenuProvider>().SingleInstance();
-            builder.RegisterType<UserGroupProvider>().As<IUserGroupProvider>().SingleInstance();
-            builder.RegisterType<TemplateTypeProvider>().As<ITemplateTypeProvider>().SingleInstance();
-            builder.RegisterType<ControlTypeProvider>().As<IControlTypeProvider>().SingleInstance();
-            builder.RegisterType<PageProvider>().As<IPageProvider>().SingleInstance();
+            builder.RegisterType<IObjectProvider<IEnumerable<DAF.Web.Menu.MenuGroup>>, ModuleMenuGroupProvider>(LiftTimeScope.Singleton, autoWire: true,
+                getConstructorParameters: (ctx) =>
+                    {
+                        Dictionary<string, object> paras = new Dictionary<string, object>();
+                        paras.Add("paths", "App_Data, Modules/*/App_Data");
+                        paras.Add("fileName", "menu.js");
+                        return paras;
+                    });
 
-            builder.RegisterType<CmsAppEventHandler>().As<DAF.Core.IAppEventHandler>();
-            builder.RegisterType<CmsDefaultSessionProvider>().As<DAF.SSO.Client.IDefaultSessionProvider>().SingleInstance();
+            builder.RegisterType<IAppSettingProvider, AppSettingProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IBasicDataProvider, BasicDataProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<ICategoryProvider, CategoryProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IContentProvider, ContentProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IWebSiteProvider, WebSiteProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IPageTemplateProvider, PageTemplateProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IMenuProvider, MenuProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IUserGroupProvider, UserGroupProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<ITemplateTypeProvider, TemplateTypeProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IControlTypeProvider, ControlTypeProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IPageProvider, PageProvider>(LiftTimeScope.Singleton);
+
+            builder.RegisterType<IAppEventHandler, CmsAppEventHandler>();
+            builder.RegisterType<DAF.SSO.Client.IDefaultSessionProvider, CmsDefaultSessionProvider>(LiftTimeScope.Singleton);
         }
     }
 }

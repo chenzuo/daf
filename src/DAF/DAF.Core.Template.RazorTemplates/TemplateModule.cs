@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
-using Autofac.Core;
 using DAF.Core;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Template.RazorTemplates
 {
-    public class TemplateModule : Autofac.Module
+    public class TemplateModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<Core.Template.DefaultTemplateEngine>().As<Core.Template.ITemplateEngine>().Named<Core.Template.ITemplateEngine>("DefaultTemplateEngine");
-            builder.RegisterType<RazorContentTemplateGenerator>().As<Core.Template.ITemplateGenerator>().Named<Core.Template.ITemplateGenerator>("RazorContentTemplateGenerator");
-            builder.RegisterType<Core.Template.FileTemplateProvider>().OnPreparing(pe =>
-            {
-                NamedParameter np = new NamedParameter("root", "~/Templates");
-                pe.Parameters = new Parameter[] { np };
-            }).As<Core.Template.ITemplateProvider>().Named<Core.Template.ITemplateProvider>("FileTemplateProvider");
+            builder.RegisterType<Core.Template.ITemplateEngine, Core.Template.DefaultTemplateEngine>(name: "DefaultTemplateEngine");
+            builder.RegisterType<Core.Template.ITemplateGenerator, RazorContentTemplateGenerator>(name: "RazorContentTemplateGenerator");
+            builder.RegisterType<Core.Template.ITemplateProvider, Core.Template.FileTemplateProvider>(name: "FileTemplateProvider",
+                getConstructorParameters: (ctx) =>
+                {
+                    Dictionary<string, object> paras = new Dictionary<string, object>();
+                    paras.Add("root", "~/Templates");
+                    return paras;
+                });
         }
     }
 }

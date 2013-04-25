@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Command
 {
-    public class AutoRegisterCommand : IAutoRegisterContainerWithType
+    public class AutoRegisterCommand : IAutoRegister
     {
-        public void Register(ContainerBuilder builder, Type type)
+        public void Register(IIocBuilder builder, Type type)
         {
             if (!type.IsAbstract && type.IsClass && typeof(ICommand).IsAssignableFrom(type))
             {
-                builder.RegisterType(type).As(typeof(ICommand)).Named(type.FullName, typeof(ICommand));
+                builder.RegisterType(typeof(ICommand), type, LiftTimeScope.Transiant, type.FullName);
             }
         }
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Autofac;
+using DAF.Core.IOC;
 using DAF.Core.Command;
 
 namespace DAF.Core
@@ -26,7 +26,7 @@ namespace DAF.Core
             input = input.Trim();
             if (CommandRegex.IsMatch(input))
             {
-                var cmds = IOC.Current.GetService<IEnumerable<ICommand>>();
+                var cmds = IocInstance.Container.ResolveAll<ICommand>();
                 string output = CommandRegex.Replace(input, m =>
                     {
                         var cmd = m.Groups["cmd"].Value;
@@ -50,13 +50,13 @@ namespace DAF.Core
         /// <returns></returns>
         public static object Run(string cmd, string args, object context)
         {
-            var cmds = IOC.Current.GetService<IEnumerable<ICommand>>();
+            var cmds = IocInstance.Container.ResolveAll<ICommand>();
             if (cmds != null)
             {
                 var c = cmds.FirstOrDefault(o => o.Name == cmd);
                 if (c != null)
                 {
-                    var dic = args.ToDictionary(",", ":");
+                    var dic = args.ToDictionary(",", ":") as Dictionary<string, string>;
                     c.Args = dic;
                     return c.Run(context);
                 }

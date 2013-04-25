@@ -4,38 +4,46 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.IO;
-using Autofac;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Serialization;
 using DAF.Core.DataMonitor;
 using DAF.Core.Serialization.JsonNet;
 using DAF.Core.DataMonitor.SqlServer;
 using DAF.Core.Search.Lucene;
+using DAF.Core.IOC.Autofac;
 
 namespace DAF.Core.DataMonitor.SqlDataChangeMonitor
 {
     static class Program
     {
+        private static string[] IgnoreAssemblyFiles = new string[] { "system", "autofac", "bltoolkit", "entityframework", "microsoft", "newtonsoft", "nservicebus", "log4net", "emitmapper" };
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
         static void Main(string[] args)
         {
-            Config.Current.InitializeDefaultIOC(b =>
+            Config.Current.IgnoreAssemblies(IgnoreAssemblyFiles).With();
+            IIocBuilder builder = new AutofacBuilder();
+            IocInstance.RegisterBuilder(builder);
+            IocInstance.AutoRegister(Config.Current.TypesToScan);
+
+            builder.RegisterModule(new JsonNetModule());
+            builder.RegisterType<IChangeVersionManager, JsonChangeVersionManager>(LiftTimeScope.Singleton);
+            builder.RegisterType<IObjectProvider<IEnumerable<VersionInfo>>, JsonFileObjectProvider<IEnumerable<VersionInfo>>>(LiftTimeScope.Singleton,
+                getConstructorParameters: (ctx) =>
                 {
-                    b.RegisterModule<JsonNetModule>();
-
-                    b.RegisterType<JsonFileObjectProvider<IEnumerable<VersionInfo>>>().As<IObjectProvider<IEnumerable<VersionInfo>>>()
-                        .OnPreparing(p =>
-                    {
-                        var p1 = new NamedParameter("jsonFile", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "versions.js"));
-                        var p2 = new NamedParameter("jsonSerializer", p.Context.Resolve<IJsonSerializer>());
-                        p.Parameters = new [] { p1, p2 };
-                    }).SingleInstance();
-
-                    b.RegisterType<JsonChangeVersionManager>().As<IChangeVersionManager>().SingleInstance();
+                    Dictionary<string, object> paras = new Dictionary<string, object>();
+                    paras.Add("jsonFile", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "versions.js"));
+                    paras.Add("jsonSerializer", ctx.Resolve<IJsonSerializer>());
+                    return paras;
                 });
-            IOC.Current.Start();
+
+            builder.RegisterConfig(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ioc.config"));
+
+            IocInstance.Build();
+
+            IocInstance.Start();
 
             if (args.Length > 0)
             {
@@ -63,7 +71,7 @@ namespace DAF.Core.DataMonitor.SqlDataChangeMonitor
                 else if (args.Any(o => o.ToLower() == "-init"))
                 {
                     Console.WriteLine(":: Initializing ::");
-                    IBatchIndexWriter biw = IOC.Current.GetService<IBatchIndexWriter>();
+                    IBatchIndexWriter biw = IocInstance.Container.Resolve<IBatchIndexWriter>();
                     biw.Run();
                     Console.WriteLine(":: Initialized ::");
                     Console.ReadLine();

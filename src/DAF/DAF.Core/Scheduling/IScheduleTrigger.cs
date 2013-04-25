@@ -8,6 +8,6 @@ namespace DAF.Core.Scheduling
     {
         string Name { get; }
 
-        bool IsTriggered(DateTime signalTime, DateTime lastActiveTime, string lastTriggerValue, Dictionary<string, string> paras, out string currTriggerValue);
+        bool IsTriggered(DateTime signalTime, DateTime lastActiveTime, string lastTriggerValue, IDictionary<string, string> paras, out string currTriggerValue);
     }
 }

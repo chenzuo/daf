@@ -2,39 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
 using BLToolkit.Data;
 using BLToolkit.Data.Linq;
 using BLToolkit.Reflection.MetadataProvider;
 using DAF.Core;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Data.BLToolkit.Oracle
 {
-    public class OracleBLToolkitModule : TypeBasedModule<IDataContext>
+    public class OracleBLToolkitModule : IIocModule
     {
-        public OracleBLToolkitModule()
-            : base(BuildContainerRegisterations)
+        public void Load(IIocBuilder builder)
         {
-        }
+            builder.RegisterType<IAppEventHandler, OracleBLToolkitDataEventHandler>(name: "BLToolkitDataEventHandler");
 
-        private static void BuildContainerRegisterations(ContainerBuilder builder)
-        {
-            builder.RegisterType<OracleBLToolkitDataEventHandler>()
-                .As<IAppEventHandler>()
-                .Named<IAppEventHandler>("BLToolkitDataEventHandler");
-
-            builder.RegisterType<OracleDbProvider>().As<IDbProvider>();
-            builder.RegisterType<SqlFileExecutor>().As<ISqlFileExecutor>();
-            builder.RegisterType<DataContextFactory>().As<IServiceFactory<IDataContext>>();
-            builder.RegisterGeneric(typeof(DataContextRepository<>)).As(typeof(IRepository<>));
-        }
-
-        protected override bool CacheService
-        {
-            get
-            {
-                return false;
-            }
+            builder.RegisterType<IDbProvider, OracleDbProvider>();
+            builder.RegisterType<ISqlFileExecutor, SqlFileExecutor>();
+            builder.RegisterFactory<IDataContext, DataContextFactory>();
+            builder.RegisterGeneric(typeof(IRepository<>), typeof(DataContextRepository<>));
         }
     }
 }

@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
 using DAF.Core.Messaging;
+using DAF.Core.IOC;
 
 namespace DAF.Core.ServiceBus
 {
-    public class NBusModule : Module
+    public class NBusModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<NBusSender>().As<IMessageSender>().SingleInstance();
+            builder.RegisterType<IMessageSender, NBusSender>(LiftTimeScope.Singleton);
         }
     }
 }

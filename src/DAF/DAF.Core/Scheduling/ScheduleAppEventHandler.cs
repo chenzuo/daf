@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Scheduling
 {
     public class ScheduleAppEventHandler : IAppEventHandler
     {
-        public void OnApplicationStart(IContainer container, object context)
+        public void OnApplicationStart(IIocContainer container, object context)
         {
             var mgr = container.Resolve<IScheduleManager>();
             mgr.Start();
         }
 
-        public void OnApplicatoinExit(IContainer container, object context)
+        public void OnApplicatoinExit(IIocContainer container, object context)
         {
+            IIocContext ctx;
             var mgr = container.Resolve<IScheduleManager>();
             mgr.Stop();
         }

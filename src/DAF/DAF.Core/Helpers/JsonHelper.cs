@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
+using DAF.Core.IOC;
 using DAF.Core.Serialization;
 
 namespace DAF.Core
@@ -11,7 +11,7 @@ namespace DAF.Core
     {
         public static string Serialize(object obj)
         {
-            var js = IOC.Current.ResolveOptional<IJsonSerializer>();
+            var js = IocInstance.Container.ResolveOptional<IJsonSerializer>();
             if (js != null)
             {
                 return js.Serialize(obj);
@@ -21,7 +21,7 @@ namespace DAF.Core
 
         public static T Deserialize<T>(string json)
         {
-            var js = IOC.Current.ResolveOptional<IJsonSerializer>();
+            var js = IocInstance.Container.ResolveOptional<IJsonSerializer>();
             if (js != null)
             {
                 return js.Deserialize<T>(json);

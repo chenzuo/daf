@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Autofac;
 using DAF.Core.Scheduling;
 
 namespace DAF.Core.Scheduling.Provider

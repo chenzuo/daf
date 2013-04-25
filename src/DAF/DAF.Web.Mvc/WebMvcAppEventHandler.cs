@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Web.Routing;
 using System.Web.Mvc;
-using Autofac;
-using Autofac.Integration.Mvc;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Web.Mvc;
 using DAF.Core.Configurations;
 
@@ -14,9 +13,9 @@ namespace DAF.Web.Mvc
 {
     public class WebMvcAppEventHandler : DAF.Core.IAppEventHandler
     {
-        public void OnApplicationStart(IContainer container, object context)
+        public void OnApplicationStart(IIocContainer container, object context)
         {
-            //if(container.IsRegistered<IEnumerable<IConfigurationProvider>>())
+            //if (container.IsRegistered<IEnumerable<IConfigurationProvider>>())
             //    ConfigurationSystem.Install(container.Resolve<IEnumerable<IConfigurationProvider>>());
 
             ViewEngines.Engines.Clear();
@@ -25,10 +24,13 @@ namespace DAF.Web.Mvc
             //ModelValidatorProviders.Providers.RemoveAt(0);
             //ModelBinders.Binders.DefaultBinder = new DAF.Web.Mvc.DefaultModelBinder();
 
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            if (container is IOC.IIocContainerForMvc)
+            {
+                DependencyResolver.SetResolver(((IOC.IIocContainerForMvc)container).GetDependencyResolver());
+            }
         }
 
-        public void OnApplicatoinExit(IContainer container, object context)
+        public void OnApplicatoinExit(IIocContainer container, object context)
         {
         }
 

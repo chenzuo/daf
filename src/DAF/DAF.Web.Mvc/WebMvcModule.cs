@@ -2,28 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
-using Autofac.Core;
-using Autofac.Integration.Mvc;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.SSO;
 using DAF.Core.Caching;
 
 namespace DAF.Web.Mvc
 {
-    public class WebMvcModule : Autofac.Module
+    public class WebMvcModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            //builder.RegisterType<Configurations.AreaConfigurationProvider>().As<Core.Configurations.IConfigurationProvider>();
-            builder.RegisterModule(new AutoWireModule<Core.Localization.ILocalizer>(
-                o => o.RegisterType<Localization.JsonLocalizer>().OnPreparing(pe =>
-                {
-                    NamedParameter np = new NamedParameter("paths", "Localization, Areas/*/Localization");
-                    pe.Parameters = new Parameter[] { np };
-                }).As<Core.Localization.ILocalizer>().SingleInstance()));
+            //builder.RegisterType<Core.Configurations.IConfigurationProvider, Configurations.AreaConfigurationProvider>();
 
-            builder.RegisterType<WebMvcAppEventHandler>().As<IAppEventHandler>();
+            builder.RegisterType<Core.Localization.ILocalizer, Localization.JsonLocalizer>(LiftTimeScope.Singleton, autoWire: true,
+                getConstructorParameters: (ctx) =>
+                {
+                    Dictionary<string, object> paras = new Dictionary<string, object>();
+                    paras.Add("paths", "Localization, Areas/*/Localization");
+                    return paras;
+                });
+
+            builder.RegisterType<IAppEventHandler, WebMvcAppEventHandler>();
         }
     }
 }

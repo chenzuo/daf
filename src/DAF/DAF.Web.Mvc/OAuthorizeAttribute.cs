@@ -12,6 +12,7 @@ using System.Web.Script.Serialization;
 using System.Configuration;
 using System.Net.Http;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Security;
 using DAF.Core.Serialization;
 using DAF.Core.Localization;
@@ -41,7 +42,7 @@ namespace DAF.Web.Mvc
                 var fromClientId = filterContext.HttpContext.Request.QueryString["fc"];
                 if (!string.IsNullOrEmpty(fromClientId))
                 {
-                    var clientProvider = IOC.Current.GetService<ISSOClientProvider>();
+                    var clientProvider = IocInstance.Container.Resolve<ISSOClientProvider>();
                     var response = clientProvider.TransferSignOn(new TransferSignOnInfo()
                     {
                         ClientId = AuthHelper.CurrentClient.ClientId,

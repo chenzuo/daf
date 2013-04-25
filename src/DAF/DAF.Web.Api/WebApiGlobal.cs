@@ -7,22 +7,26 @@ using System.IO;
 using System.Web.Http;
 using System.Web.Http.Validation;
 using System.Web.Http.Validation.Providers;
-using Autofac;
-using Autofac.Integration.WebApi;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.FileSystem;
 using DAF.Web.Api.Filters;
 
 namespace DAF.Web.Api
 {
-    public class WebApiGlobal : WebGlobal
+    public abstract class WebApiGlobal : WebGlobal
     {
-        protected override void BuildContainer(ContainerBuilder builder)
+        protected override void BuildeIOC(IIocBuilder builder)
         {
-            Config.Current.AssembiesToScan.ForEach(asm =>
-                {
-                    builder.RegisterApiControllers(asm);
-                });
+            base.BuildeIOC(builder);
+
+            if (builder is IOC.IIocBuilderForApi)
+            {
+                Config.Current.AssembiesToScan.ForEach(asm =>
+                    {
+                        ((IOC.IIocBuilderForApi)builder).RegisterApiControllers(asm);
+                    });
+            }
         }
 
         protected override void Application_Start(object sender, EventArgs e)

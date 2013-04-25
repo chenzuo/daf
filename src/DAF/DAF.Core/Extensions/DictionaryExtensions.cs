@@ -10,7 +10,14 @@ namespace DAF.Core
 {
     public static class DictionaryExtensions
     {
-        public static Dictionary<T, V> Add<T, V>(this Dictionary<T, V> dic, IEnumerable<KeyValuePair<T, V>> values, bool replaceWhenExists = true)
+        public static V GetValue<T, V>(this IDictionary<T, V> dic, T key, V defaultValue)
+        {
+            if (dic == null || !dic.ContainsKey(key))
+                return defaultValue;
+            return dic[key];
+        }
+
+        public static IDictionary<T, V> Add<T, V>(this IDictionary<T, V> dic, IEnumerable<KeyValuePair<T, V>> values, bool replaceWhenExists = true)
         {
             if (values != null)
             {
@@ -43,7 +50,7 @@ namespace DAF.Core
         //    return dic;
         //}
 
-        public static string ToFormatString<T, V>(this Dictionary<T, V> dic, string comma = "&", string equal = "=", string leftComma = "", string rightComma = "", Func<T, string> keyToString = null, Func<V, string> valToString = null)
+        public static string ToFormatString<T, V>(this IDictionary<T, V> dic, string comma = "&", string equal = "=", string leftComma = "", string rightComma = "", Func<T, string> keyToString = null, Func<V, string> valToString = null)
         {
             if (dic == null || dic.Count <= 0)
                 return string.Empty;
@@ -63,7 +70,7 @@ namespace DAF.Core
             return sb.ToString();
         }
 
-        public static NameValueCollection ToNameValueCollection<T, V>(this Dictionary<T,V> dic, Func<T, string> keyToString = null, Func<V, string> valToString = null)
+        public static NameValueCollection ToNameValueCollection<T, V>(this IDictionary<T,V> dic, Func<T, string> keyToString = null, Func<V, string> valToString = null)
         {
             if (dic == null)
                 return null;

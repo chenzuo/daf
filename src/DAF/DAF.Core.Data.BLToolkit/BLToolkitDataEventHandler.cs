@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Autofac;
 using BL = BLToolkit;
 using BLToolkit.Data;
 using BLToolkit.Data.DataProvider;
 using BLToolkit.Reflection.MetadataProvider;
 using DAF.Core;
 using DAF.Core.Security;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Data.BLToolkit
 {
     public class BLToolkitDataEventHandler : IAppEventHandler
     {
-        public virtual void OnApplicationStart(IContainer container, object context)
+        public virtual void OnApplicationStart(IIocContainer container, object context)
         {
             MetadataProviderBase.CreateProvider = () =>
             {
@@ -26,7 +26,7 @@ namespace DAF.Core.Data.BLToolkit
             };
         }
 
-        public virtual void OnApplicatoinExit(IContainer container, object context)
+        public virtual void OnApplicatoinExit(IIocContainer container, object context)
         {
         }
 

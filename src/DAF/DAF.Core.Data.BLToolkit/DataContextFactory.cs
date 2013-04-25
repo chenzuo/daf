@@ -3,11 +3,11 @@ using System.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
 using BLToolkit.Data;
 using BLToolkit.Data.Linq;
 using BLToolkit.Mapping;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Data;
 using DAF.Core.Caching;
 
@@ -22,7 +22,7 @@ namespace DAF.Core.Data.BLToolkit
             this.entitySets = entitySets;
         }
 
-        public IDataContext Create(Type type, IComponentContext container)
+        public IDataContext Create(Type type, IIocContext context)
         {
             Type entityType = type;
             if (type.IsGenericType)

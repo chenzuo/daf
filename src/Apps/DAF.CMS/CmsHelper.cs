@@ -5,6 +5,7 @@ using System.Text;
 using System.Configuration;
 using System.Web;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Data;
 using DAF.Core.Caching;
 using DAF.Core.Generators;
@@ -201,7 +202,7 @@ namespace DAF.CMS
             var dic = paras.ToDictionary<string, string>(o => o, v =>
                 {
                     return CommandHelper.AnalysisCommands(v, HttpContext.Current);
-                });
+                }) as Dictionary<string, string>;
 
             return dic;
         }
@@ -261,47 +262,47 @@ namespace DAF.CMS
 
         public static IWebSiteProvider WebSiteProvider
         {
-            get { return IOC.Current.GetService<IWebSiteProvider>(); }
+            get { return IocInstance.Container.Resolve<IWebSiteProvider>(); }
         }
 
         public static IAppSettingProvider AppSettingProvider
         {
-            get { return IOC.Current.GetService<IAppSettingProvider>(); }
+            get { return IocInstance.Container.Resolve<IAppSettingProvider>(); }
         }
 
         public static IBasicDataProvider BasicDataProvider
         {
-            get { return IOC.Current.GetService<IBasicDataProvider>(); }
+            get { return IocInstance.Container.Resolve<IBasicDataProvider>(); }
         }
 
         public static ICategoryProvider CategoryProvider
         {
-            get { return IOC.Current.GetService<ICategoryProvider>(); }
+            get { return IocInstance.Container.Resolve<ICategoryProvider>(); }
         }
 
         public static IContentProvider ContentProvider
         {
-            get { return IOC.Current.GetService<IContentProvider>(); }
+            get { return IocInstance.Container.Resolve<IContentProvider>(); }
         }
 
         public static IPageProvider PageProvider
         {
-            get { return IOC.Current.GetService<IPageProvider>(); }
+            get { return IocInstance.Container.Resolve<IPageProvider>(); }
         }
 
         public static IPageTemplateProvider PageTemplateProvider
         {
-            get { return IOC.Current.GetService<IPageTemplateProvider>(); }
+            get { return IocInstance.Container.Resolve<IPageTemplateProvider>(); }
         }
 
         public static IMenuProvider MenuProvider
         {
-            get { return IOC.Current.GetService<IMenuProvider>(); }
+            get { return IocInstance.Container.Resolve<IMenuProvider>(); }
         }
 
         public static IUserGroupProvider UserGroupProvider
         {
-            get { return IOC.Current.GetService<IUserGroupProvider>(); }
+            get { return IocInstance.Container.Resolve<IUserGroupProvider>(); }
         }
 
         #endregion

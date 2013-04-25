@@ -8,6 +8,7 @@ using System.Web.Routing;
 using System.Web.Http;
 using System.Web.Http.Validation;
 using System.Web.Http.Validation.Providers;
+using DAF.Core.IOC;
 using DAF.Web.Api;
 
 namespace DAF.Timeline.Site
@@ -29,6 +30,11 @@ namespace DAF.Timeline.Site
                 );
 
             DAF.Core.ServiceBus.NBus.Msmq();
+        }
+
+        protected override IIocBuilder CreateIocBuilder()
+        {
+            return new DAF.Core.IOC.AutofacForApi.AutofacBuilderForApi();
         }
     }
 }

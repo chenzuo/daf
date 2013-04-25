@@ -5,27 +5,39 @@ using System.Text;
 using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
-using Autofac;
-using Autofac.Configuration;
 using DAF.Core;
+using DAF.Core.IOC;
 
 namespace DAF.Web
 {
-    public class WebGlobal : System.Web.HttpApplication
+    public abstract class WebGlobal : System.Web.HttpApplication
     {
-        protected virtual void BuildContainer(ContainerBuilder builder)
+        protected string iocConfigFile = "ioc.config";
+        protected string[] IgnoreAssemblyFiles = new string[] { "system", "autofac", "bltoolkit", "entityframework", "microsoft", "newtonsoft", "nservicebus", "log4net", "emitmapper" };
+
+        protected abstract IIocBuilder CreateIocBuilder();
+        protected virtual void BuildeIOC(IIocBuilder builder)
         {
+            var file = ("~/Configurations/" + iocConfigFile).GetPhysicalPath();
+            builder.RegisterConfig(file);
         }
 
         protected virtual void Application_Start(object sender, EventArgs e)
         {
-            Config.Current.InitializeDefaultIOC(BuildContainer);
-            IOC.Current.Start(this.Context);
+            Config.Current.IgnoreAssemblies(IgnoreAssemblyFiles).With();
+            IIocBuilder builder = CreateIocBuilder();
+
+            IocInstance.RegisterBuilder(builder);
+            IocInstance.AutoRegister(Config.Current.TypesToScan);
+            BuildeIOC(builder);
+            IocInstance.Build();
+
+            IocInstance.Start(this.Context);
         }
 
         protected virtual void Application_End(object sender, EventArgs e)
         {
-            IOC.Current.Stop(this.Context);
+            IocInstance.Stop(this.Context);
         }
 
         protected virtual void Application_BeginRequest(object sender, EventArgs e)

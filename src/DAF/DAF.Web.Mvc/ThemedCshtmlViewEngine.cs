@@ -11,6 +11,7 @@ using System.Globalization;
 using DAF.SSO;
 using DAF.SSO.Client;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Security;
 
 namespace DAF.Web.Mvc
@@ -64,7 +65,7 @@ namespace DAF.Web.Mvc
 
         protected override string GetFormatedVirtualPath(HttpContextBase context, VirtualPathProviderViewEngine.ViewLocation location, string name, string controllerName, string areaName)
         {
-            var clientProvider = IOC.Current.GetService<ISSOClientProvider>();
+            var clientProvider = IocInstance.Container.Resolve<ISSOClientProvider>();
             var session = clientProvider == null ? null : clientProvider.GetCurrentSession();
             string theme = session == null ? "Default" : session.Theme;
             string skin = session == null ? "Default" : session.Skin;

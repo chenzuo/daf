@@ -10,7 +10,7 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Globalization;
-using Autofac;
+using DAF.Core.IOC;
 using DAF.Core;
 using DAF.Core.Localization;
 using DAF.Core.Logging;
@@ -44,7 +44,7 @@ namespace DAF.Web
                 {
                     return AuthHelper.CurrentSession.ClientBaseUrl.UriCombine(url);
                 }
-                clientProvider = IOC.Current.ResolveOptional<IObjectProvider<SSOClient>>();
+                clientProvider = IocInstance.Container.ResolveOptional<IObjectProvider<SSOClient>>();
                 if (clientProvider != null)
                 {
                     return clientProvider.GetObject().BaseUrl.UriCombine(url);
@@ -52,7 +52,7 @@ namespace DAF.Web
             }
             else
             {
-                var clientsProvider = IOC.Current.ResolveOptional<IObjectProvider<SSOClient[]>>();
+                var clientsProvider = IocInstance.Container.ResolveOptional<IObjectProvider<SSOClient[]>>();
                 if (clientsProvider != null)
                 {
                     var clients = clientsProvider.GetObject();

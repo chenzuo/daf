@@ -1,14 +1,15 @@
 ﻿@using System.Drawing;
 @using System.Drawing.Imaging;
 @using DAF.Core;
+@using DAF.Core.IOC;
 @using DAF.Web;
 @using DAF.Core.Generators;
 @using DAF.Web.Security;
 @{
     string AllowedChars = "ABCDEFGHJKLMNPQRSTUVWXYZ3456789";
     int Length = 5;
-    ICaptchaGenerator captchaGenerator = IOC.Current.GetService<ICaptchaGenerator>();
-    IRandomTextGenerator radomTextGenerator = IOC.Current.GetService<IRandomTextGenerator>(); ;
+    ICaptchaGenerator captchaGenerator = IocInstance.Container.Resolve<ICaptchaGenerator>();
+    IRandomTextGenerator radomTextGenerator = IocInstance.Container.Resolve<IRandomTextGenerator>(); ;
     int width = 100;
     int height = 30;
     if (!string.IsNullOrEmpty(Request.QueryString["w"]))

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Command;
 using DAF.Core.Caching;
 
@@ -20,7 +21,7 @@ namespace DAF.Web.Commands
 
         public object Run(object context)
         {
-            var cacheMgr = IOC.Current.GetService<ICacheManager>();
+            var cacheMgr = IocInstance.Container.Resolve<ICacheManager>();
             var cache = cacheMgr.CreateCacheProvider(CacheScope.Global);
             string cmd = Args["cmd"].ToLower();
             switch (cmd)

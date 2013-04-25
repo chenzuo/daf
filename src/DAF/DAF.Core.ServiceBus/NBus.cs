@@ -2,20 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
 using NServiceBus;
+using DAF.Core.IOC;
 
 namespace DAF.Core.ServiceBus
 {
     public class NBus
     {
-        public static IBus Msmq()
+        public static IBus Msmq(Func<Configure, Configure> iocConfig = null, Func<Configure, Configure> extraConfig = null)
         {
-            var bus = Configure.With(DAF.Core.Config.Current.TypesToScan)
+            var config = Configure.With(DAF.Core.Config.Current.TypesToScan)
                 .Log4Net()
-                .AutofacBuilder(IOC.Current)
-                .XmlSerializer()
-                .DefiningCommandsAs(t => t.Namespace != null && t.Namespace.EndsWith(".Commands"))
+                .XmlSerializer();
+            if (iocConfig == null)
+            {
+                config = config.DefaultBuilder();
+            }
+            else
+            {
+                config = iocConfig(config);
+            }
+
+            config = config.DefiningCommandsAs(t => t.Namespace != null && t.Namespace.EndsWith(".Commands"))
                 .DefiningEventsAs(t => t.Namespace != null && t.Namespace.EndsWith(".Events"))
                 .DefiningMessagesAs(t => t.Namespace != null && t.Namespace.EndsWith(".Messages"))
                 .DefiningEncryptedPropertiesAs(p => p.Name.StartsWith("Encrypted"))
@@ -30,8 +38,12 @@ namespace DAF.Core.ServiceBus
                 .UnicastBus()
                     .LoadMessageHandlers()
                     .ImpersonateSender(false)
-                .MsmqSubscriptionStorage()
-               .CreateBus()
+                .MsmqSubscriptionStorage();
+
+            if (extraConfig != null)
+                config = extraConfig(config);
+
+            var bus = config.CreateBus()
                .Start(() => Configure.Instance.ForInstallationOn<NServiceBus.Installation.Environments.Windows>().Install());
 
             return bus;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
+using DAF.Core.IOC;
 using DAF.Core;
 
 namespace DAF.Core.Scheduling
@@ -14,7 +14,7 @@ namespace DAF.Core.Scheduling
             get { return "TimingTrigger"; }
         }
 
-        public bool IsTriggered(DateTime signalTime, DateTime lastActiveTime, string lastTriggerValue, Dictionary<string, string> paras, out string currTriggerValue)
+        public bool IsTriggered(DateTime signalTime, DateTime lastActiveTime, string lastTriggerValue, IDictionary<string, string> paras, out string currTriggerValue)
         {
             DateTimePart? intervalType = null;
             if(paras.ContainsKey("IntervalType"))

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data.Entity;
-using Autofac;
 using DAF.Core;
-using DAF.Core.Caching;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Data.EF
 {
@@ -15,7 +14,7 @@ namespace DAF.Core.Data.EF
         {
         }
 
-        public DbContext Create(Type type, IComponentContext container)
+        public DbContext Create(Type type, IIocContext context)
         {
             Type entityType = type;
             if (type.IsGenericType)

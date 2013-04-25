@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using Autofac;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Search
 {
-    public class AutoRegisterAttributeDocumentType : IAutoRegisterContainerWithType
+    public class AutoRegisterAttributeDocumentType : IAutoRegister
     {
-        public void Register(ContainerBuilder builder, Type type)
+        public void Register(IIocBuilder builder, Type type)
         {
             var docAttr = type.GetCustomAttribute<DocumentAttribute>(true);
             if (docAttr != null)

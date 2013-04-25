@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Workflow;
 using DAF.Workflow.Models;
 using DAF.Workflow.Info;
@@ -18,7 +19,7 @@ namespace DAF.App.Workflow.Services
 
         public StateFlowService()
         {
-            svr = IOC.Current.GetService<IStateFlowService>();
+            svr = IocInstance.Container.Resolve<IStateFlowService>();
         }
 
         public BizFlowInfo GetBizFlow(string clientId, string flowCodeOrTargetType)

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
+using DAF.Core.IOC;
 
 namespace DAF.Core
 {
     public interface IAppEventHandler
     {
-        void OnApplicationStart(IContainer container, object context);
-        void OnApplicatoinExit(IContainer container, object context);
+        void OnApplicationStart(IIocContainer container, object context);
+        void OnApplicatoinExit(IIocContainer container, object context);
         int ExecuteOrder { get; }
     }
 }

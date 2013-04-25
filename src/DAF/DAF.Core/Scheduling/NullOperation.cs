@@ -8,11 +8,11 @@ namespace DAF.Core.Scheduling
 {
     public class NullOperation : IOperation
     {
-        public void Start(Dictionary<string, string> paras)
+        public void Start(IDictionary<string, string> paras)
         {
         }
 
-        public void Active(Dictionary<string, string> paras)
+        public void Active(IDictionary<string, string> paras)
         {
         }
 
@@ -20,7 +20,7 @@ namespace DAF.Core.Scheduling
         {
         }
 
-        public void Stop(Dictionary<string, string> paras)
+        public void Stop(IDictionary<string, string> paras)
         {
         }
 

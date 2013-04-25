@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Web.Menu;
 
 namespace DAF.Web
@@ -11,7 +12,7 @@ namespace DAF.Web
     {
         public static IEnumerable<MenuItem> GetMenuItems(string group)
         {
-            var menuGroupProvider = IOC.Current.GetService<IObjectProvider<IEnumerable<MenuGroup>>>();
+            var menuGroupProvider = IocInstance.Container.Resolve<IObjectProvider<IEnumerable<MenuGroup>>>();
             if (menuGroupProvider != null)
             {
                 var mgs = menuGroupProvider.GetObject();

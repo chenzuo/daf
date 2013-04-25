@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
-using Autofac.Core;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Scheduling;
 using DAF.Core.Scheduling.Provider;
 
 namespace DAF.Core.Scheduling.Provider
 {
-    public class SchedulingModule : Autofac.Module
+    public class SchedulingModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<ElapseScheduleTimer>().As<IScheduleTimer>().SingleInstance();
-            builder.RegisterType<DefaultScheduleManager>().As<IScheduleManager>().SingleInstance();
-            builder.RegisterType<TimingTrigger>().As<IScheduleTrigger>().Named<IScheduleTrigger>("TimingTrigger");
-            builder.RegisterType<NullOperation>().As<IOperation>().Named<IOperation>("NullOperation");
+            builder.RegisterType<IScheduleTimer, ElapseScheduleTimer>(LiftTimeScope.Singleton);
+            builder.RegisterType<IScheduleManager, DefaultScheduleManager>(LiftTimeScope.Singleton);
+            builder.RegisterType<IScheduleTrigger, TimingTrigger>(name: "TimingTrigger");
+            builder.RegisterType<IOperation, NullOperation>(name: "NullOperation");
 
-            builder.RegisterType<ScheduleAppEventHandler>().As<IAppEventHandler>();
+            builder.RegisterType<IAppEventHandler, ScheduleAppEventHandler>();
         }
     }
 }

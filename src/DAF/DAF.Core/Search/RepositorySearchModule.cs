@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
+using DAF.Core.IOC;
 using DAF.Core.Data;
 
 namespace DAF.Core.Search
 {
-    public class RepositorySearchModule : Module
+    public class RepositorySearchModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            builder.RegisterGeneric(typeof(SearchRepositoryEventHandler<>)).As(typeof(IRepositoryEventHandler<>));
-            builder.RegisterType<SearchAppEventHandler>().As<IAppEventHandler>();
+            builder.RegisterGeneric(typeof(IRepositoryEventHandler<>), typeof(SearchRepositoryEventHandler<>));
+            builder.RegisterType<IAppEventHandler, SearchAppEventHandler>();
         }
     }
 }

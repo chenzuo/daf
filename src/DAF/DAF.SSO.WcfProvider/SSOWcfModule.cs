@@ -2,38 +2,45 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
-using Autofac.Core;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.SSO;
 using DAF.Web;
 using DAF.Web.Menu;
 
 namespace DAF.SSO.WcfProvider
 {
-    public class SSOClientModule : Autofac.Module
+    public class SSOClientModule : IIocModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<WebJsonFileObjectProvider<SSOServer>>().OnPreparing(pe =>
-            {
-                NamedParameter np = new NamedParameter("jsonFile", "~/App_Data/sso_server.js");
-                pe.Parameters = new Parameter[] { np };
-            }).As<IObjectProvider<SSOServer>>().SingleInstance();
-            builder.RegisterType<WebJsonFileObjectProvider<SSOClient[]>>().OnPreparing(pe =>
-            {
-                NamedParameter np = new NamedParameter("jsonFile", "~/App_Data/sso_clients.js");
-                pe.Parameters = new Parameter[] { np };
-            }).As<IObjectProvider<SSOClient[]>>().SingleInstance();
-            builder.RegisterType<WebJsonFileObjectProvider<SSOClient>>().OnPreparing(pe =>
-            {
-                NamedParameter np = new NamedParameter("jsonFile", "~/App_Data/sso_client.js");
-                pe.Parameters = new Parameter[] { np };
-            }).As<IObjectProvider<SSOClient>>().SingleInstance();
+            builder.RegisterType<IObjectProvider<SSOServer>, WebJsonFileObjectProvider<SSOServer>>(LiftTimeScope.Singleton,
+                getConstructorParameters: (ctx) =>
+                {
+                    Dictionary<string, object> paras = new Dictionary<string, object>();
+                    paras.Add("jsonFile", "~/App_Data/sso_server.js");
+                    return paras;
+                });
 
-            builder.RegisterType<DefaultSSOConfiguration>().As<ISSOConfiguration>().SingleInstance();
-            builder.RegisterType<SSOClientProvider>().As<Client.ISSOClientProvider>().SingleInstance();
-            builder.RegisterType<Client.DefaultSessionProvider>().As<Client.IDefaultSessionProvider>().SingleInstance();
+            builder.RegisterType<IObjectProvider<SSOClient[]>, WebJsonFileObjectProvider<SSOClient[]>>(LiftTimeScope.Singleton,
+                getConstructorParameters: (ctx) =>
+                {
+                    Dictionary<string, object> paras = new Dictionary<string, object>();
+                    paras.Add("jsonFile", "~/App_Data/sso_clients.js");
+                    return paras;
+                });
+
+            builder.RegisterType<IObjectProvider<SSOClient>, WebJsonFileObjectProvider<SSOClient>>(LiftTimeScope.Singleton,
+                getConstructorParameters: (ctx) =>
+                {
+                    Dictionary<string, object> paras = new Dictionary<string, object>();
+                    paras.Add("jsonFile", "~/App_Data/sso_client.js");
+                    return paras;
+                });
+
+            builder.RegisterType<ISSOConfiguration, DefaultSSOConfiguration>(LiftTimeScope.Singleton);
+            builder.RegisterType<Client.ISSOClientProvider, SSOClientProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<Client.IDefaultSessionProvider, Client.DefaultSessionProvider>(LiftTimeScope.Singleton);
         }
     }
 }

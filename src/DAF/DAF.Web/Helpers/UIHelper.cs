@@ -8,6 +8,7 @@ using System.Web.Routing;
 using System.Web.WebPages.Html;
 using System.ComponentModel;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Localization;
 using DAF.Core.Data;
 
@@ -79,7 +80,7 @@ namespace DAF.Web
         public static IHtmlString SelectRepositoryEditor<T>(Func<T, string> funcGetText, Func<T, object> funcGetValue, Expression<Func<T, bool>> predicate = null, string id = null, string emptyWords = null, object val = null, string attrs = null)
             where T : class
         {
-            var repo = IOC.Current.GetService<IRepository<T>>(null);
+            var repo = IocInstance.Container.Resolve<IRepository<T>>();
             var entities = repo.Query(predicate);
             StringBuilder sb = new StringBuilder();
             if (string.IsNullOrEmpty(id))
@@ -126,7 +127,7 @@ namespace DAF.Web
         public static IHtmlString TextRepositoryEditor<T>(Func<T, string> funcGetText, Func<T, object> funcGetValue, Expression<Func<T, bool>> predicate = null, string emptyWords = null, object val = null, string attrs = null)
             where T : class
         {
-            var repo = IOC.Current.GetService<IRepository<T>>(null);
+            var repo = IocInstance.Container.Resolve<IRepository<T>>(null);
             var entities = repo.Query(predicate);
             StringBuilder sb = new StringBuilder();
             string text = emptyWords;
@@ -150,7 +151,7 @@ namespace DAF.Web
         public static IHtmlString RepositoryAutoComplete<T>(string id, Func<T, string> funcGetText, Func<T, object> funcGetValue, Expression<Func<T, bool>> predicate = null, string emptyWords = null, object val = null, string attrs = null)
             where T : class
         {
-            var repo = IOC.Current.GetService<IRepository<T>>(null);
+            var repo = IocInstance.Container.Resolve<IRepository<T>>(null);
             var entities = repo.Query(predicate);
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(@"$(function() {{ 

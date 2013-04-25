@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\libs\Autofac.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="RazorTemplates.Core">
       <HintPath>..\..\libs\RazorTemplates.Core.dll</HintPath>
       <Private>False</Private>

@@ -7,10 +7,10 @@ namespace DAF.Core.Scheduling
 {
     public interface IOperation
     {
-        void Start(Dictionary<string, string> paras);
-        void Active(Dictionary<string, string> paras);
+        void Start(IDictionary<string, string> paras);
+        void Active(IDictionary<string, string> paras);
         void HandleError(Exception ex);
-        void Stop(Dictionary<string, string> paras);
+        void Stop(IDictionary<string, string> paras);
 
         string Name { get; }
         string Description { get; }

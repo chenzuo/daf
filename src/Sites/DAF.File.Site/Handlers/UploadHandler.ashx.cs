@@ -9,6 +9,7 @@ using DAF.Core.FileSystem;
 using DAF.Core.Serialization;
 using DAF.Web;
 using DAF.File.Site.Models;
+using DAF.Core.IOC;
 
 namespace DAF.File.Site.Handlers
 {
@@ -258,7 +259,7 @@ namespace DAF.File.Site.Handlers
             {
                 if (fileProvider == null)
                 {
-                    fileProvider = IOC.Current.GetService<IFileSystemProvider>();
+                    fileProvider = IocInstance.Container.Resolve<IFileSystemProvider>();
                     fileProvider.SetRootPath("~/".GetPhysicalPath());
                 }
                 return fileProvider;
@@ -267,7 +268,7 @@ namespace DAF.File.Site.Handlers
 
         public IJsonSerializer JsonSerializer
         {
-            get { return IOC.Current.GetService<IJsonSerializer>(); }
+            get { return IocInstance.Container.Resolve<IJsonSerializer>(); }
         }
     }
 }

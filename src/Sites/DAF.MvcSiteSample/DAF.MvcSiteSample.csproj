@@ -42,9 +42,6 @@
     <Reference Include="Autofac">
       <HintPath>..\..\libs\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac.Configuration">
-      <HintPath>..\..\libs\Autofac.Configuration.dll</HintPath>
-    </Reference>
     <Reference Include="Autofac.Integration.Mvc">
       <HintPath>..\..\libs\Autofac.Integration.Mvc.dll</HintPath>
     </Reference>
@@ -59,6 +56,12 @@
     </Reference>
     <Reference Include="DAF.Core.Data.EF">
       <HintPath>..\..\outputs\DAF.Core.Data.EF.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.IOC.Autofac">
+      <HintPath>..\..\outputs\DAF.Core.IOC.Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="DAF.Core.IOC.AutofacForMvc">
+      <HintPath>..\..\outputs\DAF.Core.IOC.AutofacForMvc.dll</HintPath>
     </Reference>
     <Reference Include="DAF.Core.Map.EmitMapper">
       <HintPath>..\..\outputs\DAF.Core.Map.EmitMapper.dll</HintPath>
@@ -184,7 +187,7 @@
     <Content Include="Localization\DAF_MvcSiteSample.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Configurations\autofac.config" />
+    <Content Include="Configurations\ioc.config" />
     <Content Include="Configurations\connectionStrings.config" />
     <Content Include="Localization\DAF_Core.js" />
     <Content Include="Localization\DAF_SSO.js" />

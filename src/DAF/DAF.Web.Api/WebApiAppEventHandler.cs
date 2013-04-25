@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Http;
-using Autofac;
-using Autofac.Integration.WebApi;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Configurations;
 
 namespace DAF.Web.Api
 {
     public class WebApiAppEventHandler : DAF.Core.IAppEventHandler
     {
-        public void OnApplicationStart(IContainer container, object context)
+        public void OnApplicationStart(IIocContainer container, object context)
         {
-             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+            if (container is IOC.IIocContainerForApi)
+            {
+                GlobalConfiguration.Configuration.DependencyResolver = ((IOC.IIocContainerForApi)container).GetDependencyResolver();
+            }
         }
 
-        public void OnApplicatoinExit(IContainer container, object context)
+        public void OnApplicatoinExit(IIocContainer container, object context)
         {
         }
 

@@ -8,6 +8,7 @@ using System.Web.Routing;
 using System.Web.Http;
 using System.Web.Http.Validation;
 using System.Web.Http.Validation.Providers;
+using DAF.Core.IOC;
 using DAF.Web.Api;
 
 namespace DAF.Report.Site
@@ -27,6 +28,11 @@ namespace DAF.Report.Site
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"
                 );
+        }
+
+        protected override IIocBuilder CreateIocBuilder()
+        {
+            return new DAF.Core.IOC.AutofacForApi.AutofacBuilderForApi();
         }
     }
 }

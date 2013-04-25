@@ -21,7 +21,7 @@ namespace DAF.Web
 
         public static Uri AppendQueryString(this Uri url, RouteValueDictionary paras)
         {
-            Dictionary<string, string> dic = new Dictionary<string,string>();
+            IDictionary<string, string> dic = new Dictionary<string,string>();
             if(!string.IsNullOrEmpty(url.Query))
                dic = url.Query.ToDictionary(o => o.ToLower(), o => o);
             foreach (var key in paras.Keys)

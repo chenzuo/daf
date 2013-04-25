@@ -30,14 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\libs\Autofac.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Autofac.Integration.WebApi">
-      <HintPath>..\..\libs\Autofac.Integration.WebApi.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -76,6 +68,8 @@
     <Compile Include="Filters\ExceptionHandlingAttribute.cs" />
     <Compile Include="Filters\OAuthorizeAttribute.cs" />
     <Compile Include="Filters\ShareActionContextFilter.cs" />
+    <Compile Include="IOC\IIocBuilderForApi.cs" />
+    <Compile Include="IOC\IIocContainerForApi.cs" />
     <Compile Include="MessageHandlers\BasicAuthenticationHandler.cs" />
     <Compile Include="MessageHandlers\EncodingHandler.cs" />
     <Compile Include="MessageHandlers\ETagHandler.cs" />

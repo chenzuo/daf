@@ -12,8 +12,8 @@ using System.Web.Security;
 using System.Web.Script.Serialization;
 using System.Globalization;
 using System.Threading;
-using Autofac;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Localization;
 using DAF.Core.Generators;
 using DAF.Core.Logging;
@@ -82,7 +82,7 @@ namespace DAF.Web
 
         public static bool AutoSignOn(Func<string> getSessionCookieValue, Func<TransferSignOnInfo> getTransferSignOnInfo)
         {
-            ISSOClientProvider cp = IOC.Current.GetService<ISSOClientProvider>();
+            ISSOClientProvider cp = IocInstance.Container.Resolve<ISSOClientProvider>();
             var sessionCookieValue = getSessionCookieValue();
             if (!string.IsNullOrEmpty(sessionCookieValue))
             {
@@ -92,7 +92,7 @@ namespace DAF.Web
                     var decrypted = encrypt.Decrypt(sessionCookieValue);
                     if (!string.IsNullOrEmpty(decrypted))
                     {
-                        IJsonSerializer js = IOC.Current.GetService<IJsonSerializer>();
+                        IJsonSerializer js = IocInstance.Container.Resolve<IJsonSerializer>();
                         var session = js.Deserialize<Session>(decrypted);
                         cp.SaveSession(session);
                         return true;
@@ -133,7 +133,7 @@ namespace DAF.Web
             {
                 if (!string.IsNullOrEmpty(captcha))
                 {
-                    var captchaGenerator = IOC.Current.GetService<ICaptchaGenerator>();
+                    var captchaGenerator = IocInstance.Container.Resolve<ICaptchaGenerator>();
                     if (captchaGenerator.Verify(signOnInfo.SessionId, captcha) == false)
                     {
                         captchaPassed = false;
@@ -144,7 +144,7 @@ namespace DAF.Web
 
                 if (captchaPassed)
                 {
-                    ISSOClientProvider scp = IOC.Current.GetService<ISSOClientProvider>();
+                    ISSOClientProvider scp = IocInstance.Container.Resolve<ISSOClientProvider>();
 
                     var r = scp.SignOn(signOnInfo);
                     if (r.Status == ResponseStatus.Success)
@@ -174,7 +174,7 @@ namespace DAF.Web
         public static void SignOff()
         {
             RemoveSessionCookie();
-            ISSOClientProvider scp = IOC.Current.GetService<ISSOClientProvider>();
+            ISSOClientProvider scp = IocInstance.Container.Resolve<ISSOClientProvider>();
             scp.SignOff();
         }
 
@@ -200,7 +200,7 @@ namespace DAF.Web
 
             try
             {
-                var cp = IOC.Current.GetService<ISSOClientProvider>();
+                var cp = IocInstance.Container.Resolve<ISSOClientProvider>();
                 var r = cp.Register(info);
                 response.Status = r.Status;
                 response.Message = r.Message;
@@ -234,7 +234,7 @@ namespace DAF.Web
 
                 try
                 {
-                    var cp = IOC.Current.GetService<ISSOClientProvider>();
+                    var cp = IocInstance.Container.Resolve<ISSOClientProvider>();
                     var r = cp.ChangePassword(info);
                     response.Status = r.Status;
                     response.Message = r.Message;
@@ -259,7 +259,7 @@ namespace DAF.Web
             ServerResponse response = new ServerResponse();
             try
             {
-                IRandomTextGenerator generator = IOC.Current.GetService<IRandomTextGenerator>();
+                IRandomTextGenerator generator = IocInstance.Container.Resolve<IRandomTextGenerator>();
                 var newPassword = generator.Generate(RandomChars, RandomLength);
                 ResetPasswordInfo info = new ResetPasswordInfo()
                 {
@@ -271,7 +271,7 @@ namespace DAF.Web
                     NewPassword = newPassword
                 };
 
-                var cp = IOC.Current.GetService<ISSOClientProvider>();
+                var cp = IocInstance.Container.Resolve<ISSOClientProvider>();
                 var r = cp.ResetPassword(info);
                 response.Status = r.Status;
                 response.Message = r.Message;
@@ -291,9 +291,9 @@ namespace DAF.Web
             {
                 SetClientCookie();
 
-                IJsonSerializer js = IOC.Current.GetService<IJsonSerializer>();
-                ISSOConfiguration sc = IOC.Current.GetService<ISSOConfiguration>();
-                ISSOClientProvider cp = IOC.Current.GetService<ISSOClientProvider>();
+                IJsonSerializer js = IocInstance.Container.Resolve<IJsonSerializer>();
+                ISSOConfiguration sc = IocInstance.Container.Resolve<ISSOConfiguration>();
+                ISSOClientProvider cp = IocInstance.Container.Resolve<ISSOClientProvider>();
                 var val = js.Serialize(CurrentSession);
                 var encrypt = cp.GetEncryptor();
                 var encryptedVal = encrypt.Encrypt(val);
@@ -341,7 +341,7 @@ namespace DAF.Web
         {
             get
             {
-                ISSOClientProvider clientProvider = IOC.Current.ResolveOptional<ISSOClientProvider>();
+                ISSOClientProvider clientProvider = IocInstance.Container.ResolveOptional<ISSOClientProvider>();
                 ISession currentSession = clientProvider.GetCurrentSession();
 
                 if (currentSession != null)
@@ -353,7 +353,7 @@ namespace DAF.Web
                     if (defaultSession != null)
                         return defaultSession;
 
-                    var defaultSessionProvider = IOC.Current.ResolveOptional<IDefaultSessionProvider>();
+                    var defaultSessionProvider = IocInstance.Container.ResolveOptional<IDefaultSessionProvider>();
                     if (defaultSessionProvider == null)
                     {
                         defaultSession = new Session
@@ -377,7 +377,7 @@ namespace DAF.Web
             }
             set
             {
-                ISSOClientProvider clientProvider = IOC.Current.ResolveOptional<ISSOClientProvider>();
+                ISSOClientProvider clientProvider = IocInstance.Container.ResolveOptional<ISSOClientProvider>();
                 clientProvider.SaveSession(value);
             }
         }
@@ -392,7 +392,7 @@ namespace DAF.Web
                 SSOClient currentClient = HttpContext.Current.Items["CurrentClient"] as SSOClient;
                 if (currentClient == null)
                 {
-                    IObjectProvider<SSOClient> clientProvider = IOC.Current.ResolveOptional<IObjectProvider<SSOClient>>();
+                    IObjectProvider<SSOClient> clientProvider = IocInstance.Container.ResolveOptional<IObjectProvider<SSOClient>>();
                     currentClient = clientProvider.GetObject();
                     if (currentClient != null)
                     {
@@ -413,7 +413,7 @@ namespace DAF.Web
                 SSOServer currentServer = HttpContext.Current.Items["CurrentServer"] as SSOServer;
                 if (currentServer == null)
                 {
-                    IObjectProvider<SSOServer> serverProvider = IOC.Current.ResolveOptional<IObjectProvider<SSOServer>>();
+                    IObjectProvider<SSOServer> serverProvider = IocInstance.Container.ResolveOptional<IObjectProvider<SSOServer>>();
                     currentServer = serverProvider.GetObject();
                     if (currentServer != null)
                     {
@@ -434,7 +434,7 @@ namespace DAF.Web
                 SSOClient[] clients = HttpContext.Current.Items["Clients"] as SSOClient[];
                 if (clients == null)
                 {
-                    IObjectProvider<SSOClient[]> clientsProvider = IOC.Current.ResolveOptional<IObjectProvider<SSOClient[]>>();
+                    IObjectProvider<SSOClient[]> clientsProvider = IocInstance.Container.ResolveOptional<IObjectProvider<SSOClient[]>>();
                     clients = clientsProvider.GetObject();
                     if (clients != null)
                     {

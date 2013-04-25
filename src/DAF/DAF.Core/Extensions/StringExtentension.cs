@@ -101,19 +101,19 @@ namespace DAF.Core
         /// <param name="formatValue">原字符串</param>
         /// <param name="comma">分隔符</param>
         /// <returns>字符串集合</returns>
-        public static List<string> ToList(this string formatValue, char comma)
+        public static IList<string> ToList(this string formatValue, char comma)
         {
             List<string> list = new List<string>();
             list.AddRange(formatValue.Split(comma));
             return list;
         }
 
-        public static List<string> ToList(this string formatValue)
+        public static IList<string> ToList(this string formatValue)
         {
             return ToList(formatValue, ',');
         }
 
-        public static List<string> ToList(this string formatValue, string leftComma, string rightComma)
+        public static IList<string> ToList(this string formatValue, string leftComma, string rightComma)
         {
             List<string> list = new List<string>();
             int sidx = formatValue.IndexOf(leftComma);
@@ -145,12 +145,12 @@ namespace DAF.Core
         /// <param name="leftComma">值前特殊串</param>
         /// <param name="rightComma">值后特殊串</param>
         /// <returns>字符串字典</returns>
-        public static Dictionary<string, string> ToDictionary(this string formatValue, string comma = "&", string equal = "=", string leftComma = "", string rightComma = "")
+        public static IDictionary<string, string> ToDictionary(this string formatValue, string comma = "&", string equal = "=", string leftComma = "", string rightComma = "")
         {
             return ToDictionary(formatValue, o => o, o => o, comma, equal, leftComma, rightComma);
         }
 
-        public static Dictionary<T, V> ToDictionary<T, V>(this string formatValue, Func<string, T> keyResolver, Func<string, V> valResolver, string comma = "&", string equal = "=", string leftComma = "", string rightComma = "")
+        public static IDictionary<T, V> ToDictionary<T, V>(this string formatValue, Func<string, T> keyResolver, Func<string, V> valResolver, string comma = "&", string equal = "=", string leftComma = "", string rightComma = "")
         {
             Dictionary<T, V> dic = new Dictionary<T, V>();
             if (string.IsNullOrWhiteSpace(formatValue))
@@ -325,12 +325,12 @@ namespace DAF.Core
             return string.Format(format, source);
         }
 
-        public static string Replace(this string text, Dictionary<string, string> words)
+        public static string Replace(this string text, IDictionary<string, string> words)
         {
             return Replace(text, words, true);
         }
 
-        public static string Replace(this string text, Dictionary<string, string> words, bool ignoreCase)
+        public static string Replace(this string text, IDictionary<string, string> words, bool ignoreCase)
         {
             if (string.IsNullOrWhiteSpace(text) || words == null || words.Count <= 0)
                 return text;

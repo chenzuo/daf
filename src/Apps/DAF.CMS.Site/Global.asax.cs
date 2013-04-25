@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Validation;
 using System.Web.Http.Validation.Providers;
+using DAF.Core.IOC;
 using DAF.Web.Api;
 
 namespace DAF.CMS.Site
@@ -54,6 +55,11 @@ namespace DAF.CMS.Site
                 constraints: null,
                 handler: new CmsMessageHandler()
                 );
+        }
+
+        protected override IIocBuilder CreateIocBuilder()
+        {
+            return new DAF.Core.IOC.AutofacForApi.AutofacBuilderForApi();
         }
     }
 }

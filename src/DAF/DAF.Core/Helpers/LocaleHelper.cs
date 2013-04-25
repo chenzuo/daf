@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Web;
 using System.Reflection;
-using Autofac;
+using DAF.Core.IOC;
 using DAF.Core.Localization;
 
 namespace DAF.Core
@@ -14,7 +14,7 @@ namespace DAF.Core
     {
         public static IEnumerable<LocalizationInfo> GetSupportLanguages()
         {
-            IObjectProvider<IEnumerable<LocalizationInfo>> provider = IOC.Current.ResolveOptional<IObjectProvider<IEnumerable<LocalizationInfo>>>();
+            IObjectProvider<IEnumerable<LocalizationInfo>> provider = IocInstance.Container.ResolveOptional<IObjectProvider<IEnumerable<LocalizationInfo>>>();
             if (provider == null)
             {
                 var culture = CultureInfo.CurrentCulture;
@@ -37,9 +37,9 @@ namespace DAF.Core
         {
             get
             {
-                if (IOC.Current == null)
+                if (IocInstance.Container == null)
                     return NullLocalizer.Instance;
-                var localizer = IOC.Current.ResolveOptional<ILocalizer>();
+                var localizer = IocInstance.Container.ResolveOptional<ILocalizer>();
                 return localizer ?? NullLocalizer.Instance;
             }
         }

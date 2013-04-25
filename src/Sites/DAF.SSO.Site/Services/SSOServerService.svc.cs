@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.Text;
 using Autofac;
 using DAF.Core;
+using DAF.Core.IOC;
 using DAF.Core.Security;
 using DAF.Core.Data;
 using DAF.SSO;
@@ -24,7 +25,7 @@ namespace DAF.SSO.Site.Services
 
         public SSOServerService()
         {
-            this.serverProvider = IOC.Current.Resolve<ISSOServerProvider>();
+            this.serverProvider = IocInstance.Container.Resolve<ISSOServerProvider>();
         }
 
         public IServerResponse<Session> SignOn(SignOnInfo signOnInfo)

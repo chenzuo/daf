@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Web;
-using Autofac;
+using DAF.Core.IOC;
 using DAF.Core.Logging;
 
 namespace DAF.Core
@@ -13,9 +13,9 @@ namespace DAF.Core
         {
             get
             {
-                if (IOC.Current == null)
+                if (IocInstance.Container == null)
                     return NullLogger.Instance;
-                var logger = IOC.Current.ResolveOptional<ILogger>();
+                var logger = IocInstance.Container.ResolveOptional<ILogger>();
                 return logger ?? NullLogger.Instance;
             }
         }

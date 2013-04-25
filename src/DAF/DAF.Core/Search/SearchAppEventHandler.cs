@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Autofac;
+using DAF.Core.IOC;
 
 namespace DAF.Core.Search
 {
     public class SearchAppEventHandler : IAppEventHandler
     {
-        public void OnApplicationStart(IContainer container, object context)
+        public void OnApplicationStart(IIocContainer container, object context)
         {
             var searchProvider = container.ResolveOptional<ISearchProvider>();
             if (searchProvider != null)
                 searchProvider.Initialize();
         }
 
-        public void OnApplicatoinExit(IContainer container, object context)
+        public void OnApplicatoinExit(IIocContainer container, object context)
         {
             var searchProvider = container.ResolveOptional<ISearchProvider>();
             if (searchProvider != null)

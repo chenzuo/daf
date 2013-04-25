@@ -20,6 +20,7 @@ namespace DAF.SSO
         public ConstString ConfirmPasswordIsNotSameToPassword = "ConfirmPasswordIsNotSameToPassword";
         public ConstString ChangePasswordSuccessfully = "ChangePasswordSuccessfully";
         public ConstString ResetPasswordSuccessfully = "ResetPasswordSuccessfully";
+        public ConstString ForgetPassword = "ForgetPassword";
         public ConstString RememberMe = "RememberMe";
         public ConstString Captcha = "Captcha";
 
