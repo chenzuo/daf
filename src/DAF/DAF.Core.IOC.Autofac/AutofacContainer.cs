@@ -95,8 +95,17 @@ namespace DAF.Core.IOC.Autofac
 
         public virtual ILifetimeScope WorkUnitScope
         {
-            get { return HttpContext.Current.Items[typeof(ILifetimeScope)] as ILifetimeScope; }
-            set { HttpContext.Current.Items[typeof(ILifetimeScope)] = value; }
+            get
+            {
+                if (HttpContext.Current != null)
+                    return HttpContext.Current.Items[typeof(ILifetimeScope)] as ILifetimeScope;
+                return null;
+            }
+            set
+            {
+                if (HttpContext.Current != null)
+                    HttpContext.Current.Items[typeof(ILifetimeScope)] = value;
+            }
         }
 
         public IContainer Container { get { return container; } }
