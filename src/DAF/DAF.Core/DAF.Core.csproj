@@ -126,14 +126,16 @@
     <Compile Include="Helpers\LocaleHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="IOC\AutoRegisterStartup.cs" />
+    <Compile Include="IOC\IIocContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="IOC\IocInstance.cs" />
     <Compile Include="IOC\IAutoRegister.cs" />
     <Compile Include="IOC\IIocBuilder.cs" />
     <Compile Include="IOC\IIocContainer.cs" />
-    <Compile Include="IOC\IIocContext.cs" />
     <Compile Include="IOC\IIocModule.cs" />
     <Compile Include="IOC\IServiceFactory.cs" />
-    <Compile Include="IOC\LiftTimeScope.cs" />
+    <Compile Include="IOC\LifeTimeScope.cs" />
     <Compile Include="Messaging\AutoRegisterMessageMapper.cs" />
     <Compile Include="Messaging\IMessageMapper.cs" />
     <Compile Include="Messaging\MessageManager.cs" />

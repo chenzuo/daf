@@ -285,6 +285,14 @@
     <Content Include="Modules\ECommerce\Configurations\appSettings.config" />
     <Content Include="Modules\ECommerce\Configurations\ioc.config" />
     <Content Include="Modules\ECommerce\Configurations\connectionStrings.config" />
+    <Content Include="Modules\BXX\Configurations\appSettings.config" />
+    <Content Include="Modules\BXX\Configurations\connectionStrings.config" />
+    <Content Include="Modules\BXX\Configurations\ioc.config" />
+    <Content Include="Modules\BXX\Controls\common.cshtml" />
+    <Content Include="Modules\BXX\Controls\Menu\menu.cshtml" />
+    <Content Include="Modules\BXX\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

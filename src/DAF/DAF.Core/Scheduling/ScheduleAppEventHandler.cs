@@ -16,7 +16,6 @@ namespace DAF.Core.Scheduling
 
         public void OnApplicatoinExit(IIocContainer container, object context)
         {
-            IIocContext ctx;
             var mgr = container.Resolve<IScheduleManager>();
             mgr.Stop();
         }

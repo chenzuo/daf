@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace DAF.Core.IOC
 {
@@ -11,11 +11,13 @@ namespace DAF.Core.IOC
         private static IIocBuilder builder;
         private static IIocContainer container;
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public static void RegisterBuilder(IIocBuilder builder)
         {
             IocInstance.builder = builder;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public static void Build()
         {
             if (builder != null)
@@ -40,6 +42,7 @@ namespace DAF.Core.IOC
                 });
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public static void Start(object context = null)
         {
             var appEventHandlers = container.ResolveOptional<IEnumerable<IAppEventHandler>>();
@@ -57,6 +60,7 @@ namespace DAF.Core.IOC
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public static void Stop(object context = null)
         {
             var appEventHandlers = container.ResolveOptional<IEnumerable<IAppEventHandler>>();

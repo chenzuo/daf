@@ -16,7 +16,7 @@ namespace DAF.Web.Api
     {
         public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<ModelMetadataProvider, DataAnnotationsModelMetadataProvider2>(LiftTimeScope.Singleton);
+            builder.RegisterType<ModelMetadataProvider, DataAnnotationsModelMetadataProvider2>(LifeTimeScope.Singleton);
             builder.RegisterType<IAppEventHandler, WebApiAppEventHandler>();
         }
     }

@@ -93,6 +93,8 @@
     <Compile Include="Helpers\UIHelper.cs" />
     <Compile Include="Helpers\UrlHelper.cs" />
     <Compile Include="Helpers\WebHelper.cs" />
+    <Compile Include="IOC\IocWebAppEventHandler.cs" />
+    <Compile Include="IWebAppEventHandler.cs" />
     <Compile Include="Localization\JsonLocalizer.cs" />
     <Compile Include="Menu\MenuGroup.cs" />
     <Compile Include="Menu\MenuItem.cs" />

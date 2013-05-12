@@ -8,5 +8,6 @@ namespace DAF.Core.IOC
     public interface IIocContainer : IIocContext
     {
         void BeginWorkUnitScope();
+        void EndWorkUnitScope();
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using Autofac;
 using Autofac.Core;
 
@@ -16,46 +17,48 @@ namespace DAF.Core.IOC.Autofac
             this.context = context;
         }
 
-        public bool IsRegistered<T>(string name = null)
+        public virtual bool IsRegistered(Type type, string name = null)
         {
             if (string.IsNullOrEmpty(name))
             {
-                return context.IsRegistered<T>();
+                return context.IsRegistered(type);
             }
             else
             {
-                return context.IsRegisteredWithName<T>(name);
+                return context.IsRegisteredWithName(name, type);
             }
         }
 
-        public T Resolve<T>(string name = null)
+        public virtual object Resolve(Type type, string name = null)
         {
             if (string.IsNullOrEmpty(name))
             {
-                return context.Resolve<T>();
+                return context.Resolve(type);
             }
             else
             {
-                return context.ResolveNamed<T>(name);
+                return context.ResolveNamed(name, type);
             }
         }
 
-        public T ResolveOptional<T>(string name = null)
-            where T : class
+        public virtual object ResolveOptional(Type type, string name = null)
         {
             if (string.IsNullOrEmpty(name))
             {
-                return context.ResolveOptional<T>();
+                return context.ResolveOptional(type);
             }
             else
             {
-                return context.ResolveOptionalNamed<T>(name);
+                object obj = null;
+                context.TryResolveNamed(name, type, out obj);
+                return obj;
             }
         }
 
-        public IEnumerable<T> ResolveAll<T>()
+        public virtual IEnumerable<object> ResolveAll(Type type)
         {
-            return context.Resolve<IEnumerable<T>>();
+            var stype = typeof(IEnumerable<>).MakeGenericType(type);
+            return (IEnumerable<object>)context.Resolve(stype);
         }
     }
 }

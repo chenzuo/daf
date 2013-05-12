@@ -33,27 +33,83 @@ namespace DAF.Web
             IocInstance.Build();
 
             IocInstance.Start(this.Context);
+            var appEventHandlers = IocInstance.Container.ResolveOptional<IEnumerable<IWebAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.Application_Start(sender, e);
+            }
         }
 
         protected virtual void Application_End(object sender, EventArgs e)
         {
             IocInstance.Stop(this.Context);
+            var appEventHandlers = IocInstance.Container.ResolveOptional<IEnumerable<IWebAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.Application_End(sender, e);
+            }
+        }
+
+        protected virtual void Application_AuthenticateRequest(object sender, EventArgs e)
+        {
+            var appEventHandlers = IocInstance.Container.ResolveOptional<IEnumerable<IWebAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.Application_AuthenticateRequest(sender, e);
+            }
         }
 
         protected virtual void Application_BeginRequest(object sender, EventArgs e)
         {
+            var appEventHandlers = IocInstance.Container.ResolveOptional<IEnumerable<IWebAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.Application_BeginRequest(sender, e);
+            }
         }
 
         protected virtual void Application_EndRequest(object sender, EventArgs e)
         {
+            var appEventHandlers = IocInstance.Container.ResolveOptional<IEnumerable<IWebAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.Application_EndRequest(sender, e);
+            }
         }
 
         protected virtual void Session_Start(object sender, EventArgs e)
         {
+            var appEventHandlers = IocInstance.Container.ResolveOptional<IEnumerable<IWebAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.Session_Start(sender, e);
+            }
         }
 
         protected virtual void Session_End(object sender, EventArgs e)
         {
+            var appEventHandlers = IocInstance.Container.ResolveOptional<IEnumerable<IWebAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.Session_End(sender, e);
+            }
+        }
+
+        protected virtual void Application_Error(object sender, EventArgs e)
+        {
+            var appEventHandlers = IocInstance.Container.ResolveOptional<IEnumerable<IWebAppEventHandler>>();
+            if (appEventHandlers != null)
+            {
+                foreach (var aeh in appEventHandlers.OrderBy(o => o.ExecuteOrder))
+                    aeh.Application_Error(sender, e);
+            }
         }
 
         public override string GetVaryByCustomString(HttpContext context, string custom)

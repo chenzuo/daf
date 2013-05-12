@@ -11,7 +11,7 @@ namespace DAF.Core.IOC
         {
             if (!type.IsAbstract && type.IsClass && typeof(IStartup).IsAssignableFrom(type))
             {
-                builder.RegisterType(typeof(IStartup), type, LiftTimeScope.Transiant, type.FullName);
+                builder.RegisterType(typeof(IStartup), type, LifeTimeScope.Transient, type.FullName);
             }
         }
     }

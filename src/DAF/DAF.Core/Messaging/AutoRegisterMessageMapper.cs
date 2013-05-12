@@ -18,7 +18,7 @@ namespace DAF.Core.Messaging
                     var itype = type.GetInterfaces()[0];
                     if (itype.IsGenericType && itype.GetGenericTypeDefinition().Equals(typeof(IMessageMapper<>)))
                     {
-                        builder.RegisterType(itype, type, LiftTimeScope.Transiant, type.FullName);
+                        builder.RegisterType(itype, type, LifeTimeScope.Transient, type.FullName);
                     }
                 }
             }

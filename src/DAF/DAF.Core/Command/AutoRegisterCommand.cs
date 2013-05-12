@@ -12,7 +12,7 @@ namespace DAF.Core.Command
         {
             if (!type.IsAbstract && type.IsClass && typeof(ICommand).IsAssignableFrom(type))
             {
-                builder.RegisterType(typeof(ICommand), type, LiftTimeScope.Transiant, type.FullName);
+                builder.RegisterType(typeof(ICommand), type, LifeTimeScope.Transient, type.FullName);
             }
         }
     }

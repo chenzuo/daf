@@ -9,6 +9,6 @@ namespace DAF.Web.Mvc.IOC
 {
     public interface IIocBuilderForMvc : IIocBuilder
     {
-        void RegisterControllers(Assembly asm);
+        void RegisterControllers(params Assembly[] asms);
     }
 }

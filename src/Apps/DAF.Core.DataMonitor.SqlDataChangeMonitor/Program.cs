@@ -29,8 +29,8 @@ namespace DAF.Core.DataMonitor.SqlDataChangeMonitor
             IocInstance.AutoRegister(Config.Current.TypesToScan);
 
             builder.RegisterModule(new JsonNetModule());
-            builder.RegisterType<IChangeVersionManager, JsonChangeVersionManager>(LiftTimeScope.Singleton);
-            builder.RegisterType<IObjectProvider<IEnumerable<VersionInfo>>, JsonFileObjectProvider<IEnumerable<VersionInfo>>>(LiftTimeScope.Singleton,
+            builder.RegisterType<IChangeVersionManager, JsonChangeVersionManager>(LifeTimeScope.Singleton);
+            builder.RegisterType<IObjectProvider<IEnumerable<VersionInfo>>, JsonFileObjectProvider<IEnumerable<VersionInfo>>>(LifeTimeScope.Singleton,
                 getConstructorParameters: (ctx) =>
                 {
                     Dictionary<string, object> paras = new Dictionary<string, object>();

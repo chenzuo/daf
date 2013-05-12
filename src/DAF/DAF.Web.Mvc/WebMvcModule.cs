@@ -15,7 +15,7 @@ namespace DAF.Web.Mvc
         {
             //builder.RegisterType<Core.Configurations.IConfigurationProvider, Configurations.AreaConfigurationProvider>();
 
-            builder.RegisterType<Core.Localization.ILocalizer, Localization.JsonLocalizer>(LiftTimeScope.Singleton, autoWire: true,
+            builder.RegisterType<Core.Localization.ILocalizer, Localization.JsonLocalizer>(LifeTimeScope.Singleton, autoWire: true,
                 getConstructorParameters: (ctx) =>
                 {
                     Dictionary<string, object> paras = new Dictionary<string, object>();

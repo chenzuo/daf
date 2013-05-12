@@ -20,10 +20,7 @@ namespace DAF.Web.Mvc
             
             if (builder is IOC.IIocBuilderForMvc)
             {
-                Config.Current.AssembiesToScan.ForEach(asm =>
-                {
-                    ((IOC.IIocBuilderForMvc)builder).RegisterControllers(asm);
-                });
+                ((IOC.IIocBuilderForMvc)builder).RegisterControllers(Config.Current.AssembiesToScan.ToArray());
             }
         }
 

@@ -13,9 +13,9 @@ namespace DAF.Core.IOC.AutofacForApi
 {
     public class AutofacBuilderForApi : AutofacBuilder, IIocBuilderForApi
     {
-        public void RegisterApiControllers(Assembly asm)
+        public void RegisterApiControllers(params Assembly[] asms)
         {
-            builder.RegisterApiControllers(asm);
+            builder.RegisterApiControllers(asms);
         }
 
         public override IIocContainer Build()

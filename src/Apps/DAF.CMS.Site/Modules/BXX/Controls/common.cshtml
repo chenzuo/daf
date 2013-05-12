@@ -1,0 +1,56 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.CMS;
+@using DAF.CMS.Models;
+@{
+    Layout = "~/Templates/Full.cshtml";
+    var pageData = Page.PageData as DAF.CMS.Models.WebPage;
+    Page.Title = pageData.PageTitle;
+}
+
+@section top
+{
+    @foreach (var con in pageData.OrderedControls("top"))
+    {
+        <div class="container @con.Container" style="@con.Styles">
+            @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
+        </div>
+    }
+}
+
+@section left
+{
+    @foreach (var con in pageData.OrderedControls("left"))
+    {
+        <div class="container @con.Container" style="@con.Styles">
+            @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
+        </div>
+    }
+}
+
+@section right
+{
+    @foreach (var con in pageData.OrderedControls("right"))
+    {
+        <div class="container @con.Container" style="@con.Styles">
+            @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
+        </div>
+    }
+}
+
+@section bottom
+{
+    @foreach (var con in pageData.OrderedControls("bottom"))
+    {
+        <div class="container @con.Container" style="@con.Styles">
+            @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
+        </div>
+    }
+}
+
+@foreach (var con in pageData.OrderedControls("body"))
+{
+    <div class="container @con.Container" style="@con.Styles">
+        @RenderPage(con.Path, new { PageData = pageData, Paras = con.Paras });
+    </div>
+}

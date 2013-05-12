@@ -13,9 +13,9 @@ namespace DAF.Core.IOC.AutofacForMvc
 {
     public class AutofacBuilderForMvc : AutofacBuilder, IIocBuilderForMvc
     {
-        public void RegisterControllers(Assembly asm)
+        public void RegisterControllers(params Assembly[] asms)
         {
-            builder.RegisterControllers(asm);
+            builder.RegisterControllers(asms);
         }
 
         public override IIocContainer Build()

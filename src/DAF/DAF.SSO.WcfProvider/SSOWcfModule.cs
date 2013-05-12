@@ -14,7 +14,7 @@ namespace DAF.SSO.WcfProvider
     {
         public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<IObjectProvider<SSOServer>, WebJsonFileObjectProvider<SSOServer>>(LiftTimeScope.Singleton,
+            builder.RegisterType<IObjectProvider<SSOServer>, WebJsonFileObjectProvider<SSOServer>>(LifeTimeScope.Singleton,
                 getConstructorParameters: (ctx) =>
                 {
                     Dictionary<string, object> paras = new Dictionary<string, object>();
@@ -22,7 +22,7 @@ namespace DAF.SSO.WcfProvider
                     return paras;
                 });
 
-            builder.RegisterType<IObjectProvider<SSOClient[]>, WebJsonFileObjectProvider<SSOClient[]>>(LiftTimeScope.Singleton,
+            builder.RegisterType<IObjectProvider<SSOClient[]>, WebJsonFileObjectProvider<SSOClient[]>>(LifeTimeScope.Singleton,
                 getConstructorParameters: (ctx) =>
                 {
                     Dictionary<string, object> paras = new Dictionary<string, object>();
@@ -30,7 +30,7 @@ namespace DAF.SSO.WcfProvider
                     return paras;
                 });
 
-            builder.RegisterType<IObjectProvider<SSOClient>, WebJsonFileObjectProvider<SSOClient>>(LiftTimeScope.Singleton,
+            builder.RegisterType<IObjectProvider<SSOClient>, WebJsonFileObjectProvider<SSOClient>>(LifeTimeScope.Singleton,
                 getConstructorParameters: (ctx) =>
                 {
                     Dictionary<string, object> paras = new Dictionary<string, object>();
@@ -38,9 +38,9 @@ namespace DAF.SSO.WcfProvider
                     return paras;
                 });
 
-            builder.RegisterType<ISSOConfiguration, DefaultSSOConfiguration>(LiftTimeScope.Singleton);
-            builder.RegisterType<Client.ISSOClientProvider, SSOClientProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<Client.IDefaultSessionProvider, Client.DefaultSessionProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<ISSOConfiguration, DefaultSSOConfiguration>(LifeTimeScope.Singleton);
+            builder.RegisterType<Client.ISSOClientProvider, SSOClientProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<Client.IDefaultSessionProvider, Client.DefaultSessionProvider>(LifeTimeScope.Singleton);
         }
     }
 }

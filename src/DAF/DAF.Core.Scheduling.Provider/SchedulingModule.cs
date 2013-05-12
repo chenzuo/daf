@@ -13,8 +13,8 @@ namespace DAF.Core.Scheduling.Provider
     {
         public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<IScheduleTimer, ElapseScheduleTimer>(LiftTimeScope.Singleton);
-            builder.RegisterType<IScheduleManager, DefaultScheduleManager>(LiftTimeScope.Singleton);
+            builder.RegisterType<IScheduleTimer, ElapseScheduleTimer>(LifeTimeScope.Singleton);
+            builder.RegisterType<IScheduleManager, DefaultScheduleManager>(LifeTimeScope.Singleton);
             builder.RegisterType<IScheduleTrigger, TimingTrigger>(name: "TimingTrigger");
             builder.RegisterType<IOperation, NullOperation>(name: "NullOperation");
 

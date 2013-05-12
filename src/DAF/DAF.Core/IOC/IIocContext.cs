@@ -2,15 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace DAF.Core.IOC
 {
     public interface IIocContext
     {
-        bool IsRegistered<T>(string name = null);
-        T Resolve<T>(string name = null);
-        T ResolveOptional<T>(string name = null) where T : class;
-        IEnumerable<T> ResolveAll<T>();
+        bool IsRegistered(Type type, string name = null);
+        object Resolve(Type type, string name = null);
+        object ResolveOptional(Type type, string name = null);
+        IEnumerable<object> ResolveAll(Type type);
+    }
+
+    public static class IIocContextExtensions
+    {
+        public static bool IsRegistered<T>(this IIocContext context, string name = null)
+        {
+            return context.IsRegistered(typeof(T), name);
+        }
+
+        public static T Resolve<T>(this IIocContext context, string name = null)
+        {
+            return (T)context.Resolve(typeof(T), name);
+        }
+
+        public static T ResolveOptional<T>(this IIocContext context, string name = null)
+        {
+            return (T)context.ResolveOptional(typeof(T), name);
+        }
+
+        public static IEnumerable<T> ResolveAll<T>(this IIocContext context)
+        {
+            return context.ResolveAll(typeof(T)).Select(o => (T)o);
+        }
     }
 }

@@ -9,6 +9,6 @@ namespace DAF.Web.Api.IOC
 {
     public interface IIocBuilderForApi : IIocBuilder
     {
-        void RegisterApiControllers(Assembly asm);
+        void RegisterApiControllers(params Assembly[] asms);
     }
 }

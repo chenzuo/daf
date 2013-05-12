@@ -19,7 +19,7 @@ namespace DAF.Core.IOC.Autofac
             module = new AttachComponentModule();
         }
 
-        public void RegisterType(Type interfaceType, Type serviceType, LiftTimeScope scope = LiftTimeScope.Transiant, string name = null, bool autoWire = false,
+        public void RegisterType(Type interfaceType, Type serviceType, LifeTimeScope scope = LifeTimeScope.Transient, string name = null, bool autoWire = false,
             Func<IIocContext, IDictionary<string, object>> getConstructorParameters = null, Func<IIocContext, object, object> onActivating = null, Action<IIocContext, object> onActivated = null)
         {
             var rb = builder.RegisterType(serviceType).As(interfaceType);
@@ -27,13 +27,13 @@ namespace DAF.Core.IOC.Autofac
                 rb.Named(name, interfaceType);
             switch (scope)
             {
-                case LiftTimeScope.Singleton:
+                case LifeTimeScope.Singleton:
                     rb.SingleInstance();
                     break;
-                case LiftTimeScope.WorkUnit:
+                case LifeTimeScope.WorkUnit:
                     rb.InstancePerMatchingLifetimeScope("workunit");
                     break;
-                case LiftTimeScope.Transiant:
+                case LifeTimeScope.Transient:
                 default:
                     rb.InstancePerDependency();
                     break;
@@ -71,20 +71,20 @@ namespace DAF.Core.IOC.Autofac
             }
         }
 
-        public void RegisterInstance(Type interfaceType, object instance, LiftTimeScope scope = LiftTimeScope.Transiant, string name = null, bool autoWire = false)
+        public void RegisterInstance(Type interfaceType, object instance, LifeTimeScope scope = LifeTimeScope.Transient, string name = null, bool autoWire = false)
         {
             var rb = builder.RegisterInstance(instance).As(interfaceType);
             if (!string.IsNullOrEmpty(name))
                 rb.Named(name, interfaceType);
             switch (scope)
             {
-                case LiftTimeScope.Singleton:
+                case LifeTimeScope.Singleton:
                     rb.SingleInstance();
                     break;
-                case LiftTimeScope.WorkUnit:
+                case LifeTimeScope.WorkUnit:
                     rb.InstancePerMatchingLifetimeScope("workunit");
                     break;
-                case LiftTimeScope.Transiant:
+                case LifeTimeScope.Transient:
                 default:
                     rb.InstancePerDependency();
                     break;
@@ -96,7 +96,7 @@ namespace DAF.Core.IOC.Autofac
             }
         }
 
-        public void RegisterFactory<IT, TT>(LiftTimeScope scope = LiftTimeScope.Transiant)
+        public void RegisterFactory<IT, TT>(LifeTimeScope scope = LifeTimeScope.Transient)
             where TT : class, IServiceFactory<IT>
         {
             builder.RegisterType<TT>().As<IServiceFactory<IT>>().SingleInstance();
@@ -117,18 +117,18 @@ namespace DAF.Core.IOC.Autofac
             module.AddTypeBasedServiceType(typeof(IT));
         }
 
-        public void RegisterGeneric(Type interfaceType, Type serviceType, LiftTimeScope scope = LiftTimeScope.Transiant)
+        public void RegisterGeneric(Type interfaceType, Type serviceType, LifeTimeScope scope = LifeTimeScope.Transient)
         {
             var rb = builder.RegisterGeneric(serviceType).As(interfaceType);
             switch (scope)
             {
-                case LiftTimeScope.Singleton:
+                case LifeTimeScope.Singleton:
                     rb.SingleInstance();
                     break;
-                case LiftTimeScope.WorkUnit:
+                case LifeTimeScope.WorkUnit:
                     rb.InstancePerMatchingLifetimeScope("workunit");
                     break;
-                case LiftTimeScope.Transiant:
+                case LifeTimeScope.Transient:
                 default:
                     rb.InstancePerDependency();
                     break;

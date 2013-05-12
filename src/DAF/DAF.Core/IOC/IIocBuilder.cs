@@ -10,18 +10,18 @@ namespace DAF.Core.IOC
 {
     public interface IIocBuilder
     {
-        void RegisterType(Type interfaceType, Type serviceType, LiftTimeScope scope = LiftTimeScope.Transiant, string name = null, bool autoWire = false,
+        void RegisterType(Type interfaceType, Type serviceType, LifeTimeScope scope = LifeTimeScope.Transient, string name = null, bool autoWire = false,
             Func<IIocContext, IDictionary<string, object>> getConstructorParameters = null, Func<IIocContext, object, object> onActivating = null, Action<IIocContext, object> onActivated = null);
-        void RegisterInstance(Type interfaceType, object instance, LiftTimeScope scope = LiftTimeScope.Transiant, string name = null, bool autoWire = false);
-        void RegisterFactory<IT, TT>(LiftTimeScope scope = LiftTimeScope.Transiant)
+        void RegisterInstance(Type interfaceType, object instance, LifeTimeScope scope = LifeTimeScope.Transient, string name = null, bool autoWire = false);
+        void RegisterFactory<IT, TT>(LifeTimeScope scope = LifeTimeScope.Transient)
             where TT : class, IServiceFactory<IT>;
-        void RegisterGeneric(Type interfaceType, Type serviceType, LiftTimeScope scope = LiftTimeScope.Transiant);
+        void RegisterGeneric(Type interfaceType, Type serviceType, LifeTimeScope scope = LifeTimeScope.Transient);
         IIocContainer Build();
     }
 
     public static class IIocBuilderExtensions
     {
-        public static void RegisterType<IT, TT>(this IIocBuilder builder, LiftTimeScope scope = LiftTimeScope.Transiant, string name = null, bool autoWire = false,
+        public static void RegisterType<IT, TT>(this IIocBuilder builder, LifeTimeScope scope = LifeTimeScope.Transient, string name = null, bool autoWire = false,
             Func<IIocContext, IDictionary<string, object>> getConstructorParameters = null, Func<IIocContext, TT, TT> onActivating = null, Action<IIocContext, TT> onActivated = null)
             where TT : class, IT
         {
@@ -49,7 +49,7 @@ namespace DAF.Core.IOC
             builder.RegisterType(typeof(IT), typeof(TT), scope, name, autoWire, getConstructorParameters, onObjActivaing, onObjActivated);
         }
 
-        public static void RegisterInstance<IT, TT>(this IIocBuilder builder, TT instance, LiftTimeScope scope = LiftTimeScope.Transiant, string name = null, bool autoWire = false)
+        public static void RegisterInstance<IT, TT>(this IIocBuilder builder, TT instance, LifeTimeScope scope = LifeTimeScope.Transient, string name = null, bool autoWire = false)
         {
             builder.RegisterInstance(typeof(IT), instance, scope, name, autoWire);
         }
@@ -75,20 +75,20 @@ namespace DAF.Core.IOC
             {
                 var serviceType = Type.GetType(ele.Attribute("type").Value);
                 var interfaceType = Type.GetType(ele.Attribute("service").Value);
-                LiftTimeScope scope = LiftTimeScope.Transiant;
+                LifeTimeScope scope = LifeTimeScope.Transient;
                 if (ele.Attribute("scope") != null)
                 {
                     switch (ele.Attribute("scope").Value.ToLower())
                     {
                         case "singleton":
-                            scope = LiftTimeScope.Singleton;
+                            scope = LifeTimeScope.Singleton;
                             break;
                         case "workunit":
-                            scope = LiftTimeScope.WorkUnit;
+                            scope = LifeTimeScope.WorkUnit;
                             break;
                         case "transiant":
                         default:
-                            scope = LiftTimeScope.Transiant;
+                            scope = LifeTimeScope.Transient;
                             break;
                     }
                 }

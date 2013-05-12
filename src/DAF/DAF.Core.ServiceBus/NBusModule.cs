@@ -11,7 +11,7 @@ namespace DAF.Core.ServiceBus
     {
         public void Load(IIocBuilder builder)
         {
-            builder.RegisterType<IMessageSender, NBusSender>(LiftTimeScope.Singleton);
+            builder.RegisterType<IMessageSender, NBusSender>(LifeTimeScope.Singleton);
         }
     }
 }

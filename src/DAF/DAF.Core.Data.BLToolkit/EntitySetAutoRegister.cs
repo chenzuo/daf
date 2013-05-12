@@ -13,7 +13,7 @@ namespace DAF.Core.Data.BLToolkit
         {
             if (type.IsClass && !type.IsAbstract && typeof(IEntitySet).IsAssignableFrom(type))
             {
-                builder.RegisterType(typeof(IEntitySet), type, LiftTimeScope.Transiant, type.FullName);
+                builder.RegisterType(typeof(IEntitySet), type, LifeTimeScope.Transient, type.FullName);
             }
         }
     }

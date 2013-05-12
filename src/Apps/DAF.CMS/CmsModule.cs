@@ -13,7 +13,7 @@ namespace DAF.CMS
         public void Load(IIocBuilder builder)
         {
             builder.RegisterType<Core.Configurations.IConfigurationProvider, Configurations.ModuleConfigurationProvider>();
-            builder.RegisterType<Core.Localization.ILocalizer, JsonLocalizer>(LiftTimeScope.Singleton, autoWire: true,
+            builder.RegisterType<Core.Localization.ILocalizer, JsonLocalizer>(LifeTimeScope.Singleton, autoWire: true,
                 getConstructorParameters: (ctx) =>
                     {
                         Dictionary<string, object> paras = new Dictionary<string, object>();
@@ -21,7 +21,7 @@ namespace DAF.CMS
                         return paras;
                     });
 
-            builder.RegisterType<IObjectProvider<IEnumerable<DAF.Web.Menu.MenuGroup>>, ModuleMenuGroupProvider>(LiftTimeScope.Singleton, autoWire: true,
+            builder.RegisterType<IObjectProvider<IEnumerable<DAF.Web.Menu.MenuGroup>>, ModuleMenuGroupProvider>(LifeTimeScope.Singleton, autoWire: true,
                 getConstructorParameters: (ctx) =>
                     {
                         Dictionary<string, object> paras = new Dictionary<string, object>();
@@ -30,20 +30,20 @@ namespace DAF.CMS
                         return paras;
                     });
 
-            builder.RegisterType<IAppSettingProvider, AppSettingProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<IBasicDataProvider, BasicDataProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<ICategoryProvider, CategoryProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<IContentProvider, ContentProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<IWebSiteProvider, WebSiteProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<IPageTemplateProvider, PageTemplateProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<IMenuProvider, MenuProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<IUserGroupProvider, UserGroupProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<ITemplateTypeProvider, TemplateTypeProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<IControlTypeProvider, ControlTypeProvider>(LiftTimeScope.Singleton);
-            builder.RegisterType<IPageProvider, PageProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<IAppSettingProvider, AppSettingProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IBasicDataProvider, BasicDataProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<ICategoryProvider, CategoryProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IContentProvider, ContentProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IWebSiteProvider, WebSiteProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IPageTemplateProvider, PageTemplateProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IMenuProvider, MenuProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IUserGroupProvider, UserGroupProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<ITemplateTypeProvider, TemplateTypeProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IControlTypeProvider, ControlTypeProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IPageProvider, PageProvider>(LifeTimeScope.Singleton);
 
             builder.RegisterType<IAppEventHandler, CmsAppEventHandler>();
-            builder.RegisterType<DAF.SSO.Client.IDefaultSessionProvider, CmsDefaultSessionProvider>(LiftTimeScope.Singleton);
+            builder.RegisterType<DAF.SSO.Client.IDefaultSessionProvider, CmsDefaultSessionProvider>(LifeTimeScope.Singleton);
         }
     }
 }

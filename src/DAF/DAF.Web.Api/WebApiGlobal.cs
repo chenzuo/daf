@@ -22,10 +22,7 @@ namespace DAF.Web.Api
 
             if (builder is IOC.IIocBuilderForApi)
             {
-                Config.Current.AssembiesToScan.ForEach(asm =>
-                    {
-                        ((IOC.IIocBuilderForApi)builder).RegisterApiControllers(asm);
-                    });
+                ((IOC.IIocBuilderForApi)builder).RegisterApiControllers(Config.Current.AssembiesToScan.ToArray());
             }
         }
 
