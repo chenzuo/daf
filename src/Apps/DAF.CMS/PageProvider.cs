@@ -12,10 +12,10 @@ namespace DAF.CMS
     {
         private ITransactionManager trans;
         private IRepository<WebPage> repoPage;
-        private IRepository<WebPageControl> repoControl;
+        private IRepository<WebPageWidget> repoControl;
         private IRepository<SubSite> repoSite;
 
-        public PageProvider(ITransactionManager trans,  IRepository<SubSite> repoSite, IRepository<WebPage> repoPage, IRepository<WebPageControl> repoControl)
+        public PageProvider(ITransactionManager trans,  IRepository<SubSite> repoSite, IRepository<WebPage> repoPage, IRepository<WebPageWidget> repoControl)
         {
             this.trans = trans;
             this.repoSite = repoSite;
@@ -49,14 +49,14 @@ namespace DAF.CMS
             return query;
         }
 
-        public IEnumerable<WebPageControl> GetControls(string pageId)
+        public IEnumerable<WebPageWidget> GetControls(string pageId)
         {
             var query = repoControl.Query(o => o.PageId == pageId);
             query = query.OrderBy(o => o.ShowOrder);
             return query.ToArray();
         }
 
-        public bool Save(ChangedData<WebPageControl> items)
+        public bool Save(ChangedData<WebPageWidget> items)
         {
             return repoControl.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems);
         }

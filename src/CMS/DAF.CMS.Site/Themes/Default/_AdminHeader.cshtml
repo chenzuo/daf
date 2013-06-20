@@ -1,0 +1,30 @@
+﻿@using DAF.Core;
+@using DAF.Web;
+@using DAF.SSO;
+@{
+}
+
+<div id="admin-menu"  class="navbar navbar-primary">
+    <div class="navbar-inner">
+        <div class="container">
+            @Menu.Render(MenuHelper.GetMenuItems("admin"))
+            <ul class="pull-right">
+                <li><a href="/">首页</a></li>
+                @if (AuthHelper.IsAuthenticated)
+                {
+                    <li><a>@(DAF.SSO.Resources.Locale(o => o.WelcomeUser, AuthHelper.CurrentSession.User.Name()))</a>
+                        <ul>
+                            <li><a href="/Account/ChangePassword">@(DAF.SSO.Resources.Locale(o => o.ChangePassword))</a></li>
+                            <li><a href="/Account/SignOff">@(DAF.SSO.Resources.Locale(o => o.SignOff))</a></li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li><a href="/Account/Register">@(DAF.SSO.Resources.Locale(o => o.Register))</a></li>
+                    <li><a href="/Account/SignOn">@(DAF.SSO.Resources.Locale(o => o.SignOn))</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

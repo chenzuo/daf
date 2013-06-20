@@ -39,7 +39,7 @@ namespace DAF.CMS
             builder.RegisterType<IMenuProvider, MenuProvider>(LifeTimeScope.Singleton);
             builder.RegisterType<IUserGroupProvider, UserGroupProvider>(LifeTimeScope.Singleton);
             builder.RegisterType<ITemplateTypeProvider, TemplateTypeProvider>(LifeTimeScope.Singleton);
-            builder.RegisterType<IControlTypeProvider, ControlTypeProvider>(LifeTimeScope.Singleton);
+            builder.RegisterType<IWidgetTypeProvider, WidgetTypeProvider>(LifeTimeScope.Singleton);
             builder.RegisterType<IPageProvider, PageProvider>(LifeTimeScope.Singleton);
 
             builder.RegisterType<IAppEventHandler, CmsAppEventHandler>();

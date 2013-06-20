@@ -1,0 +1,25 @@
+﻿@using DAF.Core;
+@{
+    Layout = null;
+    string id = PageData["id"] ?? "langs-div";
+}
+<div id="@id">
+    <ul class="nav nav-pills">
+        @foreach (var lang in LocaleHelper.GetSupportLanguages())
+        {
+            <li data-key="@lang.Code"><a href="javascript:;" onclick="SelectLanguage({ Code: '@lang.Code', Name: '@lang.Name' });">@lang.Name</a></li>
+        }
+    </ul>
+</div>
+<script type="text/javascript">
+    function SelectLanguage(lang) {
+        var langDiv = $('#@id');
+        langDiv.find('ul>li').removeClass('active');
+        langDiv.find('ul>li[data-key="' + lang.Code + '"]').addClass('active');
+        $(document).trigger('selectlanguage', [lang]);
+        return false;
+    }
+    function SelectFirstLanguage() {
+        $('#@(id) ul>li[data-key]:first>a').trigger('click');
+    }
+</script>

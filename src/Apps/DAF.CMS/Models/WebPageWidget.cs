@@ -8,13 +8,13 @@ using DAF.Core.Caching;
 
 namespace DAF.CMS.Models
 {
-    [Table("cms_WebPageControl")]
-    public class WebPageControl
+    [Table("cms_WebPageWidget")]
+    public class WebPageWidget
     {
         [Required]
         [Key]
         [StringLength(50)]
-        public string ControlId { get; set; }
+        public string WidgetId { get; set; }
         [Required]
         [StringLength(50)]
         public string PageId { get; set; }
@@ -26,9 +26,9 @@ namespace DAF.CMS.Models
         public string Section { get; set; }
         [Required]
         [StringLength(200)]
-        public string ControlPath { get; set; }
+        public string WidgetPath { get; set; }
         [MaxLength]
-        public string ControlParas { get; set; }
+        public string WidgetParas { get; set; }
         [StringLength(50)]
         public string Container { get; set; }
         [MaxLength]

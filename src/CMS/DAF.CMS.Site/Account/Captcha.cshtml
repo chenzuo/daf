@@ -1,0 +1,29 @@
+﻿@using System.Drawing;
+@using System.Drawing.Imaging;
+@using DAF.Core;
+@using DAF.Core.IOC;
+@using DAF.Web;
+@using DAF.Core.Generators;
+@using DAF.Web.Security;
+@{
+    string AllowedChars = "ABCDEFGHJKLMNPQRSTUVWXYZ3456789";
+    int Length = 5;
+    ICaptchaGenerator captchaGenerator = IocInstance.Container.Resolve<ICaptchaGenerator>();
+    IRandomTextGenerator radomTextGenerator = IocInstance.Container.Resolve<IRandomTextGenerator>(); ;
+    int width = 100;
+    int height = 30;
+    if (!string.IsNullOrEmpty(Request.QueryString["w"]))
+    {
+        int.TryParse(Request.QueryString["w"], out width);
+    }
+    if (!string.IsNullOrEmpty(Request.QueryString["h"]))
+    {
+        int.TryParse(Request.QueryString["h"], out height);
+    }
+    string randomText = radomTextGenerator.Generate(AllowedChars, Length);
+    Bitmap img = captchaGenerator.Generate(this.Session.SessionID, randomText, width, height);
+    MemoryStream stream = new MemoryStream();
+    img.Save(stream, ImageFormat.Jpeg);
+    Response.WriteBinary(stream.ToArray(), "image/jpeg");
+    Response.End();
+}

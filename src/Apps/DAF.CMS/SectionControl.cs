@@ -19,12 +19,12 @@ namespace DAF.CMS
 
     public static class SectionControlExtensions
     {
-        public static SectionControl ToSectionControl(this WebPageControl con)
+        public static SectionControl ToSectionControl(this WebPageWidget con)
         {
             return new SectionControl()
             {
-                Path = con.ControlPath,
-                Paras = con.ControlParas,
+                Path = con.WidgetPath,
+                Paras = con.WidgetParas,
                 Container = con.Container,
                 Styles = con.CssStyle,
                 CacheKey = con.CacheKey,
@@ -33,12 +33,12 @@ namespace DAF.CMS
             };
         }
 
-        public static SectionControl ToSectionControl(this PageTemplateControl con)
+        public static SectionControl ToSectionControl(this PageTemplateWidget con)
         {
             return new SectionControl()
             {
-                Path = con.ControlPath,
-                Paras = con.ControlParas,
+                Path = con.WidgetPath,
+                Paras = con.WidgetParas,
                 Container = con.Container,
                 Styles = con.CssStyle,
                 CacheKey = con.CacheKey,

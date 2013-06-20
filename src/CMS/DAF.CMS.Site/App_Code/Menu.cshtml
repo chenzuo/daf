@@ -1,0 +1,36 @@
+﻿@using DAF.Core;
+@using DAF.SSO;
+@using DAF.Web;
+@using DAF.Web.Menu;
+@helper Render(IEnumerable<MenuItem> items, Func<dynamic, object> itemTemplate = null, int depth = 99, int currentDepth = 0)
+{
+    var session = AuthHelper.CurrentSession;
+    int total = items == null ? 0 : items.Count();
+    if (total > 0 && currentDepth < depth)
+    {
+    <ul>
+        @foreach (var item in items)
+        {
+            if (session.CanAccess(AuthHelper.CurrentClient.ClientId, item.ProtectedUri, PermissionType.Operation))
+            {
+            <li data-key="@item.Name">
+                @if (itemTemplate == null)
+                {
+                    <a href="@(CommandHelper.AnalysisCommands(item.LinkUrl, HttpContext.Current))" id="@item.Name" target="@item.Target">
+                        @if (!string.IsNullOrEmpty(item.Icon))
+                        {
+                            <img src="@item.Icon" alt="@item.Caption"/>
+                        }
+                        <span>@item.Caption</span> </a>
+                }
+                else
+                {
+                    @itemTemplate(item)
+                }
+                @Render(item.Children, itemTemplate, depth, currentDepth + 1)
+            </li>
+            }
+        }
+    </ul>       
+    }
+}

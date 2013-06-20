@@ -97,7 +97,7 @@
     <Compile Include="CmsWebGlobal.cs" />
     <Compile Include="Configurations\ModuleConfigurationProvider.cs" />
     <Compile Include="ContentProvider.cs" />
-    <Compile Include="ControlTypeProvider.cs" />
+    <Compile Include="WidgetTypeProvider.cs" />
     <Compile Include="DB\BT\CMSDB.cs" />
     <Compile Include="DB\EF\CMSDB.cs" />
     <Compile Include="Extensions\WebPageExtensions.cs" />
@@ -105,7 +105,7 @@
     <Compile Include="IBasicDataProvider.cs" />
     <Compile Include="ICategoryProvider.cs" />
     <Compile Include="IContentProvider.cs" />
-    <Compile Include="IControlTypeProvider.cs" />
+    <Compile Include="IWidgetTypeProvider.cs" />
     <Compile Include="IMenuProvider.cs" />
     <Compile Include="IPageProvider.cs" />
     <Compile Include="IPageTemplateProvider.cs" />
@@ -138,8 +138,8 @@
     <Compile Include="Models\WebPage.cs" />
     <Compile Include="Models\WebSite.cs" />
     <Compile Include="Models\PageTemplate.cs" />
-    <Compile Include="Models\PageTemplateControl.cs" />
-    <Compile Include="Models\WebPageControl.cs" />
+    <Compile Include="Models\PageTemplateWidget.cs" />
+    <Compile Include="Models\WebPageWidget.cs" />
     <Compile Include="ModuleMenuGroupProvider.cs" />
     <Compile Include="PageProvider.cs" />
     <Compile Include="PageSection.cs" />
@@ -149,7 +149,7 @@
     <Compile Include="SitePage.cs" />
     <Compile Include="TemplateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ControlType.cs" />
+    <Compile Include="WidgetType.cs" />
     <Compile Include="TemplateTypeProvider.cs" />
     <Compile Include="WebSiteProvider.cs" />
     <Compile Include="PageTemplateProvider.cs" />

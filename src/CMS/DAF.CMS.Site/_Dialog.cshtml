@@ -1,0 +1,21 @@
+﻿@using DAF.Web;
+@{
+    Layout = "~/_Html.cshtml";
+}
+@section head {
+    @AssetsHelper.CDNCss("bootstrap.my.dialog.css")
+    @RenderPage(AssetsHelper.ThemePartial("_DialogHead.cshtml"))
+    @RenderSection("head", false)
+}
+@section end {
+    @RenderPage(AssetsHelper.ThemePartial("_DialogEnd.cshtml"))
+    @RenderSection("end", false)
+}
+<div class="page">
+    <header class="page-header">
+        @RenderSection("header", false)
+    </header>
+    <div class="page-body">
+        @RenderBody()
+    </div>
+</div>

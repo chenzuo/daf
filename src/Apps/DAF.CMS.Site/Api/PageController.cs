@@ -17,14 +17,14 @@ namespace DAF.CMS.Site.Controllers
     public class PageController : ApiController
     {
         private ITemplateTypeProvider templateProvider;
-        private IControlTypeProvider controlProvider;
+        private IWidgetTypeProvider widgetProvider;
         private IPageTemplateProvider pageTemplateProvider;
         private IPageProvider pageProvider;
 
-        public PageController(ITemplateTypeProvider templateProvider, IControlTypeProvider controlProvider, IPageTemplateProvider pageTemplateProvider, IPageProvider pageProvider)
+        public PageController(ITemplateTypeProvider templateProvider, IWidgetTypeProvider widgetProvider, IPageTemplateProvider pageTemplateProvider, IPageProvider pageProvider)
         {
             this.templateProvider = templateProvider;
-            this.controlProvider = controlProvider;
+            this.widgetProvider = widgetProvider;
             this.pageTemplateProvider = pageTemplateProvider;
             this.pageProvider = pageProvider;
         }
@@ -36,9 +36,9 @@ namespace DAF.CMS.Site.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ControlType> ControlTypes()
+        public IEnumerable<WidgetType> WidgetTypes()
         {
-            return controlProvider.LoadControlTypes();
+            return widgetProvider.LoadWidgetTypes();
         }
 
         [HttpGet]
@@ -66,13 +66,13 @@ namespace DAF.CMS.Site.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WebPageControl> Data(string pageId)
+        public IEnumerable<WebPageWidget> Data(string pageId)
         {
             return pageProvider.GetControls(pageId);
         }
 
         [HttpPost]
-        public ServerResponse Save([FromBody]ChangedData<WebPageControl> items)
+        public ServerResponse Save([FromBody]ChangedData<WebPageWidget> items)
         {
             return items.Save(o => pageProvider.Save(items));
         }

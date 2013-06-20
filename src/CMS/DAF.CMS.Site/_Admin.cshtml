@@ -1,0 +1,17 @@
+﻿@using DAF.Web;
+@{
+    Layout = "~/_Html.cshtml";
+}
+@section head {
+    @RenderPage(AssetsHelper.ThemePartial("_AdminHead.cshtml"))
+    @RenderSection("head", false)
+}
+@section end {
+    @RenderPage(AssetsHelper.ThemePartial("_AdminEnd.cshtml"))
+    @RenderSection("end", false)
+}
+<div class="page">
+    <div class="page-body">
+        @RenderBody()
+    </div>
+</div>

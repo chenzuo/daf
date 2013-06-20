@@ -1,0 +1,10 @@
+﻿<script type="text/javascript">
+    $(function () {
+        $('#admin-menu ul:first a[href]').each(function () {
+            var href = $(this).attr('href');
+            if (href != '#' && href.indexOf('javascript') < 0) {
+                $(this).attr('href', 'javascript:OpenIFrame("admin-body","' + href + '");');
+            }
+        });
+    });
+</script>

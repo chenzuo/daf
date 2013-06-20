@@ -12,7 +12,7 @@ namespace DAF.CMS.Models
     {
         public WebPage()
         {
-            Controls = new List<WebPageControl>();
+            Controls = new List<WebPageWidget>();
         }
 
         [Required]
@@ -80,6 +80,6 @@ namespace DAF.CMS.Models
         public virtual SubSite Site { get; set; }
         [ForeignKey("SiteId, TemplateName")]
         public virtual PageTemplate Template { get; set; }
-        public virtual ICollection<WebPageControl> Controls { get; set; }
+        public virtual ICollection<WebPageWidget> Controls { get; set; }
     }
 }

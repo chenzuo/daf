@@ -213,9 +213,9 @@
     <Content Include="packages.config" />
     <Content Include="Admin\Default.cshtml" />
     <Content Include="Account\Captcha.cshtml" />
-    <Content Include="Controls\User\_AccountInfo.cshtml" />
+    <Content Include="Widgets\User\_AccountInfo.cshtml" />
     <Content Include="Account\SignOff.cshtml" />
-    <Content Include="Controls\Image\_ImageSlideShow.cshtml">
+    <Content Include="Widgets\Image\_ImageSlideShow.cshtml">
       <SubType>
       </SubType>
     </Content>
@@ -243,11 +243,11 @@
     <Content Include="Account\ResetPassword.cshtml" />
     <Content Include="Account\ResetPasswordSuccess.cshtml" />
     <Content Include="Admin\_PageStart.cshtml" />
-    <Content Include="Controls\Content\_ContentDetail.cshtml" />
-    <Content Include="Controls\Content\_ContentBrief.cshtml" />
-    <Content Include="Controls\Content\_ContentList.cshtml" />
+    <Content Include="Widgets\Content\_ContentDetail.cshtml" />
+    <Content Include="Widgets\Content\_ContentBrief.cshtml" />
+    <Content Include="Widgets\Content\_ContentList.cshtml" />
     <Content Include="Admin\WebSite\Default.cshtml" />
-    <Content Include="Controls\_SelectSites.cshtml" />
+    <Content Include="Widgets\_SelectSites.cshtml" />
     <Content Include="Admin\PageTemplate\Default.cshtml" />
     <Content Include="PageTemplates\TopMainBottom.cshtml" />
     <Content Include="PageTemplates\LeftMainRight.cshtml" />
@@ -262,17 +262,17 @@
     <Content Include="Modules\Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Modules\ECommerce\Controls\common.cshtml" />
-    <Content Include="Modules\ECommerce\Controls\Menu\menu.cshtml" />
-    <Content Include="Controls\Menu\_CascadeHorzMenu.cshtml" />
-    <Content Include="Controls\Menu\_FooterMenu.cshtml" />
-    <Content Include="Controls\Site\_SiteLogo.cshtml" />
-    <Content Include="Controls\Category\_SubCategories.cshtml" />
-    <Content Include="Controls\Content\_ContentSlideShow.cshtml" />
-    <Content Include="Controls\Menu\_TreeMenu.cshtml" />
-    <Content Include="Admin\_SelectControlType.cshtml" />
+    <Content Include="Modules\ECommerce\Widgets\common.cshtml" />
+    <Content Include="Modules\ECommerce\Widgets\Menu\menu.cshtml" />
+    <Content Include="Widgets\Menu\_CascadeHorzMenu.cshtml" />
+    <Content Include="Widgets\Menu\_FooterMenu.cshtml" />
+    <Content Include="Widgets\Site\_SiteLogo.cshtml" />
+    <Content Include="Widgets\Category\_SubCategories.cshtml" />
+    <Content Include="Widgets\Content\_ContentSlideShow.cshtml" />
+    <Content Include="Widgets\Menu\_TreeMenu.cshtml" />
+    <Content Include="Admin\_SelectWidgetType.cshtml" />
     <Content Include="Admin\_SetPageProperties.cshtml" />
-    <Content Include="Controls\Site\_SiteFooter.cshtml" />
+    <Content Include="Widgets\Site\_SiteFooter.cshtml" />
     <Content Include="PageTemplates\LeftMain.cshtml" />
     <Content Include="PageTemplates\TopMain.cshtml" />
     <Content Include="Pages\LeftMain.cshtml" />
@@ -281,15 +281,15 @@
     <Content Include="Pages\MainBottom.cshtml" />
     <Content Include="PageTemplates\MainRight.cshtml" />
     <Content Include="PageTemplates\MainBottom.cshtml" />
-    <Content Include="Controls\Content\_ContentTopList.cshtml" />
+    <Content Include="Widgets\Content\_ContentTopList.cshtml" />
     <Content Include="Modules\ECommerce\Configurations\appSettings.config" />
     <Content Include="Modules\ECommerce\Configurations\ioc.config" />
     <Content Include="Modules\ECommerce\Configurations\connectionStrings.config" />
     <Content Include="Modules\BXX\Configurations\appSettings.config" />
     <Content Include="Modules\BXX\Configurations\connectionStrings.config" />
     <Content Include="Modules\BXX\Configurations\ioc.config" />
-    <Content Include="Modules\BXX\Controls\common.cshtml" />
-    <Content Include="Modules\BXX\Controls\Menu\menu.cshtml" />
+    <Content Include="Modules\BXX\Widgets\common.cshtml" />
+    <Content Include="Modules\BXX\Widgets\Menu\menu.cshtml" />
     <Content Include="Modules\BXX\Web.config">
       <SubType>Designer</SubType>
     </Content>

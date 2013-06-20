@@ -14,8 +14,8 @@ namespace DAF.CMS
         WebPage GetPageById(string pageId);
         WebPage GetPageByName(string pageName);
         WebPage GetPageByShortUrl(string shortUrl);
-        IEnumerable<WebPageControl> GetControls(string pageId);
-        bool Save(ChangedData<WebPageControl> items);
+        IEnumerable<WebPageWidget> GetControls(string pageId);
+        bool Save(ChangedData<WebPageWidget> items);
 
         bool AddPage(WebPage page);
         bool UpdatePage(WebPage page);

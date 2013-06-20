@@ -15,6 +15,7 @@ echo logpath=d:\test\log\mongo.log > C:\mongodb\mongod.cfg
 mongod.exe --config C:\mongodb\mongod.cfg --install
 启动服务
 net start MongoDB
+
 停止服务
 net stop MongoDB
 移除windows服务

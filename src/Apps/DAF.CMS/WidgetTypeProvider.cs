@@ -9,44 +9,44 @@ using DAF.Web;
 
 namespace DAF.CMS
 {
-    public class ControlTypeProvider : IControlTypeProvider
+    public class WidgetTypeProvider : IWidgetTypeProvider
     {
         private IFileSystemProvider fileProvider;
-        private List<ControlType> controlTypes;
+        private List<WidgetType> controlTypes;
 
-        public ControlTypeProvider(IFileSystemProvider fileProvider)
+        public WidgetTypeProvider(IFileSystemProvider fileProvider)
         {
             this.fileProvider = fileProvider;
             this.fileProvider.SetRootPath("~/".GetPhysicalPath());
         }
 
-        public IEnumerable<ControlType> LoadControlTypes()
+        public IEnumerable<WidgetType> LoadWidgetTypes()
         {
             if (controlTypes == null || controlTypes.Count <= 0)
             {
-                controlTypes = new List<ControlType>();
-                var conFiles = fileProvider.GetFiles("Controls/*", "*.cshtml", false)
-                    .Union(fileProvider.GetFiles("Controls", "*.cshtml", false));
-                var moduleFiles = fileProvider.GetFiles("Modules/*/Controls/*", "*.cshtml", false)
-                    .Union(fileProvider.GetFiles("Modules/*/Controls", "*.cshtml", false));
+                controlTypes = new List<WidgetType>();
+                var conFiles = fileProvider.GetFiles("Widgets/*", "*.cshtml", false)
+                    .Union(fileProvider.GetFiles("Widgets", "*.cshtml", false));
+                var moduleFiles = fileProvider.GetFiles("Modules/*/Widgets/*", "*.cshtml", false)
+                    .Union(fileProvider.GetFiles("Modules/*/Widgets", "*.cshtml", false));
 
                 conFiles.ForEach(f =>
                     {
-                        ControlType tt = new ControlType();
+                        WidgetType tt = new WidgetType();
                         tt.Name = f.FileNameWithoutExtension();
                         tt.Path = "~/" + fileProvider.MakeRelative(f.FullName);
-                        tt.Category = f.Directory.Name.ToLower() == "controls" ? "" : f.Directory.Name;
+                        tt.Category = f.Directory.Name.ToLower() == "widgets" ? "" : f.Directory.Name;
                         tt.Parameters = GetParameters(f.FullName);
 
                         controlTypes.Add(tt);
                     });
                 moduleFiles.ForEach(f =>
                 {
-                    ControlType tt = new ControlType();
+                    WidgetType tt = new WidgetType();
                     tt.Name = f.FileNameWithoutExtension();
                     tt.Path = "~/" + fileProvider.MakeRelative(f.FullName);
-                    tt.Category = f.Directory.Name.ToLower() == "controls" ? "" : f.Directory.Name;
-                    tt.Module = f.Directory.Name.ToLower() == "controls" ? f.Directory.Parent.Name : f.Directory.Parent.Parent.Name;
+                    tt.Category = f.Directory.Name.ToLower() == "widgets" ? "" : f.Directory.Name;
+                    tt.Module = f.Directory.Name.ToLower() == "widgets" ? f.Directory.Parent.Name : f.Directory.Parent.Parent.Name;
                     tt.Parameters = GetParameters(f.FullName);
 
                     controlTypes.Add(tt);
@@ -57,7 +57,7 @@ namespace DAF.CMS
             return controlTypes;
         }
 
-        private IEnumerable<ControlParameter> GetParameters(string file)
+        private IEnumerable<WidgetParameter> GetParameters(string file)
         {
             var lines = File.ReadAllLines(file);
             bool started = false;
@@ -84,15 +84,15 @@ namespace DAF.CMS
             var json = sb.ToString();
             if (json.Length > 0)
             {
-                return JsonHelper.Deserialize<ControlParameter[]>(json);
+                return JsonHelper.Deserialize<WidgetParameter[]>(json);
             }
-            return Enumerable.Empty<ControlParameter>();
+            return Enumerable.Empty<WidgetParameter>();
         }
 
-        public ControlType GetControlType(string nameOrPath)
+        public WidgetType GetWidgetType(string nameOrPath)
         {
             nameOrPath = nameOrPath.ToLower();
-            var tts = LoadControlTypes();
+            var tts = LoadWidgetTypes();
             return tts.FirstOrDefault(o => o.Name.ToLower() == nameOrPath || o.Path == nameOrPath);
         }
     }

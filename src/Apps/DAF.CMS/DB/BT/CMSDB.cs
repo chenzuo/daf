@@ -32,9 +32,9 @@ namespace DAF.CMS.DB.BT
                     typeof(WebSite),
                     typeof(SubSite),
                     typeof(PageTemplate),
-                    typeof(PageTemplateControl),
+                    typeof(PageTemplateWidget),
                     typeof(WebPage),
-                    typeof(WebPageControl),
+                    typeof(WebPageWidget),
                     typeof(SiteMenuGroup),
                     typeof(SiteMenuItem)
               };

@@ -11,20 +11,20 @@
     }
 </style>
 <div id="controlTypes" class="hide">
-    <h3>当前控件：<span data-bind="text:EditingControlName"></span></h3>
+    <h3>当前控件：<span data-bind="text:EditingWidgetName"></span></h3>
     <div id="ctTabs" class="tabs">
-        <ul data-bind="foreach:ControlModules">
+        <ul data-bind="foreach:WidgetModules">
             <li><a data-bind="attr: { href: '#' + Name() }, text: Name"></a></li>
         </ul>
-        <!-- ko foreach:ControlModules -->
+        <!-- ko foreach:WidgetModules -->
         <div data-bind="foreach:Categories, attr: { id: Name }">
             <fieldset>
                 <legend>
                     <span data-bind="text: Name"></span>
                 </legend>
-                <ul class="nav nav-pills" data-bind="foreach:Controls">
+                <ul class="nav nav-pills" data-bind="foreach:Widgets">
                     <li>
-                        <div class="well bg-none text-center" data-bind="click:vm.SetItemControl, css: { selected: vm.IsEditingControl($data) }">
+                        <div class="well bg-none text-center" data-bind="click:vm.SetItemWidget, css: { selected: vm.IsEditingWidget($data) }">
                             <span data-bind="text:Name"></span>
                         </div>
                     </li>
@@ -34,7 +34,7 @@
         <!-- /ko -->
     </div>
 </div>
-<div id="controlParas" data-bind="with:EditingControl" class="hide">
+<div id="controlParas" data-bind="with:EditingWidget" class="hide">
     <!-- ko foreach:Parameters -->
     <table class="table table-bordered spanfull">
         <tr>
@@ -60,67 +60,67 @@
 </div>
 
 <script type="text/javascript">
-    function InitControlTypes() {
-        vm.EditingControl = ko.observable(null);
-        vm.ControlModules = ko.observableArray([]);
-        vm.EditingControlName = ko.computed(function () {
-            var con = vm.EditingControl();
+    function InitWidgetTypes() {
+        vm.EditingWidget = ko.observable(null);
+        vm.WidgetModules = ko.observableArray([]);
+        vm.EditingWidgetName = ko.computed(function () {
+            var con = vm.EditingWidget();
             if (con) {
                 return con.Module() + "/" + con.Category() + "/" + con.Name();
             }
             return "";
         });
-        vm.IsEditingControl = function (item) {
-            var con = vm.EditingControl();
+        vm.IsEditingWidget = function (item) {
+            var con = vm.EditingWidget();
             if (con) {
                 return con.Path() == item.Path();
             }
             return false;
         };
-        vm.FindControl = function (path) {
+        vm.FindWidget = function (path) {
             path = path.toLowerCase();
-            for (var i = 0; i < vm.ControlModules().length; i++) {
-                var mod = vm.ControlModules()[i];
+            for (var i = 0; i < vm.WidgetModules().length; i++) {
+                var mod = vm.WidgetModules()[i];
                 for (var j = 0; j < mod.Categories().length; j++) {
                     var cate = mod.Categories()[j];
-                    for (var k = 0; k < cate.Controls().length; k++) {
-                        if (cate.Controls()[k].Path().toLowerCase() == path) {
-                            return cate.Controls()[k];
+                    for (var k = 0; k < cate.Widgets().length; k++) {
+                        if (cate.Widgets()[k].Path().toLowerCase() == path) {
+                            return cate.Widgets()[k];
                         }
                     }
                 }
             }
             return null;
         };
-        vm.SetItemControl = function (con) {
-            vm.EditingControl(con);
+        vm.SetItemWidget = function (con) {
+            vm.EditingWidget(con);
         };
-        vm.ShowItemControl = function (item) {
+        vm.ShowItemWidget = function (item) {
             vm.EditingItem(item);
-            vm.EditingControl(vm.FindControl(item.ControlPath()));
+            vm.EditingWidget(vm.FindWidget(item.WidgetPath()));
             ShowDialog('#controlTypes', '选择控件', function () {
-                var con = vm.EditingControl();
-                vm.EditingItem().ControlPath(con.Path());
-                vm.EditingControl(null);
+                var con = vm.EditingWidget();
+                vm.EditingItem().WidgetPath(con.Path());
+                vm.EditingWidget(null);
             }, function () {
-                vm.EditingControl(null);
+                vm.EditingWidget(null);
             }, 600, 500);
         };
-        vm.EditItemControl = function (item) {
-            var con = vm.FindControl(item.ControlPath());
+        vm.EditItemWidget = function (item) {
+            var con = vm.FindWidget(item.WidgetPath());
             if (con) {
                 if (con.Parameters().length > 0) {
-                    var dic = Str2Dic(item.ControlParas());
+                    var dic = Str2Dic(item.WidgetParas());
                     $.each(con.Parameters(), function (i, n) {
                         var vals = $.grep(dic, function (item, idx) { return item.Key == n.Name(); });
                         n.ParaValue(vals.length > 0 ? vals[0].Value : n.DefaultValue());
                     });
                 }
-                vm.EditingControl(con);
+                vm.EditingWidget(con);
                 vm.EditingItem(item);
                 ShowDialog('#controlParas', '编辑控件参数', function () {
                     var dic = [];
-                    var con = vm.EditingControl();
+                    var con = vm.EditingWidget();
                     var paras = con.Parameters();
                     for (var i = 0; i < paras.length; i++) {
                         var val = paras[i].ParaValue();
@@ -129,14 +129,14 @@
                         }
                         dic.push({ Key: paras[i].Name(), Value: val });
                     }
-                    vm.EditingItem().ControlParas(Dic2Str(dic));
+                    vm.EditingItem().WidgetParas(Dic2Str(dic));
                 }, null, 660, 500);
             }
         };
-        vm.GetControlName = function (item) {
+        vm.GetWidgetName = function (item) {
             if (!item) { item = this.EditingItem(); }
             if (item) {
-                var con = this.FindControl(item.ControlPath());
+                var con = this.FindWidget(item.WidgetPath());
                 if (con) {
                     return con.Module() + "/" + con.Category() + "/" + con.Name();
                 }
@@ -144,7 +144,7 @@
             return "";
         };
 
-        GetJson('@(UrlHelper.ClientUrl("Api/Page/ControlTypes"))', function (data) {
+        GetJson('@(UrlHelper.ClientUrl("Api/Page/WidgetTypes"))', function (data) {
             $.each(data, function (i, n) {
                 if (!n.Module || n.Module.length <= 0)
                     n.Module = "public";
@@ -160,15 +160,15 @@
                     .select(function (item) { return item.Category; }).unique();
 
                 for (var j = 0; j < cns.length; j++) {
-                    var cate = { Name: cns[j], Controls: [] };
+                    var cate = { Name: cns[j], Widgets: [] };
                     var cs = $.grep(data, function (n, idx) { return n.Module == mns[i] && n.Category == cns[j]; });
-                    cate.Controls = cs;
+                    cate.Widgets = cs;
 
                     mod.Categories.push(cate);
                 }
                 mods.push(mod);
             }
-            ko.mapping.fromJS(mods, null, vm.ControlModules);
+            ko.mapping.fromJS(mods, null, vm.WidgetModules);
             $('.tabs').tabs('destroy').tabs();
             SelectFirstSite();
         });

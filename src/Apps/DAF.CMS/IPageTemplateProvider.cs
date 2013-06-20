@@ -13,8 +13,8 @@ namespace DAF.CMS
         IEnumerable<PageTemplate> GetTemplates(string siteId);
         IEnumerable<PageTemplate> GetTemplates(string siteId, string parentName);
         PageTemplate GetTemplate(string siteId, string template);
-        IEnumerable<PageTemplateControl> GetControls(string siteId, string template = null);
-        bool Save(ChangedData<PageTemplateControl> items);
+        IEnumerable<PageTemplateWidget> GetControls(string siteId, string template = null);
+        bool Save(ChangedData<PageTemplateWidget> items);
 
         bool AddTemplate(PageTemplate template);
         bool UpdateTemplate(PageTemplate template);

@@ -14,7 +14,7 @@ namespace DAF.CMS.Models
         {
             Parent = null;
             Children = new List<PageTemplate>();
-            Controls = new List<PageTemplateControl>();
+            Controls = new List<PageTemplateWidget>();
         }
 
         [Required]
@@ -43,6 +43,6 @@ namespace DAF.CMS.Models
         [ForeignKey("SiteId, TemplateName")]
         public virtual PageTemplate Parent { get; set; }
         public virtual ICollection<PageTemplate> Children { get; set; }
-        public virtual ICollection<PageTemplateControl> Controls { get; set; }
+        public virtual ICollection<PageTemplateWidget> Controls { get; set; }
     }
 }

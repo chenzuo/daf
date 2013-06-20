@@ -20,9 +20,9 @@ namespace DAF.CMS.DB.EF
         public DbSet<WebSite> WebSites { get; set; }
         public DbSet<SubSite> LocaleSites { get; set; }
         public DbSet<PageTemplate> PageTemplates { get; set; }
-        public DbSet<PageTemplateControl> PageTemplateControls { get; set; }
+        public DbSet<PageTemplateWidget> PageTemplateControls { get; set; }
         public DbSet<WebPage> WebPages { get; set; }
-        public DbSet<WebPageControl> WebPageControls { get; set; }
+        public DbSet<WebPageWidget> WebPageControls { get; set; }
         public DbSet<SiteMenuGroup> MenuGroups { get; set; }
         public DbSet<SiteMenuItem> MenuItems { get; set; }
 

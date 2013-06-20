@@ -14,9 +14,9 @@ namespace DAF.CMS
     {
         private ITransactionManager trans;
         private IRepository<PageTemplate> repoTemplate;
-        private IRepository<PageTemplateControl> repoControl;
+        private IRepository<PageTemplateWidget> repoControl;
 
-        public PageTemplateProvider(ITransactionManager trans, IRepository<PageTemplate> repoTemplate, IRepository<PageTemplateControl> repoControl)
+        public PageTemplateProvider(ITransactionManager trans, IRepository<PageTemplate> repoTemplate, IRepository<PageTemplateWidget> repoControl)
         {
             this.trans = trans;
             this.repoTemplate = repoTemplate;
@@ -46,7 +46,7 @@ namespace DAF.CMS
 
         }
 
-        public IEnumerable<PageTemplateControl> GetControls(string siteId, string template = null)
+        public IEnumerable<PageTemplateWidget> GetControls(string siteId, string template = null)
         {
             var query = repoControl.Query(o => o.SiteId == siteId);
             if (!string.IsNullOrEmpty(template))
@@ -55,7 +55,7 @@ namespace DAF.CMS
             return query.ToArray();
         }
 
-        public bool Save(ChangedData<PageTemplateControl> items)
+        public bool Save(ChangedData<PageTemplateWidget> items)
         {
             return repoControl.SaveAll(trans, items.NewItems, items.ModifiedItems, items.DeletedItems);
         }
